@@ -15,83 +15,43 @@ public class Server {
         while (true){
 
             byte[] raw_message = new byte[100];
-            String message;
+
             DatagramPacket dpacket = new DatagramPacket(raw_message, 100);
             dsocket.receive(dpacket);
-            message = new String(dpacket.getData()).trim();
+            Xpac xpac_message = new Xpac(dpacket);
 
             System.out.println("Received:");
-            System.out.println(message);
-            String[] request = message.split(":");
+            System.out.println(xpac_message.getMessage());
+            String[] request = xpac_message.getMessage().split(":");
             String response_message;
-            byte[] response_bytes;
-            byte[] response;
+
             switch (request[0]){
                 case "lookup":
                     response_message = "NOT IN DATABASE";
                     if(database.containsKey(request[1])){
                         response_message = database.get(request[1]);
                     }
-                    response = new byte[100];
-                    response_bytes = response_message.getBytes();
-                    for (int i = 0; i < response.length; i++) {
-                        if(i < response_bytes.length){
-                            response[i] = response_bytes[i];
-                        }
-                        else {
-                            response[i] = 0;
-                        }
-                    }
 
-                    dpacket.setData(response);
-                    dsocket.send(dpacket);
-                    System.out.println("Responded:");
-                    System.out.println(response_message);
                     break;
                 case "register":
                     response_message = "ADDED";
                     if(database.containsKey(request[1])){
-                        System.out.println("damn");
                         response_message = "ALREADY IN DATABASE";
                     }
                     else {
                         database.put(request[1], request[2]);
                     }
-                    response = new byte[100];
-                    response_bytes = response_message.getBytes();
-                    for (int i = 0; i < response.length; i++) {
-                        if(i < response_bytes.length){
-                            response[i] = response_bytes[i];
-                        }
-                        else {
-                            response[i] = 0;
-                        }
-                    }
-
-                    dpacket.setData(response);
-                    dsocket.send(dpacket);
-                    System.out.println("Responded:");
-                    System.out.println(response_message);
                     break;
                 default:
                     response_message = "ERROR PROCESSING";
-                    response = new byte[100];
-                    response_bytes = response_message.getBytes();
-                    for (int i = 0; i < response.length; i++) {
-                        if(i < response_bytes.length){
-                            response[i] = response_bytes[i];
-                        }
-                        else {
-                            response[i] = 0;
-                        }
-                    }
-
-                    dpacket.setData(response);
-                    dsocket.send(dpacket);
-                    System.out.println("Responded:");
-                    System.out.println(response_message);
                     break;
             }
+
+            Xpac xpac_response = new Xpac(response_message);
+            dpacket.setData(xpac_response.getMessage_bytes());
+            dsocket.send(dpacket);
+            System.out.println("Responded:");
+            System.out.println(response_message);
         }
     }
 }
