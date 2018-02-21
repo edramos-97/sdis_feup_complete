@@ -4,10 +4,11 @@ import java.net.DatagramPacket;
 
 public class Xpac {
 
-    private int size = 200;
+    public int size = 200;
 
-    String message;
-    DatagramPacket data_packet;
+    private String message;
+    private DatagramPacket data_packet;
+    private byte[] message_bytes;
 
 
     public Xpac(String message){
@@ -15,27 +16,49 @@ public class Xpac {
     }
 
     public Xpac(DatagramPacket dpacket){
-        data_packet = dpacket;
-        message = new String(dpacket.getData()).trim();
+        setData_packet(dpacket);
+        setMessage(new String(dpacket.getData()).trim());
     }
 
     public void encapsulate(String message_to_encapsulate){
-        message = message_to_encapsulate;
+        setMessage(message_to_encapsulate);
 
-        byte[] response = new byte[size];
+        setMessage_bytes(new byte[size]);
         byte[] message_to_encapsulateBytes = message_to_encapsulate.getBytes();
-        for (int i = 0; i < response.length; i++) {
+        for (int i = 0; i < getMessage_bytes().length; i++) {
             if(i < message_to_encapsulateBytes.length){
-                response[i] = message_to_encapsulateBytes[i];
+                getMessage_bytes()[i] = message_to_encapsulateBytes[i];
             }
             else {
-                response[i] = 0;
+                getMessage_bytes()[i] = 0;
             }
         }
 
-        data_packet = new DatagramPacket(response, size);
+        setData_packet(new DatagramPacket(getMessage_bytes(), size));
     }
 
 
+    public String getMessage() {
+        return message;
+    }
 
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public DatagramPacket getData_packet() {
+        return data_packet;
+    }
+
+    public void setData_packet(DatagramPacket data_packet) {
+        this.data_packet = data_packet;
+    }
+
+    public byte[] getMessage_bytes() {
+        return message_bytes;
+    }
+
+    public void setMessage_bytes(byte[] message_bytes) {
+        this.message_bytes = message_bytes;
+    }
 }

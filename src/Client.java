@@ -22,18 +22,10 @@ public class Client {
                     message = message.concat(":");
             }
 
-            byte[] to_send = new byte[100];
-            byte[] message_bytes = message.getBytes();
-            for (int i = 0; i < to_send.length; i++) {
-                if (i < message_bytes.length) {
-                    to_send[i] = message_bytes[i];
-                } else {
-                    to_send[i] = 0;
-                }
-            }
+            Xpac xpac_message = new Xpac(message);
             DatagramPacket dpacket = new DatagramPacket(
-                    to_send,
-                    100,
+                    xpac_message.getMessage_bytes(),
+                    xpac_message.size,
                     InetAddress.getByName(args[0]),
                     Integer.parseInt(args[1]));
 
