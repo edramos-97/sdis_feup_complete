@@ -24,9 +24,9 @@ public class Client {
 
         msocket.leaveGroup(InetAddress.getByName(mcast_addr));
 
-
-        String address = "localhost"; // could send through server
-        int port = Integer.parseInt(info_server.getMessage());
+        String[] info = info_server.getMessage().split("/");
+        String address = info[1]; // could send through server
+        int port = Integer.parseInt(info[0]);
 
 
 

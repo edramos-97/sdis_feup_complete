@@ -15,15 +15,20 @@ public class Server {
         // ***
         // java Server <srvc_port> <mcast_addr> <mcast_port>
 
-        (new Thread(){
+        new Thread(){
             @Override
             public void run(){
                 String mcast_addr = args[1];
                 String mcast_port = args[2];
 
                 try {
+                    InetAddress address = InetAddress.getLocalHost();
                     MulticastSocket mcast_socket = new MulticastSocket();
-                    Xpac message_to_broadc = new Xpac(args[0]);
+                    String message_to_send = args[0];
+                    message_to_send += "/";
+                    message_to_send += address.getHostAddress();
+
+                    Xpac message_to_broadc = new Xpac(message_to_send);
                     DatagramPacket packet_to_broad = new DatagramPacket(
                             message_to_broadc.getMessage_bytes(),
                             message_to_broadc.size,
@@ -44,7 +49,7 @@ public class Server {
 
 
             }
-        }).start();
+        }.start();
 
         int port = Integer.parseInt(args[0]);
         DatagramSocket dsocket = new DatagramSocket(port);
