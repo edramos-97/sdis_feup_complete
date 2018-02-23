@@ -24,6 +24,7 @@ public class Server {
                 try {
                     InetAddress address = InetAddress.getLocalHost();
                     MulticastSocket mcast_socket = new MulticastSocket();
+                    mcast_socket.setTimeToLive(100);
                     String message_to_send = args[0];
                     message_to_send += "/";
                     message_to_send += address.getHostAddress();
