@@ -4,7 +4,7 @@ import java.net.DatagramPacket;
 
 public class Xpac {
 
-    public int size = 200;
+    public static int size = 200;
 
     private String message;
     private DatagramPacket data_packet;
