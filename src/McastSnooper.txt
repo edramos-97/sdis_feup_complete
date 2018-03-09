@@ -1,0 +1,15 @@
+This application was designed to help you debug your backup service: it logs all the messages exchanged via the
+multicast channels specified.
+
+To learn how to invoke it, run it without arguments:
+    java -jar McastSnooper.jar
+
+java -jar McastSnooper.jar [<logFileName>] <MC_addr>:<MC_port> <MDB_addr>:<MDB_port> <MDR_addr>:<MDR_port>
+
+<logFileName> - Where to store the log file
+
+<MC_addr>:<MC_port>     - Multicast Control Chanel
+<MDB_addr>:<MDB_port>   - Multicast Data Chanel
+<MDR_addr>:<MDR_port>   - Multicast Recover Chanel
+
+If you specify a log file, on Linux the file is stored in /tmp

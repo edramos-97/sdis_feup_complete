@@ -3,17 +3,17 @@ import java.io.*;
 import java.util.Hashtable;
 import Xpac.Xpac;
 
-public class Server {
-    public static Hashtable<String, String> database = new Hashtable<>();
+public class OLD_Server {
+    private static Hashtable<String, String> database = new Hashtable<>();
 
     public class MyThread extends Thread {
 
     }
 
     public static void main(String[] args) throws IOException {
-        // java Server <port_number>
+        // java OLD_Server <port_number>
         // ***
-        // java Server <srvc_port> <mcast_addr> <mcast_port>
+        // java OLD_Server <srvc_port> <mcast_addr> <mcast_port>
 
         new Thread(){
             @Override
@@ -32,7 +32,7 @@ public class Server {
                     Xpac message_to_broadc = new Xpac(message_to_send);
                     DatagramPacket packet_to_broad = new DatagramPacket(
                             message_to_broadc.getMessage_bytes(),
-                            message_to_broadc.size,
+                            Xpac.size,
                             InetAddress.getByName(mcast_addr),
                             Integer.parseInt(mcast_port));
 

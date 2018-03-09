@@ -1,5 +1,5 @@
-java Server 4000 228.5.6.7 6789
+java OLD_Server 4000 228.5.6.7 6789
 
-java Client 228.5.6.7 6789 register xx-89-89 xavier
+java OLD_Client 228.5.6.7 6789 register xx-89-89 xavier
 
-java Client 228.5.6.7 6789 lookup xx-89-89
+java OLD_Client 228.5.6.7 6789 lookup xx-89-89

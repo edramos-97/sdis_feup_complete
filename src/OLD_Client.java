@@ -2,10 +2,10 @@ import java.net.*;
 import java.io.*;
 import Xpac.Xpac;
 
-public class Client {
+public class OLD_Client {
 
     public static void main(String[] args) throws IOException {
-        // java Client <host_name> <port_number> <oper> <opnd>*
+        // java OLD_Client <host_name> <port_number> <oper> <opnd>*
         // ***
         // java client <mcast_addr> <mcast_port> <oper> <opnd> *
 
@@ -33,7 +33,7 @@ public class Client {
 
         DatagramSocket dsocket = new DatagramSocket();
         dsocket.setSoTimeout(10*1000);
-        String message = new String();
+        String message = "";
 
         //Arrays.copyOfRange(args,2,args.length);
         //String joined2 = String.join(",", args);
@@ -49,7 +49,7 @@ public class Client {
             Xpac xpac_message = new Xpac(message);
             DatagramPacket dpacket = new DatagramPacket(
                     xpac_message.getMessage_bytes(),
-                    xpac_message.size,
+                    Xpac.size,
                     InetAddress.getByName(address),
                     port);
 
