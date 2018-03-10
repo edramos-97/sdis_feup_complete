@@ -1,14 +1,16 @@
-public class MessageParser {
+package Utilities;
 
-    public Message parseMessage(String receivedMessage){
+public class ProtocolMessageParser {
+
+    public ProtocolMessage parseMessage(String receivedMessage){
         String[] msgFields = receivedMessage.split("\r\n\r\n");
         String[] headerFields = msgFields[0].split(" ");
-        Message.PossibleTypes tempType = verifyType(headerFields[0]);
-        Message tempMessage;
+        ProtocolMessage.PossibleTypes tempType = verifyType(headerFields[0]);
+        ProtocolMessage tempMessage;
         if (tempType==null){
             return null;
         }else {
-            tempMessage = new Message(tempType);
+            tempMessage = new ProtocolMessage(tempType);
         }
         setFields(tempMessage,headerFields);
 
@@ -22,8 +24,8 @@ public class MessageParser {
         return tempMessage;
     }
 
-    public Message.PossibleTypes verifyType(String value){
-        for (Message.PossibleTypes c : Message.PossibleTypes.values()) {
+    private ProtocolMessage.PossibleTypes verifyType(String value){
+        for (ProtocolMessage.PossibleTypes c : ProtocolMessage.PossibleTypes.values()) {
             if (c.name().equals(value)) {
                 return c;
             }
@@ -31,13 +33,13 @@ public class MessageParser {
         return null;
     }
 
-    private boolean setFields(Message tempMessage,String[] headerFields){
+    private boolean setFields(ProtocolMessage tempMessage,String[] headerFields) {
 
         try {
             tempMessage.setVersion(headerFields[1]);
             tempMessage.setSenderId(headerFields[2]);
             tempMessage.setFileId(headerFields[3]);
-            switch(tempMessage.getMsgType()){
+            switch (tempMessage.getMsgType()) {
                 case PUTCHUNK:
                     tempMessage.setChunkNo(headerFields[4]);
                     tempMessage.setReplicationDeg(headerFields[5].charAt(0));
@@ -54,9 +56,11 @@ public class MessageParser {
                 default:
                     throw new Exception("Invalid message type received!");
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
+            return false;
         }
+        return true;
     }
 
 }
