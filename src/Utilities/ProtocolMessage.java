@@ -61,7 +61,7 @@ public class ProtocolMessage {
     }
 
     public void setFileId(String fileId) throws Exception {
-        if (!fileId.matches("[0-9a-zA-Z]{64}")){
+        if (!fileId.matches("[0-9a-fA-F]{64}")){
             throw new Exception("Invalid message field received: fileId="+fileId);
         }
         FileId = fileId;
