@@ -1,15 +1,18 @@
 package Utilities;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 
 public class FileHandler {
 
     public static void main(String[] args){
         try {
-            saveChunk("123","isto foi um ficheiro que eu criei onde eu quis",new char[]{'1'});
+            for (int i = 0; i < 2; i++) {
+                System.out.println(new String(splitFile(savePath+"1.txt",i)));
+                System.out.println(":::::::::::::::::::::::::::::::::::::");
+                System.out.println(":::::::::::::::::::::::::::::::::::::");
+                System.out.println(":::::::::::::::::::::::::::::::::::::");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -64,8 +67,15 @@ public class FileHandler {
         return true;
     }
 
-    public ArrayList<byte[]> splitFile(){
-        ArrayList<byte[]> fileChunks = new ArrayList<>();
-        return fileChunks;
+    public static byte[] splitFile(String path, int chunkNo) throws IOException {
+        byte[] chunk = new byte[65535];
+
+        RandomAccessFile openFile = new RandomAccessFile(new File(path),"r");
+
+        openFile.seek(chunkNo*65535);
+
+        openFile.read(chunk);
+
+        return chunk;
     }
 }
