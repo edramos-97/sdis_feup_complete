@@ -24,6 +24,11 @@ public class ProtocolMessageParser {
         return tempMessage;
     }
 
+    /**
+     * Function to verify if the received message type is a valid one
+     * @param value - Received data as a String
+     * @return Returns a PossibleType value or null
+     */
     private ProtocolMessage.PossibleTypes verifyType(String value){
         for (ProtocolMessage.PossibleTypes c : ProtocolMessage.PossibleTypes.values()) {
             if (c.name().equals(value)) {
@@ -33,8 +38,13 @@ public class ProtocolMessageParser {
         return null;
     }
 
+    /**
+     * Function to set message fields from a string array
+     * @param tempMessage - Message to be set
+     * @param headerFields - String array with information about a message
+     * @return False if an invalid message field is received, true otherwise
+     */
     private boolean setFields(ProtocolMessage tempMessage,String[] headerFields) {
-
         try {
             tempMessage.setVersion(headerFields[1]);
             tempMessage.setSenderId(headerFields[2]);
@@ -42,7 +52,16 @@ public class ProtocolMessageParser {
             switch (tempMessage.getMsgType()) {
                 case PUTCHUNK:
                     tempMessage.setChunkNo(headerFields[4]);
-                    tempMessage.setReplicationDeg(headerFields[5].charAt(0));
+                    int temp = Integer.parseInt(headerFields[5]);
+                    if (headerFields[5].length()==1 && temp!=0){
+                        tempMessage.setReplicationDeg(headerFields[5].charAt(0));
+                    }else if(temp<=0){
+                        System.out.println("Assuming replication degree 1");
+                        throw new Exception("Invalid message field received: replicationDegree="+temp);
+                    }else if (temp>9){
+                        System.out.println("Assuming replication degree 9");
+                        throw new Exception("Invalid message field received: replicationDegree="+temp);
+                    }
                     break;
                 case GETCHUNK:
                 case STORED:
@@ -52,7 +71,6 @@ public class ProtocolMessageParser {
                     break;
                 case DELETE:
                     break;
-
                 default:
                     throw new Exception("Invalid message type received!");
             }

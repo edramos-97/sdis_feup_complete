@@ -5,9 +5,9 @@ public class ProtocolMessage {
     enum PossibleTypes {PUTCHUNK,STORED,GETCHUNK,CHUNK,DELETE,REMOVED}
 
     private PossibleTypes msgType;
-    private String Version;
-    private String SenderId;
-    private String FileId;
+    private String version;
+    private String senderId;
+    private String fileId;
     private String ChunkNo;
     private char ReplicationDeg;
     private String body;
@@ -15,16 +15,15 @@ public class ProtocolMessage {
 
     ProtocolMessage(PossibleTypes msgType){
         this.msgType = msgType;
-        this.hasBody = false;
         switch (msgType){
-            case GETCHUNK:
+            case PUTCHUNK:
             case CHUNK:
                 this.hasBody = true; break;
             case DELETE:
             case STORED:
             case REMOVED:
-            case PUTCHUNK:
-                this.hasBody = true; break;
+            case GETCHUNK:
+                this.hasBody = false; break;
             default:
                 System.out.println("Invalid message type in Message Constructor");
         }
@@ -35,36 +34,36 @@ public class ProtocolMessage {
     }
 
     public String getVersion() {
-        return Version;
+        return version;
     }
 
     public void setVersion(String version) throws Exception {
         if (!version.matches("[0-9]/.[0-9]")){
             throw new Exception("Invalid message field received: version="+version);
         }
-        Version = version;
+        this.version = version;
     }
 
     public String getSenderId() {
-        return SenderId;
+        return senderId;
     }
 
     public void setSenderId(String senderId) throws Exception {
         if(!senderId.matches("[0-9]+")){
             throw new Exception("Invalid message field received: senderId="+senderId);
         }
-        SenderId = senderId;
+        this.senderId = senderId;
     }
 
     public String getFileId() {
-        return FileId;
+        return fileId;
     }
 
     public void setFileId(String fileId) throws Exception {
         if (!fileId.matches("[0-9a-fA-F]{64}")){
             throw new Exception("Invalid message field received: fileId="+fileId);
         }
-        FileId = fileId;
+        this.fileId = fileId;
     }
 
     public String getChunkNo() {
@@ -83,7 +82,7 @@ public class ProtocolMessage {
     }
 
     public void setReplicationDeg(char replicationDeg) throws Exception {
-        if(!Character.isDigit(replicationDeg)){
+        if(!Character.isDigit(replicationDeg)||replicationDeg=='0'){
             throw new Exception("Invalid message field received: replicationDegree="+replicationDeg);
         }
         ReplicationDeg = replicationDeg;
@@ -100,12 +99,12 @@ public class ProtocolMessage {
     public byte[] toCharArray(){
         String result = "hey";
 
-        // PUTCHUNK <Version> <SenderId> <FileId> <ChunkNo> <ReplicationDeg> <CRLF><CRLF><Body>
-        // STORED <Version> <SenderId> <FileId> <ChunkNo> <CRLF><CRLF>
-        // GETCHUNK <Version> <SenderId> <FileId> <ChunkNo> <CRLF><CRLF>
-        // CHUNK <Version> <SenderId> <FileId> <ChunkNo> <CRLF><CRLF><Body>
-        // DELETE <Version> <SenderId> <FileId> <CRLF><CRLF>
-        // REMOVED <Version> <SenderId> <FileId> <ChunkNo> <CRLF><CRLF>
+        // PUTCHUNK <version> <senderId> <fileId> <ChunkNo> <ReplicationDeg> <CRLF><CRLF><Body>
+        // STORED <version> <senderId> <fileId> <ChunkNo> <CRLF><CRLF>
+        // GETCHUNK <version> <senderId> <fileId> <ChunkNo> <CRLF><CRLF>
+        // CHUNK <version> <senderId> <fileId> <ChunkNo> <CRLF><CRLF><Body>
+        // DELETE <version> <senderId> <fileId> <CRLF><CRLF>
+        // REMOVED <version> <senderId> <fileId> <ChunkNo> <CRLF><CRLF>
 
 
         return result.getBytes();
