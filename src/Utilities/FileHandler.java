@@ -42,9 +42,7 @@ public class FileHandler {
             File chunk = new File(path);
             chunk.getParentFile().mkdirs();
             out = new FileOutputStream(chunk,false);
-            for (byte c : data) {
-                out.write(c);
-            }
+            out.write(data);
         }catch (Exception e) {
             System.out.println(e.getMessage());
         }finally{
