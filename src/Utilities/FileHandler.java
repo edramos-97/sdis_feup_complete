@@ -1,7 +1,9 @@
 package Utilities;
 
 import java.io.*;
-import java.util.ArrayList;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class FileHandler {
 
@@ -18,16 +20,15 @@ public class FileHandler {
             e.printStackTrace();
         }
 
-
+        System.out.println(getDiskUsage(Paths.get(savePath))/1000);
 
         System.out.println(hasFile("fileId-No1")?"TRUE":"FALSE");
-
     }
 
     private static String savePath = System.getProperty("user.home")+File.separator+"Desktop"+File.separator+"testFolder"+File.separator;
 
     /**
-     *
+     * Function used to save a file chunk
      * @param fileId - File identifier
      * @param data - File chunk data
      * @param chunkNo - File chunk sequence number
@@ -59,7 +60,7 @@ public class FileHandler {
      * @return Returns true if the file is backed up, false otherwise
      */
     public static boolean hasFile(String fileId){
-        FileFilter directoryFileFilter = file -> file.isDirectory();
+        FileFilter directoryFileFilter = File::isDirectory;
 
         File directory = new File(savePath);
 
@@ -72,6 +73,42 @@ public class FileHandler {
             }
         }
         return false;
+    }
+
+    /**
+     * Function that returns the current backed up files size on disk
+     * @param path - Back up directory Path object from java.nio.files package
+     * @return Returns the size in bytes of the used disk space
+     */
+    public static long getDiskUsage(Path path) {
+
+        final AtomicLong size = new AtomicLong(0);
+
+        try {
+            Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                    size.addAndGet(attrs.size());
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult visitFileFailed(Path file, IOException exc) {
+                    System.out.println("Skipped: " + file + " (" + exc + ")");
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
+                    if (exc != null)
+                        System.out.println("Had trouble traversing: " + dir + " (" + exc + ")");
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (IOException e) {
+            throw new AssertionError("walkFileTree will not throw IOException if the FileVisitor does not");
+        }
+        return size.get();
     }
 
     /**
