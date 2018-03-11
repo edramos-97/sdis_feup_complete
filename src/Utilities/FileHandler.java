@@ -5,43 +5,43 @@ import java.util.ArrayList;
 
 public class FileHandler {
 
+    private static final int CHUNK_SIZE = 65535;
+
     public static void main(String[] args){
+        byte[] data;
         try {
             for (int i = 0; i < 2; i++) {
-                System.out.println(new String(splitFile(savePath+"1.txt",i)));
-                System.out.println(":::::::::::::::::::::::::::::::::::::");
-                System.out.println(":::::::::::::::::::::::::::::::::::::");
-                System.out.println(":::::::::::::::::::::::::::::::::::::");
+                data = splitFile(savePath+"1.txt",i);
+                saveChunk("fileId-No3",data,Integer.toString(i));
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
+
+        System.out.println(hasFile("fileId-No1")?"TRUE":"FALSE");
+
     }
 
-
     private static String savePath = System.getProperty("user.home")+File.separator+"Desktop"+File.separator+"testFolder"+File.separator;
-
 
     /**
      *
      * @param fileId - File identifier
      * @param data - File chunk data
      * @param chunkNo - File chunk sequence number
-     * @return True if the chunk was saved successfully, false otherwise.
-     * @throws IOException - Default IOException
      */
-    public static boolean saveChunk(String fileId, String data, char[] chunkNo) throws IOException {
+    public static void saveChunk(String fileId, byte[] data, String chunkNo) throws IOException {
         FileOutputStream out = null;
 
         try {
-            String path = savePath+ new String(chunkNo)+".txt";
+            String path = savePath+fileId+File.separator+chunkNo+".txt";
             System.out.println(path);
             File chunk = new File(path);
-            if (!chunk.getParentFile().mkdirs()){
-                throw new IOException("Could not make path for chunk no:"+new String(chunkNo)+" of file:"+fileId);
-            }
+            chunk.getParentFile().mkdirs();
             out = new FileOutputStream(chunk,false);
-            for (char c : data.toCharArray()) {
+            for (byte c : data) {
                 out.write(c);
             }
         }catch (Exception e) {
@@ -51,30 +51,58 @@ public class FileHandler {
                 out.close();
             }
         }
-        return true;
     }
 
-    public boolean backupFile(String path){
-        return true;
+    /**
+     * Function used to verify if a file is backed up
+     * @param fileId - char array with the file id
+     * @return Returns true if the file is backed up, false otherwise
+     */
+    public static boolean hasFile(String fileId){
+        FileFilter directoryFileFilter = file -> file.isDirectory();
+
+        File directory = new File(savePath);
+
+        File[] paths = directory.listFiles(directoryFileFilter);
+        if(paths != null){
+            for (File file:paths) {
+                if(file.getName().equals(fileId)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
-    public boolean hasFile(char[] fileId){
-
-        return true;
-    }
-
-    public boolean checkFileIntegrity(char[] fileId){
-        return true;
-    }
-
+    /**
+     * Function used to obtain a chunk of a file
+     * @param path - path of the file
+     * @param chunkNo - File chunk sequence number
+     * @return byte array with the file bytes
+     * @throws IOException - File couldn't be closed
+     */
     public static byte[] splitFile(String path, int chunkNo) throws IOException {
-        byte[] chunk = new byte[65535];
+        byte[] chunk = new byte[CHUNK_SIZE];
 
-        RandomAccessFile openFile = new RandomAccessFile(new File(path),"r");
+        RandomAccessFile openFile = null;
+        try {
+            openFile = new RandomAccessFile(new File(path),"r");
+            openFile.seek(chunkNo*CHUNK_SIZE);
+            int bytesRead = openFile.read(chunk);
+            if (bytesRead != CHUNK_SIZE) {
+                byte[] smallerData = new byte[bytesRead];
+                System.arraycopy(chunk, 0, smallerData, 0, bytesRead);
+                chunk = smallerData;
+            }
+            System.out.println(bytesRead);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (openFile != null) {
+                openFile.close();
+            }
+        }
 
-        openFile.seek(chunkNo*65535);
-
-        openFile.read(chunk);
 
         return chunk;
     }
