@@ -1,31 +1,55 @@
 package Utilities;
 
+import InitiatorCommunication.PutChunkRequest;
+
+import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class FileHandler {
 
     private static final int CHUNK_SIZE = 65535;
-
-    public static void main(String[] args){
-        byte[] data;
-        try {
-            for (int i = 0; i < 2; i++) {
-                data = splitFile(savePath+"1.txt",i);
-                saveChunk("fileId-No3",data,Integer.toString(i));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println(getDiskUsage(Paths.get(savePath))/1000);
-
-        System.out.println(hasFile("fileId-No1")?"TRUE":"FALSE");
-    }
-
     private static String savePath = System.getProperty("user.home")+File.separator+"Desktop"+File.separator+"testFolder"+File.separator;
+
+    public static void main(String[] args) throws InterruptedException {
+        /*ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 4, 100, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(4));
+        long size = FileHandler.getSize(savePath+"1.txt");
+        float chunkTotal = (float)size / CHUNK_SIZE;
+        System.out.println("division number:"+chunkTotal);
+        for (short i = 0; i < chunkTotal; i++) {
+            try {
+                executor.execute(new PutChunkRequest(savePath+"1.txt",i,'3'));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        executor.shutdown();
+        while (!executor.isTerminated()){
+        }*/
+
+//        byte[] data;
+//        try {
+//            for (int i = 0; i < 2; i++) {
+//                data = splitFile(savePath+"1.txt",i);
+//                saveChunk("fileId-No3",data,Integer.toString(i));
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        System.out.println(getDiskUsage(savePath)/1000);
+//
+//        System.out.println(hasFile("fileId-No1")?"TRUE":"FALSE");
+    }
 
     /**
      * Function used to save a file chunk
@@ -75,10 +99,12 @@ public class FileHandler {
 
     /**
      * Function that returns the current backed up files size on disk
-     * @param path - Back up directory Path object from java.nio.files package
+     * @param pathStr - Back up directory Path object from java.nio.files package
      * @return Returns the size in bytes of the used disk space
      */
-    public static long getDiskUsage(Path path) {
+    public static long getDiskUsage(String pathStr) {
+
+        Path path = Paths.get(pathStr);
 
         final AtomicLong size = new AtomicLong(0);
 
@@ -140,5 +166,42 @@ public class FileHandler {
 
 
         return chunk;
+    }
+
+    /**
+     * Function to obtain a file size in bytes
+     * @param path - path of the file
+     * @return Returns the file length in bytes or 0 if the file doesn't exist or the path point to a directory
+     */
+    public static long getSize(String path){
+        File file = new File(path);
+        if (file.isDirectory()){
+            return 0;
+        }else{
+            return file.length();
+        }
+    }
+
+    /**
+     * Encodes file name and date created to protocol standard
+     * @param filePath - Path of the file to be encoded
+     * @return - Returns the encoded file id or null if the path doesn't point to a file
+     */
+    public static String getFileId(String filePath){
+        File file = new File(filePath);
+        if(!file.isDirectory()){
+            String fileInfo = file.getName()+file.lastModified();
+            MessageDigest digest;
+            try {
+                digest = MessageDigest.getInstance("SHA-256");
+                byte[] hash = digest.digest(fileInfo.getBytes());
+                String hashedName = DatatypeConverter.printHexBinary(hash);
+                System.out.println(hashedName.toLowerCase());
+                return hashedName.toLowerCase();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 }
