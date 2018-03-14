@@ -2,7 +2,7 @@ package Utilities;
 
 public class ProtocolMessage {
 
-    enum PossibleTypes {PUTCHUNK,STORED,GETCHUNK,CHUNK,DELETE,REMOVED}
+    public enum PossibleTypes {PUTCHUNK,STORED,GETCHUNK,CHUNK,DELETE,REMOVED}
 
     private PossibleTypes msgType;
     private String version;
@@ -10,10 +10,10 @@ public class ProtocolMessage {
     private String fileId;
     private String ChunkNo;
     private char ReplicationDeg;
-    private String body;
+    private byte[] body;
     boolean hasBody;
 
-    ProtocolMessage(PossibleTypes msgType){
+    public ProtocolMessage(PossibleTypes msgType){
         this.msgType = msgType;
         switch (msgType){
             case PUTCHUNK:
@@ -88,11 +88,11 @@ public class ProtocolMessage {
         ReplicationDeg = replicationDeg;
     }
 
-    public String getBody() {
+    public byte[] getBody() {
         return body;
     }
 
-    public void setBody(String body) {
+    public void setBody(byte[] body) {
         this.body = body;
     }
 

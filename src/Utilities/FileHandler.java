@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class FileHandler {
 
     private static final int CHUNK_SIZE = 65535;
+    private static final String EXTENSION = ".txt";
     private static String savePath = System.getProperty("user.home")+File.separator+"Desktop"+File.separator+"testFolder"+File.separator;
 
     public static void main(String[] args) throws InterruptedException {
@@ -59,7 +60,6 @@ public class FileHandler {
      */
     public static void saveChunk(String fileId, byte[] data, String chunkNo) throws IOException {
         FileOutputStream out = null;
-
         try {
             String path = savePath+fileId+File.separator+chunkNo+".txt";
             System.out.println(path);
@@ -155,7 +155,6 @@ public class FileHandler {
                 System.arraycopy(chunk, 0, smallerData, 0, bytesRead);
                 chunk = smallerData;
             }
-            System.out.println(bytesRead);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -164,21 +163,35 @@ public class FileHandler {
             }
         }
 
-
         return chunk;
     }
 
     /**
      * Function to obtain a file size in bytes
-     * @param path - path of the file
+     * @param file - path of the file
      * @return Returns the file length in bytes or 0 if the file doesn't exist or the path point to a directory
      */
-    public static long getSize(String path){
-        File file = new File(path);
+    private static long getSize(File file){
         if (file.isDirectory()){
             return 0;
         }else{
             return file.length();
+        }
+    }
+
+    /**
+     * Method used to retreive the number of chunck a file should be divided in
+     * @param path - path to the file
+     * @return returns the number of chunks a file can be divided in
+     * @throws Exception - Throws exception if the path specified doesn't point to a file
+     */
+    public static short getChunkNo(String path) throws Exception {
+        File file = new File(path);
+        long size = getSize(file);
+        if (size==0){
+            throw new Exception("File path indicated is either a directory or doesn't exist");
+        }else{
+            return (short)Math.ceil((float)size / CHUNK_SIZE);
         }
     }
 
@@ -203,5 +216,42 @@ public class FileHandler {
             }
         }
         return null;
+    }
+
+    /**
+     * Retrieves a chunk of a given file from the backed up storage
+     * @param fileId - Id of the file to be retreived
+     * @param chunkNo - Number of the file chunk
+     * @return Returns the data of the chunk
+     * @throws Exception - Throws Exception when the file id is not backed up or the chunk does not have the correct size
+     */
+    public static byte[] getChunk(String fileId,short chunkNo) throws Exception {
+        if (!hasFile(fileId)){
+            throw new Exception("File with Id:"+fileId+" is not backed up");
+        }else{
+            byte[] chunk = new byte[CHUNK_SIZE];
+            RandomAccessFile file;
+            file =  new RandomAccessFile(savePath+fileId+File.pathSeparator+chunkNo+EXTENSION,"r");
+            if (file.read(chunk)!=CHUNK_SIZE){
+                throw new Exception("File with Id:"+fileId+"has been corrupted on chunk No:"+chunkNo);
+            }else{
+                return chunk;
+            }
+        }
+    }
+
+    /**
+     * Method used to delete a folder
+     * @param folder - File object representing the folder to be deleted
+     * @return Returns true if the folder is successfully deleted, false otherwise
+     */
+    public static boolean removeFolder(File folder){
+        File[] folderContents = folder.listFiles();
+        if (folderContents!=null){
+            for (File file : folderContents) {
+                if(!removeFolder(file))return false;
+            }
+        }
+        return folder.delete();
     }
 }
