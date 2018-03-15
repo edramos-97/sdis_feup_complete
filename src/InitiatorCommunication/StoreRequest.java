@@ -31,7 +31,7 @@ public class StoreRequest implements Runnable{
             e.printStackTrace();
             return;
         }
-        int timeout = (new Random().nextInt())%400;
+        int timeout = new Random().nextInt(400);
         try {
             Thread.sleep(timeout);
         } catch (InterruptedException e) {
