@@ -1,0 +1,115 @@
+Header example
+<MessageType> <Version> <SenderId> <FileId> <ChunkNo> <ReplicationDeg> <CRLF>
+
+termina sempre em <CRLF>
+
+<MessageType>
+This is the type of the message.
+Each subprotocol specifies its own message types.
+This field determines the format of the message and what actions its receivers should perform.
+This is encoded as a variable length sequence of ASCII characters.
+
+Possible Types:
+PUTCHUNK- Backup a file chunk
+STORED- Confirmation message for PUTCHUNK
+GETCHUNK- Ask other peers for a chunks
+CHUNK- Response to GETCHUNK
+DELETE- Remove a file from Backup
+REMOVED- Inform other peers of a backup deletion
+
+<Version>
+This is the version of the protocol.
+It is a three ASCII char sequence with the format <n>'.'<m>,
+where <n> and <m> are the ASCII codes of digits.
+For example, version 1.0, the one specified in this document,
+should be encoded as the char sequence '1''.''0'.
+
+<SenderId>
+This is the id of the server that has sent the message.
+This field is useful in many subprotocols.
+This is encoded as a variable length sequence of ASCII digits.
+
+<FileId>
+This is the file identifier for the backup service.
+As stated above, it is supposed to be obtained by using the SHA256 cryptographic hash function.
+As its name indicates its length is 256 bit, i.e. 32 bytes,
+and should be encoded as a 64 ASCII character sequence.
+The encoding is as follows: each byte of the hash value is encoded by the two ASCII
+characters corresponding to the hexadecimal representation of that byte.
+E.g., a byte with value 0xB2 should be represented by the two char sequence 'B''2' (or 'b''2', it does not matter).
+The entire hash is represented in big-endian order,
+i.e. from the MSB (byte 31) to the LSB (byte 0).
+
+<ChunkNo>
+This field together with the FileId specifies a chunk in the file.
+The chunk numbers are integers and should be assigned sequentially starting at 0.
+It is encoded as a sequence of ASCII characters corresponding to the decimal
+representation of that number, with the most significant digit first.
+The length of this field is variable, but should not be larger than 6 chars.
+Therefore, each file can have at most one million chunks.
+Given that each chunk is 64 KByte, this limits the size of the files to backup to 64 GByte.
+
+<ReplicationDeg>
+This field contains the desired replication degree of the chunk.
+This is a digit, thus allowing a replication degree of up to 9.
+It takes one byte, which is the ASCII code of that digit.
+
+MessageObject
+
+char[] MsgType
+SIZE-Variable (MAX:8;"[A-Z]*")
+
+char[3] Version ("[0-9].[0-9]")
+SIZE-Fixed
+
+char[] SenderId
+SIZE-Variable ("[0-9]*")
+
+char[64] FileId
+SIZE-Fixed ("[0-9a-zA-Z]{64}")
+
+char[6] ChunkNo
+SIZE-Fixed ("[0-9]{6}")
+
+char ReplicationDeg
+SIZE-Fixed ("[0-9]")
+
+String body
+SIZE-Variable
+
+
+Possible Messages
+PUTCHUNK <Version> <SenderId> <FileId> <ChunkNo> <ReplicationDeg> <CRLF><CRLF><Body>
+STORED <Version> <SenderId> <FileId> <ChunkNo> <CRLF><CRLF>
+GETCHUNK <Version> <SenderId> <FileId> <ChunkNo> <CRLF><CRLF>
+CHUNK <Version> <SenderId> <FileId> <ChunkNo> <CRLF><CRLF><Body>
+DELETE <Version> <SenderId> <FileId> <CRLF><CRLF>
+REMOVED <Version> <SenderId> <FileId> <ChunkNo> <CRLF><CRLF>
+
+Protocols and Channels
+--MDB multicast data channel:
++PUTCHUNK
+
+--MC multicast control channel:
++STORED(on action)
+  -wait 100-400ms to answer
+  -verify replication degree of file
+  -effRepDeg < repDeg -> send message; terminate
++STORED(on receive)
+  -update replication degree
++GETCHUNK(on action)
+  -wait for the CHUNK message reception(limit wait time and iteration number)
++DELETE(on action)
+  -after deletion from system
++DELETE(on receive)
+  -remove file from backup storage
++REMOVED(on action)
+  -send message upon deleting a file chunk
++REMOVED(on receive)
+  -check file replication degree
+  -effRepDeg < repDeg -> send PUTCHUNK message; terminate
+
+--MDR multicast data recovery channel:
++CHUNK(on action)
+  -retrieve file from system
+  -send file chunk requested
