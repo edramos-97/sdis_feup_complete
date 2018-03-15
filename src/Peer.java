@@ -25,9 +25,9 @@ public class Peer {
 
         // trying to create main threads
         try {
-            mcc = new MulticastChanelControl(args[2],args[3],args[4],args[5],args[6],args[7]);
-            mcd = new MulticastChanelData(args[2],args[3],args[4],args[5],args[6],args[7]);
-            mcr = new MulticastChanelRecovery(args[2],args[3],args[4],args[5],args[6],args[7]);
+            mcc = new MulticastChanelControl(args[2],args[3],args[4],args[5],args[6],args[7], peerID);
+            mcd = new MulticastChanelData(args[2],args[3],args[4],args[5],args[6],args[7], peerID);
+            mcr = new MulticastChanelRecovery(args[2],args[3],args[4],args[5],args[6],args[7], peerID);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -44,7 +44,21 @@ public class Peer {
         boolean is_initiator = Integer.parseInt(args[1]) == 1;
 
         if(is_initiator){
-            //do stuff
+            System.out.println("Initiating command given.");
+/*            String subprotocol, operand_1, operand_2;
+            if(args.length < 9){
+                System.out.println("Subprotocol not given, exiting now.");
+                return;
+            }
+            subprotocol = args[8];
+            if(args.length < 10){
+                System.out.println("First operand not given, exiting now.");
+                return;
+            }
+            operand_1 = args[9];
+
+
+            String operand_2 = args[10]*/
         }
 
 //        regular peer:
