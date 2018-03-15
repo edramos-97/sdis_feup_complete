@@ -2,7 +2,6 @@ package InitiatorCommunication;
 
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
-import java.io.File;
 
 public class GetChunkRequest extends Thread{
     private String fileId;
