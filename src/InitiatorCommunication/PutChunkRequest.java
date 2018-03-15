@@ -2,9 +2,7 @@ package InitiatorCommunication;
 
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
-
 import java.io.File;
-import java.io.IOException;
 
 public class PutChunkRequest extends Thread{
 
@@ -37,10 +35,10 @@ public class PutChunkRequest extends Thread{
             return;
         }
         while (i<5){
-            //send putchunk command to MDB
+            //TODO - send putchunk command to MDB
             try {
                 Thread.sleep(1000);//wait for answers
-                int effReplicationDegree = 5;//hashMap.get(message.fileId+message.chunkNo).effReplicationDegree
+                int effReplicationDegree = 5;//TODO - hashMap.get(message.fileId+message.chunkNo).effReplicationDegree
                 if(effReplicationDegree>=message.getReplicationDeg()){
                     break;
                 }else{

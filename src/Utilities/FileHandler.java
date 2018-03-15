@@ -81,6 +81,32 @@ public class FileHandler {
      * @param fileId - char array with the file id
      * @return Returns true if the file is backed up, false otherwise
      */
+    public static boolean hasChunk(String fileId,short chunkNo){
+        FileFilter directoryFileFilter = File::isDirectory;
+
+        File directory = new File(savePath);
+
+        File[] paths = directory.listFiles(directoryFileFilter);
+        if(paths != null){
+            for (File file:paths) {
+                if(file.getName().equals(fileId)) {
+                    return hasChunk(file,chunkNo);
+                }
+            }
+        }
+        return false;
+    }
+
+    private static boolean hasChunk(File file,short chunkNo){
+        File[] chunks = file.listFiles();
+        return chunks!= null && chunkNo < chunks.length && chunks[chunkNo].getName().equals(chunkNo+EXTENSION);
+    }
+
+    /**
+     * Function used to verify if a file is backed up
+     * @param fileId - char array with the file id
+     * @return Returns true if the file is backed up, false otherwise
+     */
     public static boolean hasFile(String fileId){
         FileFilter directoryFileFilter = File::isDirectory;
 
