@@ -1,5 +1,6 @@
 package Utilities;
 
+import InitiatorCommunication.DiskReclaimRequest;
 import InitiatorCommunication.PutChunkRequest;
 
 import javax.xml.bind.DatatypeConverter;
@@ -20,10 +21,17 @@ public class FileHandler {
     private static final int CHUNK_SIZE = 65535;
     private static final String EXTENSION = ".txt";
     private static String savePath = System.getProperty("user.home")+File.separator+"Desktop"+File.separator+"testFolder"+File.separator;
+    private static long allocatedSpace;
 
     public static void main(String[] args) throws InterruptedException {
-        /*ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 4, 100, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(4));
-        long size = FileHandler.getSize(savePath+"1.txt");
+        /*ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 4, 100, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(4)){
+            @Override
+            protected void afterExecute(Runnable r, Throwable t) {
+                super.afterExecute(r, t);
+                System.out.print(r.toString());
+            }
+        };
+        long size = FileHandler.getSize(new File(savePath+"1.txt"));
         float chunkTotal = (float)size / CHUNK_SIZE;
         System.out.println("division number:"+chunkTotal);
         for (short i = 0; i < chunkTotal; i++) {
@@ -33,9 +41,10 @@ public class FileHandler {
                 e.printStackTrace();
             }
         }
+        while (executor.getActiveCount()!=0);
+        executor.execute(new DiskReclaimRequest(300000));
         executor.shutdown();
-        while (!executor.isTerminated()){
-        }*/
+        while (!executor.isTerminated());*/
 
 //        byte[] data;
 //        try {
@@ -50,6 +59,14 @@ public class FileHandler {
 //        System.out.println(getDiskUsage(savePath)/1000);
 //
 //        System.out.println(hasFile("fileId-No1")?"TRUE":"FALSE");
+    }
+
+    public static long getAllocatedSpace() {
+        return allocatedSpace;
+    }
+
+    private static void setAllocatedSpace(long allocatedSpace) {
+        FileHandler.allocatedSpace = allocatedSpace;
     }
 
     /**
@@ -77,8 +94,9 @@ public class FileHandler {
     }
 
     /**
-     * Function used to verify if a file is backed up
+     * Verifies if a file is backed up in the current backup storage
      * @param fileId - char array with the file id
+     * @param chunkNo - number of the chunk to be checked
      * @return Returns true if the file is backed up, false otherwise
      */
     public static boolean hasChunk(String fileId,short chunkNo){
@@ -97,6 +115,12 @@ public class FileHandler {
         return false;
     }
 
+    /**
+     * Verifies if a file chunk is present in the file being analysed
+     * @param file - File object pointing to a backed up file
+     * @param chunkNo - chunk number to be checked
+     * @return True if the chunk is present, false otherwise
+     */
     private static boolean hasChunk(File file,short chunkNo){
         File[] chunks = file.listFiles();
         return chunks!= null && chunkNo < chunks.length && chunks[chunkNo].getName().equals(chunkNo+EXTENSION);
@@ -107,7 +131,7 @@ public class FileHandler {
      * @param fileId - char array with the file id
      * @return Returns true if the file is backed up, false otherwise
      */
-    public static boolean hasFile(String fileId){
+    private static boolean hasFile(String fileId){
         FileFilter directoryFileFilter = File::isDirectory;
 
         File directory = new File(savePath);
@@ -125,12 +149,11 @@ public class FileHandler {
 
     /**
      * Function that returns the current backed up files size on disk
-     * @param pathStr - Back up directory Path object from java.nio.files package
      * @return Returns the size in bytes of the used disk space
      */
-    public static long getDiskUsage(String pathStr) {
+    private static long getDiskUsage() {
 
-        Path path = Paths.get(pathStr);
+        Path path = Paths.get(savePath);
 
         final AtomicLong size = new AtomicLong(0);
 
@@ -271,7 +294,7 @@ public class FileHandler {
      * @param folder - File object representing the folder to be deleted
      * @return Returns true if the folder is successfully deleted, false otherwise
      */
-    public static boolean removeFolder(File folder){
+    private static boolean removeFolder(File folder){
         File[] folderContents = folder.listFiles();
         if (folderContents!=null){
             for (File file : folderContents) {
@@ -279,5 +302,25 @@ public class FileHandler {
             }
         }
         return folder.delete();
+    }
+
+    public static long getAvailableSpace(){
+        return new File(savePath).getFreeSpace();
+    }
+
+    public static File[] setAllocation(long allocSpace){
+        if(getDiskUsage()<allocSpace){
+            setAllocatedSpace(allocSpace);
+            return null;
+        }
+        File[] removedFiles = new File[]{};
+
+        //TODO choose files to delete and add them to removedFiles array
+        /*for (File folder: selectedFiles ) {
+            removeFolder(folder);
+        }*/
+
+        System.out.println("allocating space");
+        return removedFiles;
     }
 }
