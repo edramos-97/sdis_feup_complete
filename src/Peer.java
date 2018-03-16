@@ -19,8 +19,8 @@ public class Peer {
 
         if(args.length < 7){
             System.out.println("one of two usages:");
-            System.out.println("usage_1 -> java Peer PeerID  <MC_addr> <MC_port> <MDB_addr> <MDB_port> <MDR_addr> <MDR_port>");
-            System.out.println("usage_2 -> java Peer PeerID  <MC_addr> <MC_port> <MDB_addr> <MDB_port> <MDR_addr> <MDR_port> <sub_protocol> <opnd_1> <opnd_2>");
+            System.out.println("usage -> java Peer PeerID  <MC_addr> <MC_port> <MDB_addr> <MDB_port> <MDR_addr> <MDR_port>");
+            //System.out.println("usage_2 -> java Peer PeerID  <MC_addr> <MC_port> <MDB_addr> <MDB_port> <MDR_addr> <MDR_port> <sub_protocol> <opnd_1> <opnd_2>");
             System.out.println("exiting...");
             return;
         }
