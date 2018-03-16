@@ -63,13 +63,6 @@ public class Peer {
             e.printStackTrace();
             System.out.println("Error in RMI setup.");
         }
-
-        // Wait...
-        try {
-            Thread.sleep(100000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 /*
         boolean is_initiator = Integer.parseInt(args[1]) == 1;
 
