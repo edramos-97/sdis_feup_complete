@@ -4,7 +4,7 @@ public class ProtocolMessageParser {
 
     public ProtocolMessage parseMessage(String receivedMessage){
         String[] msgFields = receivedMessage.split("\r\n\r\n");
-        String[] headerFields = msgFields[0].split(" ");
+        String[] headerFields = msgFields[0].split("[ ]+");
         ProtocolMessage.PossibleTypes tempType = verifyType(headerFields[0]);
         ProtocolMessage tempMessage;
         if (tempType==null){

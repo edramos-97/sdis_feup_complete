@@ -10,25 +10,22 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class FileHandler {
 
     private static final int CHUNK_SIZE = 65535;
     private static final String EXTENSION = ".txt";
-    private static String savePath = System.getProperty("user.home")+File.separator+"Desktop"+File.separator+"testFolder"+File.separator;
+    public static String savePath = System.getProperty("user.home")+File.separator+"Desktop"+File.separator+"testFolder"+File.separator;
     private static long allocatedSpace;
 
     public static void main(String[] args) throws InterruptedException {
-        /*ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 4, 100, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(4)){
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 4, 100, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(4)){
             @Override
             protected void afterExecute(Runnable r, Throwable t) {
                 super.afterExecute(r, t);
-                System.out.print(r.toString());
+
             }
         };
         long size = FileHandler.getSize(new File(savePath+"1.txt"));
@@ -36,15 +33,22 @@ public class FileHandler {
         System.out.println("division number:"+chunkTotal);
         for (short i = 0; i < chunkTotal; i++) {
             try {
-                executor.execute(new PutChunkRequest(savePath+"1.txt",i,'3'));
+                executor.submit(new PutChunkRequest(savePath+"1.txt",i,'3'));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        while (executor.getActiveCount()!=0);
-        executor.execute(new DiskReclaimRequest(300000));
+        Thread test = new DiskReclaimRequest(300000);
+        Future futureTest = executor.submit(test);
+        System.out.println("waiting for end of thread");
+        try {
+            System.out.println("this is the result"+futureTest.get());
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        System.out.println("thread joined");
         executor.shutdown();
-        while (!executor.isTerminated());*/
+        while (!executor.isTerminated());
 
 //        byte[] data;
 //        try {
@@ -258,7 +262,6 @@ public class FileHandler {
                 digest = MessageDigest.getInstance("SHA-256");
                 byte[] hash = digest.digest(fileInfo.getBytes());
                 String hashedName = DatatypeConverter.printHexBinary(hash);
-                System.out.println(hashedName.toLowerCase());
                 return hashedName.toLowerCase();
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();

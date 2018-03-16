@@ -33,5 +33,10 @@ public class DiskReclaimRequest extends Thread{
             return;
         }
         System.out.println("Allocation successfully set to "+this.allocGoal);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

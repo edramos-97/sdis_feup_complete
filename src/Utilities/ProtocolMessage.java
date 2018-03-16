@@ -1,5 +1,7 @@
 package Utilities;
 
+import Executables.Peer;
+
 public class ProtocolMessage {
 
     public enum PossibleTypes {PUTCHUNK,STORED,GETCHUNK,CHUNK,DELETE,REMOVED}
@@ -15,6 +17,8 @@ public class ProtocolMessage {
 
     public ProtocolMessage(PossibleTypes msgType){
         this.msgType = msgType;
+        this.version = Peer.VERSION;
+        this.senderId = String.valueOf(Peer.peerID);
         switch (msgType){
             case PUTCHUNK:
             case CHUNK:
@@ -77,8 +81,8 @@ public class ProtocolMessage {
         ChunkNo = chunkNo;
     }
 
-    public char getReplicationDeg() {
-        return ReplicationDeg;
+    public int getReplicationDeg() {
+        return Character.getNumericValue(ReplicationDeg);
     }
 
     public void setReplicationDeg(char replicationDeg) throws Exception {
@@ -105,7 +109,6 @@ public class ProtocolMessage {
         // CHUNK <version> <senderId> <fileId> <ChunkNo> <CRLF><CRLF><Body>
         // DELETE <version> <senderId> <fileId> <CRLF><CRLF>
         // REMOVED <version> <senderId> <fileId> <ChunkNo> <CRLF><CRLF>
-
 
         return result.getBytes();
     }

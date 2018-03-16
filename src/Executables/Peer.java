@@ -1,3 +1,5 @@
+package Executables;
+
 import MulticastThreads.MulticastChanelControl;
 import MulticastThreads.MulticastChanelData;
 import MulticastThreads.MulticastChanelRecovery;
@@ -10,17 +12,22 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class Peer {
 
     public static int peerID = 0;
+    public static String VERSION = "1.0";
+    public static ThreadPoolExecutor threadPool = new ThreadPoolExecutor(4, 4, 100, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(4));
 
     public static void main(String[] args) {
 
         if(args.length < 7){
             System.out.println("one of two usages:");
-            System.out.println("usage -> java Peer PeerID  <MC_addr> <MC_port> <MDB_addr> <MDB_port> <MDR_addr> <MDR_port>");
-            //System.out.println("usage_2 -> java Peer PeerID  <MC_addr> <MC_port> <MDB_addr> <MDB_port> <MDR_addr> <MDR_port> <sub_protocol> <opnd_1> <opnd_2>");
+            System.out.println("usage -> java Executables.Peer PeerID  <MC_addr> <MC_port> <MDB_addr> <MDB_port> <MDR_addr> <MDR_port>");
+            //System.out.println("usage_2 -> java Executables.Peer PeerID  <MC_addr> <MC_port> <MDB_addr> <MDB_port> <MDR_addr> <MDR_port> <sub_protocol> <opnd_1> <opnd_2>");
             System.out.println("exiting...");
             return;
         }
@@ -52,13 +59,10 @@ public class Peer {
         try {
             Control control_rmi = new Control();
             ControlInterface control_rmi_stub = (ControlInterface) UnicastRemoteObject.exportObject(control_rmi, 0);
-
             // Bind the remote object's stub in the registry
             Registry registry = LocateRegistry.getRegistry();
             String name = "peer"+peerID;
             registry.rebind(name, control_rmi_stub);
-
-
         } catch (RemoteException e) {
             e.printStackTrace();
             System.out.println("Error in RMI setup.");
@@ -85,9 +89,9 @@ public class Peer {
         }*/
 
 //        regular peer:
-//          java Peer 0 <MC_addr> <MC_port> <MDB_addr> <MDB_port> <MDR_addr> <MDR_port>
+//          java Executables.Peer 0 <MC_addr> <MC_port> <MDB_addr> <MDB_port> <MDR_addr> <MDR_port>
 //        initiator peer:
-//          java Peer 1 <MC_addr> <MC_port> <MDB_addr> <MDB_port> <MDR_addr> <MDR_port> <sub_protocol> <opnd_1> <opnd_2>
+//          java Executables.Peer 1 <MC_addr> <MC_port> <MDB_addr> <MDB_port> <MDR_addr> <MDR_port> <sub_protocol> <opnd_1> <opnd_2>
 
     }
 }

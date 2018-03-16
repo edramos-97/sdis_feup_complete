@@ -7,9 +7,7 @@ public interface ControlInterface extends Remote {
 
     //TODO: fill these
 
-    boolean say_this(String text) throws RemoteException;
-
-    // backup
+    boolean putChunk(String filePath, char replicationDeg) throws RemoteException;
 
     // restore
 

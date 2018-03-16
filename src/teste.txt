@@ -8,9 +8,9 @@ java OLD_Client 228.5.6.7 6789 lookup xx-89-89
 
 how to test:
 
-java Client localhost:peer10 subprotocol operand1 operand2
+java Executables.Client localhost:peer10 subprotocol operand1 operand2
 
-java Peer java Peer 10 228.5.6.7 6789 228.5.6.8 6790 228.5.6.9 6791
+java Executables.Peer 10 228.5.6.7 6789 228.5.6.8 6790 228.5.6.9 6791
 
 correr rmiregistry no sdis_feup/out/production/sdis_feup
 windows: start rmiregistry
