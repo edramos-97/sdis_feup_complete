@@ -2,6 +2,8 @@ package Utilities;
 
 import Executables.Peer;
 
+import java.security.InvalidParameterException;
+
 public class ProtocolMessage {
 
     public enum PossibleTypes {PUTCHUNK,STORED,GETCHUNK,CHUNK,DELETE,REMOVED}
@@ -63,9 +65,9 @@ public class ProtocolMessage {
         return fileId;
     }
 
-    public void setFileId(String fileId) throws Exception {
+    public void setFileId(String fileId) throws InvalidParameterException{
         if (!fileId.matches("[0-9a-fA-F]{64}")){
-            throw new Exception("Invalid message field received: fileId="+fileId);
+            throw new InvalidParameterException("Invalid message field received: fileId=\""+fileId+"\". Format must be [0-9a-fA-F]{64}");
         }
         this.fileId = fileId;
     }

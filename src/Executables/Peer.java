@@ -20,7 +20,7 @@ public class Peer {
 
     public static int peerID = 0;
     public static String VERSION = "1.0";
-    public static ThreadPoolExecutor threadPool = new ThreadPoolExecutor(4, 4, 100, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(4));
+    public static ThreadPoolExecutor threadPool = new ThreadPoolExecutor(4, 4, 100, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(10));
 
     public static void main(String[] args) {
 

@@ -7,6 +7,7 @@ import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.security.InvalidParameterException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
@@ -20,8 +21,8 @@ public class FileHandler {
     public static String savePath = System.getProperty("user.home")+File.separator+"Desktop"+File.separator+"testFolder"+File.separator;
     private static long allocatedSpace;
 
-    public static void main(String[] args) throws InterruptedException {
-        ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 4, 100, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(4)){
+    public static void main(String[] args){
+        /*ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 4, 100, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(4)){
             @Override
             protected void afterExecute(Runnable r, Throwable t) {
                 super.afterExecute(r, t);
@@ -48,7 +49,7 @@ public class FileHandler {
         }
         System.out.println("thread joined");
         executor.shutdown();
-        while (!executor.isTerminated());
+        while (!executor.isTerminated());*/
 
 //        byte[] data;
 //        try {
@@ -82,10 +83,11 @@ public class FileHandler {
     public static void saveChunk(String fileId, byte[] data, String chunkNo) throws IOException {
         FileOutputStream out = null;
         try {
-            String path = savePath+fileId+File.separator+chunkNo+".txt";
-            System.out.println(path);
+            String path = savePath+fileId+File.separator+chunkNo+EXTENSION;
             File chunk = new File(path);
-            chunk.getParentFile().mkdirs();
+            if(!chunk.getParentFile().mkdirs()){
+                throw new Exception("Couldn't make parent directories for fileId:"+fileId+" chunkNo:"+chunkNo);
+            }
             out = new FileOutputStream(chunk,false);
             out.write(data);
         }catch (Exception e) {
@@ -238,13 +240,17 @@ public class FileHandler {
      * @return returns the number of chunks a file can be divided in
      * @throws Exception - Throws exception if the path specified doesn't point to a file
      */
-    public static short getChunkNo(String path) throws Exception {
+    public static short getChunkNo(String path) throws InvalidParameterException {
         File file = new File(path);
         long size = getSize(file);
         if (size==0){
-            throw new Exception("File path indicated is either a directory or doesn't exist");
+            throw new InvalidParameterException("File path indicated is either a directory or doesn't exist");
         }else{
-            return (short)Math.ceil((float)size / CHUNK_SIZE);
+            if(size%CHUNK_SIZE!=0){
+                return (short)((size/CHUNK_SIZE)+1);
+            }else{
+                return (short)((size/CHUNK_SIZE)+2);
+            }
         }
     }
 

@@ -9,7 +9,7 @@ public interface ControlInterface extends Remote {
 
     boolean putChunk(String filePath, char replicationDeg) throws RemoteException;
 
-    // restore
+    boolean getChunk(String fileId, short chunkNo) throws RemoteException;
 
     // delete
 

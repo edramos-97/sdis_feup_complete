@@ -2,6 +2,8 @@ package InitiatorCommunication;
 
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
+import org.omg.CORBA.TIMEOUT;
+
 import java.io.File;
 import java.util.concurrent.Callable;
 
@@ -11,6 +13,8 @@ public class PutChunkRequest implements Callable<String>{
     private short chunkNo;
     private char replicationDeg;
     private ProtocolMessage message;
+    public static short TIMEOUT = 1000;
+    public static short MAX_TRIES = 5;
 
     public PutChunkRequest(String filePath, short chunkNo, char replicationDeg) throws Exception {
         if(new File(filePath).isDirectory()){
@@ -31,23 +35,24 @@ public class PutChunkRequest implements Callable<String>{
             message.setReplicationDeg(this.replicationDeg);
             message.setBody(FileHandler.splitFile(filePath,chunkNo));
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            //e.printStackTrace();
+            return "PutChunk for fileID:\""+filePath+"\" chunkNo:"+chunkNo+"finished unsuccessfully\n"+e.getMessage();
         }
-        while (i<5){
+        while (i<MAX_TRIES){
             //TODO - send putchunk command to MDB
             try {
-                Thread.sleep(1000);//wait for answers
-                int effReplicationDegree = 5;//TODO - hashMap.get(message.fileId+message.chunkNo).effReplicationDegree
+                Thread.sleep(TIMEOUT);//wait for answers
+                int effReplicationDegree = 0;//TODO - hashMap.get(message.fileId+message.chunkNo).effReplicationDegree
                 if(effReplicationDegree >= message.getReplicationDeg()){
-                    return "Putchunk for fileID:"+message.getFileId()+" chunkNo:"+message.getChunkNo()+" finished successfully";
+                    return "PutChunk for fileID:"+message.getFileId()+" chunkNo:"+message.getChunkNo()+" finished successfully";
                 }else{
+                    System.out.println("PutChunk for file:\""+filePath+"\" chunkNo:"+chunkNo+" failed to reach the desired replication degree("+replicationDeg+"),retrying...");
                     i++;
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        return null;
+        return "PutChunk for file:\""+filePath+"\" chunkNo:"+chunkNo+" finished unsuccessfully\nCouldn't reach the desired replication degree("+replicationDeg+")";
     }
 }

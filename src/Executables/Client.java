@@ -24,10 +24,12 @@ public class Client {
         try {
             Registry registry = LocateRegistry.getRegistry(); // TODO: change this to go with other hosts
             ControlInterface control_rmi_stub = (ControlInterface) registry.lookup(name);
-            boolean response = control_rmi_stub.putChunk(FileHandler.savePath+"1.txt",'1');
-            boolean response2 = control_rmi_stub.putChunk(FileHandler.savePath+"1.txt",'1');
+            boolean response = control_rmi_stub.putChunk(FileHandler.savePath+"18.txt",'1');
+            boolean response2 = control_rmi_stub.putChunk(FileHandler.savePath+"2.txt",'1');
+            boolean response3 = control_rmi_stub.getChunk("51c36c365ca845a0c509c74d88fe6c06ac830bf06832b2a832bd6eee3e310627",(short)0);
             System.out.println("returned: " + response);
             System.out.println("returned2: " + response2);
+            System.out.println("returned2: " + response3);
         } catch (Exception e) {
             System.err.println("Executables.Client exception: " + e.toString());
             e.printStackTrace();
