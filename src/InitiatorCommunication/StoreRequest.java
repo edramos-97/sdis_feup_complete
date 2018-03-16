@@ -37,9 +37,11 @@ public class StoreRequest implements Runnable{
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        // ENHANCEMENT
         //TODO - hashMap.get(message.fileId+message.chunkNo).effReplicationDegree
         short effReplicationDegree = 5;
-        if(effReplicationDegree>=this.replicationDeg){
+        if(effReplicationDegree<this.replicationDeg){
             try {
                 FileHandler.saveChunk(this.message.getFileId(),this.data,this.message.getChunkNo());
             } catch (IOException e) {
@@ -47,6 +49,7 @@ public class StoreRequest implements Runnable{
                 return;
             }
             //TODO - send stored message to MC
+
         }
     }
 }

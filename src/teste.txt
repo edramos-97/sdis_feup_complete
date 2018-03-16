@@ -3,3 +3,15 @@ java OLD_Server 4000 228.5.6.7 6789
 java OLD_Client 228.5.6.7 6789 register xx-89-89 xavier
 
 java OLD_Client 228.5.6.7 6789 lookup xx-89-89
+
+
+
+how to test:
+
+java Client localhost:peer10 subprotocol operand1 operand2
+
+java Peer java Peer 10 228.5.6.7 6789 228.5.6.8 6790 228.5.6.9 6791
+
+correr rmiregistry no sdis_feup/out/production/sdis_feup
+windows: start rmiregistry
+linux: rmiregistry
