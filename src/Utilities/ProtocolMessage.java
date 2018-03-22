@@ -2,6 +2,7 @@ package Utilities;
 
 import Executables.Peer;
 
+import java.nio.ByteBuffer;
 import java.security.InvalidParameterException;
 
 public class ProtocolMessage {
@@ -14,7 +15,7 @@ public class ProtocolMessage {
     private String fileId;
     private String ChunkNo;
     private char ReplicationDeg;
-    private byte[] body;
+    public ByteBuffer body;
     boolean hasBody;
 
     public ProtocolMessage(PossibleTypes msgType){
@@ -33,6 +34,7 @@ public class ProtocolMessage {
             default:
                 System.out.println("Invalid message type in Message Constructor");
         }
+        this.body = ByteBuffer.allocate(FileHandler.CHUNK_SIZE);
     }
 
     public PossibleTypes getMsgType() {
@@ -94,11 +96,11 @@ public class ProtocolMessage {
         ReplicationDeg = replicationDeg;
     }
 
-    public byte[] getBody() {
+    public ByteBuffer getBody() {
         return body;
     }
 
-    public void setBody(byte[] body) {
+    public void setBody(ByteBuffer body) {
         this.body = body;
     }
 
@@ -111,6 +113,8 @@ public class ProtocolMessage {
         // CHUNK <version> <senderId> <fileId> <ChunkNo> <CRLF><CRLF><Body>
         // DELETE <version> <senderId> <fileId> <CRLF><CRLF>
         // REMOVED <version> <senderId> <fileId> <ChunkNo> <CRLF><CRLF>
+
+
 
         return result.getBytes();
     }

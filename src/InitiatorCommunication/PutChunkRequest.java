@@ -2,9 +2,13 @@ package InitiatorCommunication;
 
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
-import org.omg.CORBA.TIMEOUT;
 
 import java.io.File;
+import java.nio.channels.AsynchronousFileChannel;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.concurrent.Callable;
 
 public class PutChunkRequest implements Callable<String>{
@@ -27,32 +31,19 @@ public class PutChunkRequest implements Callable<String>{
 
     @Override
     public String call() {
-        short i = 0;
         this.message = new ProtocolMessage(ProtocolMessage.PossibleTypes.PUTCHUNK);
         try {
             message.setFileId(FileHandler.getFileId(filePath));
             message.setChunkNo(String.valueOf(chunkNo));
             message.setReplicationDeg(this.replicationDeg);
-            message.setBody(FileHandler.splitFile(filePath,chunkNo));
+            Path path = Paths.get(filePath);
+            AsynchronousFileChannel file = AsynchronousFileChannel.open(path, StandardOpenOption.READ);
+            file.read(message.body,chunkNo*FileHandler.CHUNK_SIZE,message,new PutChunkReadComplete());
+            System.out.println("AFTER FILE READ");
         } catch (Exception e) {
-            //e.printStackTrace();
-            return "PutChunk for fileID:\""+filePath+"\" chunkNo:"+chunkNo+"finished unsuccessfully\n"+e.getMessage();
+            e.printStackTrace();
+            //return "PutChunk for fileID:\""+filePath+"\" chunkNo:"+chunkNo+" finished unsuccessfully\n"+e.getMessage();
         }
-        while (i<MAX_TRIES){
-            //TODO - send putchunk command to MDB
-            try {
-                Thread.sleep(TIMEOUT);//wait for answers
-                int effReplicationDegree = 0;//TODO - hashMap.get(message.fileId+message.chunkNo).effReplicationDegree
-                if(effReplicationDegree >= message.getReplicationDeg()){
-                    return "PutChunk for fileID:"+message.getFileId()+" chunkNo:"+message.getChunkNo()+" finished successfully";
-                }else{
-                    System.out.println("PutChunk for file:\""+filePath+"\" chunkNo:"+chunkNo+" failed to reach the desired replication degree("+replicationDeg+"),retrying...");
-                    i++;
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        return "PutChunk for file:\""+filePath+"\" chunkNo:"+chunkNo+" finished unsuccessfully\nCouldn't reach the desired replication degree("+replicationDeg+")";
+        return "Success!";
     }
 }

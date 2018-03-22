@@ -1,5 +1,7 @@
 package Utilities;
 
+import java.nio.ByteBuffer;
+
 public class ProtocolMessageParser {
 
     public ProtocolMessage parseMessage(String receivedMessage){
@@ -16,7 +18,7 @@ public class ProtocolMessageParser {
 
         try{
             if (tempMessage.hasBody){
-                tempMessage.setBody(msgFields[1].getBytes());
+                tempMessage.setBody(ByteBuffer.wrap(msgFields[1].getBytes()));
             }
         }catch (Exception e){
             System.out.println(e.getMessage());
