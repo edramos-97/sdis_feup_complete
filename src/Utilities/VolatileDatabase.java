@@ -9,10 +9,37 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class VolatileDatabase {
 
-    public static ConcurrentHashMap<String, ProtocolStateMachine> database = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, ConcurrentHashMap<Integer, Integer>> database = new ConcurrentHashMap<>();
 
     private VolatileDatabase(){
 
+    }
+
+    public void add_chunk(String fileID, Integer chunk_number){
+        if(database.containsKey(fileID)){
+            ConcurrentHashMap<Integer, Integer> data = database.get(fileID);
+            if(data.containsKey(chunk_number)){
+                Integer replication_degree = data.remove(chunk_number);
+                data.put(chunk_number, replication_degree+1);
+            }else {
+                data.put(chunk_number, 1);
+            }
+
+        }else{
+            ConcurrentHashMap<Integer,Integer> entry = new ConcurrentHashMap<>();
+            entry.put(chunk_number, 1);
+            database.put(fileID, entry);
+        }
+    }
+
+    public Integer get_rep_degree(String fileID, Integer chunk_number){
+        if(database.containsKey(fileID)){
+            ConcurrentHashMap<Integer, Integer> data = database.get(fileID);
+            if(data.containsKey(chunk_number)){
+                return data.get(chunk_number);
+            }
+        }
+        return 0;
     }
 
     // from:

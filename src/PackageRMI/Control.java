@@ -5,6 +5,7 @@ import InitiatorCommunication.GetChunkRequest;
 import InitiatorCommunication.PutChunkRequest;
 import Utilities.FileHandler;
 
+import java.rmi.RemoteException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -13,6 +14,11 @@ import java.util.concurrent.TimeoutException;
 public class Control implements ControlInterface {
 
     public Control(){}
+
+    @Override
+    public void say_this(String s) throws RemoteException {
+        System.out.println(s);
+    }
 
     @Override
     public boolean putChunk(String filePath, char replicationDeg) {
