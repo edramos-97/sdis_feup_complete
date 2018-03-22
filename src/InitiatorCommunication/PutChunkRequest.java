@@ -2,10 +2,10 @@ package InitiatorCommunication;
 
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
+import Utilities.File_IO_Wrapper;
 
 import java.io.File;
 import java.nio.channels.AsynchronousFileChannel;
-import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -36,7 +36,7 @@ public class PutChunkRequest implements Callable<String>{
             message.setReplicationDeg(this.replicationDeg);
             Path path = Paths.get(filePath);
             AsynchronousFileChannel file = AsynchronousFileChannel.open(path, StandardOpenOption.READ);
-            file.read(message.body,chunkNo*FileHandler.CHUNK_SIZE,message,new PutChunkReadComplete());
+            file.read(message.body,chunkNo*FileHandler.CHUNK_SIZE,new File_IO_Wrapper(message,file),new PutChunkReadComplete());
         } catch (Exception e) {
             e.printStackTrace();
             return "PutChunk for fileID:\""+filePath+"\" chunkNo:"+chunkNo+" finished unsuccessfully\n"+e.getMessage();

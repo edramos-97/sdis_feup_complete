@@ -2,22 +2,22 @@ package InitiatorCommunication;
 
 import Executables.Peer;
 import Utilities.File_IO_Wrapper;
+import Utilities.ProtocolMessage;
 
 import java.io.IOException;
 import java.nio.channels.CompletionHandler;
-import java.util.concurrent.TimeUnit;
 
-public class PutChunkReadComplete implements CompletionHandler<Integer, File_IO_Wrapper>{
+public class PutChunkHandleComplete implements CompletionHandler<Integer, File_IO_Wrapper> {
     @Override
     public void completed(Integer result, File_IO_Wrapper attachment) {
-        System.out.println(new String(attachment.getMessage().toCharArray()).trim());
+        System.out.println("STORED file with Id:\""+attachment.getMessage().getFileId()+"\" and chunkNo:\""+attachment.getMessage().getChunkNo());
+        attachment.getMessage().setMsgType(ProtocolMessage.PossibleTypes.STORED);
+        //TODO send message
         try {
             attachment.getFile().close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //TODO send message
-        Peer.threadPool.schedule(new PutChunkVerification(1,attachment.getMessage()),1000, TimeUnit.MILLISECONDS);
     }
 
     @Override

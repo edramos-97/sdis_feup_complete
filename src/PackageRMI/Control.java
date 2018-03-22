@@ -16,7 +16,7 @@ public class Control implements ControlInterface {
     public Control(){}
 
     @Override
-    public void say_this(String s) throws RemoteException {
+    public void say_this(String s) {
         System.out.println(s);
     }
 
@@ -32,36 +32,21 @@ public class Control implements ControlInterface {
             System.out.println("PutChunk for fileID:\""+filePath+"\" finished unsuccessfully\n"+e.getMessage());
             return false;
         }
-        Future[] threads = new Future[threadNo];
         System.out.println("Started PUTCHUNK for file:\""+filePath+"\"");
 
+        //TODO save to backed2file
         //start working threads
         try {
             for (int i = 0; i < threadNo; i++) {
                 PutChunkRequest worker = new PutChunkRequest(filePath, (short)i, replicationDeg);
-                threads[i]=Peer.threadPool.submit(worker);
+                Peer.threadPool.submit(worker);
             }
         } catch (Exception e) {
-            for (Future worker : threads) {
-                worker.cancel(true);
-            }
-            //TODO check if it makes sense to stop all other threads if one fails
             e.printStackTrace();
             System.out.println("PutChunk for fileID:\""+filePath+"\" finished unsuccessfully");
             System.out.println(e.getMessage());
         }
 
-        //Wait for threads end without blocking
-        for (Future worker: threads) {
-            new Thread(() -> {
-                try {
-                    System.out.println(worker.get(6000, TimeUnit.MILLISECONDS));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("PutChunk for fileID:\""+filePath+"\" for an undetermined chunk finished unsuccessfully");
-                }
-            }).start();
-        }
         return true;
     }
 

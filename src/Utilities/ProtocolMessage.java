@@ -41,6 +41,10 @@ public class ProtocolMessage {
         return msgType;
     }
 
+    public void setMsgType(PossibleTypes type) {
+        this.msgType = type;
+    }
+
     public String getVersion() {
         return version;
     }

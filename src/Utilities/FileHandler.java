@@ -1,10 +1,13 @@
 package Utilities;
 
 import InitiatorCommunication.DiskReclaimRequest;
+import InitiatorCommunication.PutChunkHandleComplete;
 import InitiatorCommunication.PutChunkRequest;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousFileChannel;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.security.InvalidParameterException;
@@ -16,84 +19,70 @@ public class FileHandler {
 
     public static final int CHUNK_SIZE = 65535;
     private static final String EXTENSION = ".txt";
-    public static String savePath = System.getProperty("user.home")+File.separator+"Desktop"+File.separator+"testFolder"+File.separator;
+    private static String savePath = System.getProperty("user.home")+File.separator+"Desktop"+File.separator+"testFolder"+File.separator;
     private static long allocatedSpace;
 
     public static void main(String[] args){
-        /*ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 4, 100, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(4)){
-            @Override
-            protected void afterExecute(Runnable r, Throwable t) {
-                super.afterExecute(r, t);
-
-            }
-        };
-        long size = FileHandler.getSize(new File(savePath+"1.txt"));
-        float chunkTotal = (float)size / CHUNK_SIZE;
-        System.out.println("division number:"+chunkTotal);
-        for (short i = 0; i < chunkTotal; i++) {
-            try {
-                executor.submit(new PutChunkRequest(savePath+"1.txt",i,'3'));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        Thread test = new DiskReclaimRequest(300000);
-        Future futureTest = executor.submit(test);
-        System.out.println("waiting for end of thread");
+        Path filePath = Paths.get(savePath+"/NewFolder/1.txt");
+        Path dirPath = Paths.get(savePath+"/NewFolder/");
         try {
-            System.out.println("this is the result"+futureTest.get());
-        } catch (ExecutionException e) {
+            if (Files.notExists(dirPath)){
+                Files.createDirectories(dirPath);
+            }
+            if(Files.notExists(filePath)){
+                Files.createFile(filePath);
+            }
+            AsynchronousFileChannel file = AsynchronousFileChannel.open(filePath,StandardOpenOption.WRITE);
+            file.write(ByteBuffer.wrap("ola isto e um array".getBytes()),0);
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("thread joined");
-        executor.shutdown();
-        while (!executor.isTerminated());*/
 
-//        byte[] data;
-//        try {
-//            for (int i = 0; i < 2; i++) {
-//                data = splitFile(savePath+"1.txt",i);
-//                saveChunk("fileId-No3",data,Integer.toString(i));
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        System.out.println(getDiskUsage(savePath)/1000);
-//
-//        System.out.println(hasFile("fileId-No1")?"TRUE":"FALSE");
     }
 
+    /**
+     * Getter for the allocated disk space
+     * @return Returns the allocated disk space in bytes
+     */
     public static long getAllocatedSpace() {
         return allocatedSpace;
     }
 
+    /**
+     * Setter for the disk allocation space
+     * @param allocatedSpace - Max allocation space in bytes
+     */
     private static void setAllocatedSpace(long allocatedSpace) {
         FileHandler.allocatedSpace = allocatedSpace;
     }
 
     /**
-     * Function used to save a file chunk
-     * @param fileId - File identifier
-     * @param data - File chunk data
-     * @param chunkNo - File chunk sequence number
+     * Checks if it is possible to save a chunk without exceeding the allocated disk space
+     * @return Returns true if there is enough space to save a chunk, false otherwise
      */
-    public static void saveChunk(String fileId, byte[] data, String chunkNo) throws IOException {
-        FileOutputStream out = null;
+    private static boolean canSave(){
+        return getAllocatedSpace()>getDiskUsage()+CHUNK_SIZE;
+    }
+
+    /**
+     * Function used to save a file chunk after a putChunk message is received
+     * @param message - received putChunk message
+     */
+    public static void saveChunk(ProtocolMessage message){
+        if(!canSave())System.out.println("Back up space is full! Not saving putChunk");
+        Path dirPath = Paths.get(savePath+message.getFileId());
+        Path filePath = Paths.get(savePath+message.getFileId()+File.separator+message.getChunkNo()+EXTENSION);
         try {
-            String path = savePath+fileId+File.separator+chunkNo+EXTENSION;
-            File chunk = new File(path);
-            if(!chunk.getParentFile().mkdirs()){
-                throw new Exception("Couldn't make parent directories for fileId:"+fileId+" chunkNo:"+chunkNo);
+            if(Files.notExists(dirPath)){
+                Files.createDirectories(dirPath);
             }
-            out = new FileOutputStream(chunk,false);
-            out.write(data);
-        }catch (Exception e) {
-            System.out.println(e.getMessage());
-        }finally{
-            if (out != null) {
-                out.close();
+            if(Files.notExists(filePath)){
+                Files.createFile(filePath);
             }
+            AsynchronousFileChannel file = AsynchronousFileChannel.open(filePath,StandardOpenOption.WRITE);
+            file.write(message.body,0,new File_IO_Wrapper(message,file),new PutChunkHandleComplete());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -194,6 +183,7 @@ public class FileHandler {
      * @param chunkNo - File chunk sequence number
      * @return byte array with the file bytes
      * @throws IOException - File couldn't be closed
+     * @deprecated
      */
     public static byte[] splitFile(String path, int chunkNo) throws IOException {
         byte[] chunk = new byte[CHUNK_SIZE];
@@ -236,7 +226,7 @@ public class FileHandler {
      * Method used to retreive the number of chunck a file should be divided in
      * @param path - path to the file
      * @return returns the number of chunks a file can be divided in
-     * @throws Exception - Throws exception if the path specified doesn't point to a file
+     * @throws InvalidParameterException - Throws exception if the path specified doesn't point to a file
      */
     public static short getChunkNo(String path) throws InvalidParameterException {
         File file = new File(path);

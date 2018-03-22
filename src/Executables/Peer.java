@@ -21,7 +21,7 @@ public class Peer {
 
     public static int peerID = 0;
     public static String VERSION = "1.0";
-    public static ScheduledThreadPoolExecutor threadPool = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors()/2);
+    public static ScheduledThreadPoolExecutor threadPool = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors());
 
     public static void main(String[] args) {
 
