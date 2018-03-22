@@ -10,7 +10,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class VolatileDatabase {
 
     public static ConcurrentHashMap<String, ConcurrentHashMap<Integer, Integer>> database = new ConcurrentHashMap<>();
-
+    // fileID -> ( chunkNo -> replicationDegree , , ,)
+    public static ConcurrentHashMap<String, String> backed2fileID = new ConcurrentHashMap<>();
+    // filename_backup -> fileID
+    // by examining this we can know if the file has been altered because repeated filenames
+    // will have equal fileIDs if the same file and different otherwise...
     private VolatileDatabase(){
 
     }
