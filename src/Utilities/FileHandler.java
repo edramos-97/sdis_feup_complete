@@ -10,8 +10,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.security.InvalidParameterException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.SimpleDateFormat;
-import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class FileHandler {

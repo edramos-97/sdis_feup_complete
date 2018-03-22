@@ -105,7 +105,7 @@ public class ProtocolMessage {
     }
 
     public byte[] toCharArray(){
-        String result = "hey";
+        String result = String.format("%s %s %s %s",msgType,version,senderId,fileId);
 
         // PUTCHUNK <version> <senderId> <fileId> <ChunkNo> <ReplicationDeg> <CRLF><CRLF><Body>
         // STORED <version> <senderId> <fileId> <ChunkNo> <CRLF><CRLF>
@@ -114,7 +114,19 @@ public class ProtocolMessage {
         // DELETE <version> <senderId> <fileId> <CRLF><CRLF>
         // REMOVED <version> <senderId> <fileId> <ChunkNo> <CRLF><CRLF>
 
-
+        switch (msgType){
+            case PUTCHUNK:
+                result = String.format("%s %s %s\r\n\r\n%s", result, getChunkNo(),getReplicationDeg(),new String(body.array()));
+                break;
+            case CHUNK:
+                result = String.format("%s %s\r\n\r\n%s", result, getChunkNo(),new String(body.array()));
+            case STORED:
+            case GETCHUNK:
+            case REMOVED:
+                result = String.format("%s %s\r\n\r\n", result, getChunkNo());
+            case DELETE:
+                break;
+        }
 
         return result.getBytes();
     }

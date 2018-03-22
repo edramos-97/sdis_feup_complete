@@ -16,9 +16,6 @@ public class PutChunkRequest implements Callable<String>{
     private String filePath;
     private short chunkNo;
     private char replicationDeg;
-    private ProtocolMessage message;
-    public static short TIMEOUT = 1000;
-    public static short MAX_TRIES = 5;
 
     public PutChunkRequest(String filePath, short chunkNo, char replicationDeg) throws Exception {
         if(new File(filePath).isDirectory()){
@@ -31,7 +28,8 @@ public class PutChunkRequest implements Callable<String>{
 
     @Override
     public String call() {
-        this.message = new ProtocolMessage(ProtocolMessage.PossibleTypes.PUTCHUNK);
+        ProtocolMessage message;
+        message = new ProtocolMessage(ProtocolMessage.PossibleTypes.PUTCHUNK);
         try {
             message.setFileId(FileHandler.getFileId(filePath));
             message.setChunkNo(String.valueOf(chunkNo));
@@ -39,11 +37,10 @@ public class PutChunkRequest implements Callable<String>{
             Path path = Paths.get(filePath);
             AsynchronousFileChannel file = AsynchronousFileChannel.open(path, StandardOpenOption.READ);
             file.read(message.body,chunkNo*FileHandler.CHUNK_SIZE,message,new PutChunkReadComplete());
-            System.out.println("AFTER FILE READ");
         } catch (Exception e) {
             e.printStackTrace();
-            //return "PutChunk for fileID:\""+filePath+"\" chunkNo:"+chunkNo+" finished unsuccessfully\n"+e.getMessage();
+            return "PutChunk for fileID:\""+filePath+"\" chunkNo:"+chunkNo+" finished unsuccessfully\n"+e.getMessage();
         }
-        return "Success!";
+        return "";
     }
 }

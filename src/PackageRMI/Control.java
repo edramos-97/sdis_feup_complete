@@ -49,7 +49,7 @@ public class Control implements ControlInterface {
         for (Future worker: threads) {
             new Thread(() -> {
                 try {
-                    System.out.println(worker.get(PutChunkRequest.TIMEOUT*PutChunkRequest.MAX_TRIES+100, TimeUnit.MILLISECONDS));
+                    System.out.println(worker.get(6000, TimeUnit.MILLISECONDS));
                 } catch (Exception e) {
                     e.printStackTrace();
                     System.out.println("PutChunk for fileID:\""+filePath+"\" for an undetermined chunk finished unsuccessfully");
