@@ -24,7 +24,7 @@ public class Control implements ControlInterface {
     public boolean putChunk(String filePath, char replicationDeg) {
         int threadNo;
 
-        //check if the file
+        //check if the file exists
         try {
             threadNo = FileHandler.getChunkNo(filePath);
         } catch (Exception e) {
@@ -54,16 +54,7 @@ public class Control implements ControlInterface {
     public boolean getChunk(String fileId, short chunkNo){
         System.out.println("Started GETCHUNK for fileID:\""+fileId+"\"");
         GetChunkRequest worker = new GetChunkRequest(fileId,chunkNo);
-        Future finalized = Peer.threadPool.submit(worker);
-        new Thread(() -> {
-            try {
-                System.out.println(finalized.get(GetChunkRequest.TIMEOUT*GetChunkRequest.MAX_TRIES+100, TimeUnit.MILLISECONDS));
-            } catch (Exception e) {
-                //e.printStackTrace();
-                System.out.println("GetChunk for fileID:\""+fileId+"\" chunkNo:"+chunkNo+" finished unsuccessfully");
-                System.out.println(e.getMessage());
-            }
-        }).start();
+        Peer.threadPool.submit(worker);
         return true;
     }
 }

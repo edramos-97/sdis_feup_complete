@@ -1,17 +1,16 @@
 package InitiatorCommunication;
 
+import Executables.Peer;
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 public class GetChunkRequest implements Callable<String>{
     private String fileId;
     private short chunkNo;
-    private ProtocolMessage message;
-    public static short TIMEOUT = 1000;
-    public static short MAX_TRIES = 5;
 
     public GetChunkRequest(String fileId, short chunkNo){
         this.fileId=fileId;
@@ -20,8 +19,11 @@ public class GetChunkRequest implements Callable<String>{
 
     @Override
     public String call() {
+        ProtocolMessage message;
         short i = 0;
-        this.message = new ProtocolMessage(ProtocolMessage.PossibleTypes.GETCHUNK);
+
+        // BUILD MESSAGE
+        message = new ProtocolMessage(ProtocolMessage.PossibleTypes.GETCHUNK);
         try {
             message.setFileId(fileId);
             message.setChunkNo(String.valueOf(chunkNo));
@@ -29,22 +31,9 @@ public class GetChunkRequest implements Callable<String>{
             //e.printStackTrace();
             return "GetChunk for fileID:\""+fileId+"\" chunkNo:"+chunkNo+" finished unsuccessfully\n"+e.getMessage()+"\n";
         }
-        while (i<MAX_TRIES){
-            //TODO - send getchunk command to MDB
-            try {
-                Thread.sleep(TIMEOUT);
-                if (FileHandler.hasChunk(this.fileId,this.chunkNo))
-                    return "GetChunk for fileID:\""+fileId+"\" chunkNo:"+chunkNo+" finished successfully\n";
-                else{
-                    i++;
-                    if (i!=MAX_TRIES)
-                        System.out.println("GetChunk for fileID:\""+fileId+"\" chunkNo:"+chunkNo+" failed to get an answer on try No:"+i+", retrying...");
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                return "GetChunk for fileID:\""+fileId+"\" chunkNo:"+chunkNo+" finished unsuccessfully\n";
-            }
-        }
-        return "GetChunk for fileID:\""+fileId+"\" chunkNo:"+chunkNo+" finished unsuccessfully\nDidn't receive a valid answer after "+i+" tries\n";
+
+        //TODO - send getchunk command to MDB
+        Peer.threadPool.schedule(new GetChunkVerification(0,message),400, TimeUnit.MILLISECONDS);
+        return "";
     }
 }

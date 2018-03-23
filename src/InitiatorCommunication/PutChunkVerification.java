@@ -3,15 +3,14 @@ package InitiatorCommunication;
 import Executables.Peer;
 import Utilities.ProtocolMessage;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 public class PutChunkVerification implements Runnable {
-    public static short TIMEOUT = 1000;
-    public static short MAX_TRIES = 5;
+    private static short TIMEOUT = 1000;
+    private static short MAX_TRIES = 5;
 
-    int tryNo;
-    ProtocolMessage message;
+    private int tryNo;
+    private ProtocolMessage message;
 
     PutChunkVerification(int tryNo,ProtocolMessage message){
         this.tryNo = tryNo;
@@ -25,7 +24,8 @@ public class PutChunkVerification implements Runnable {
         }else{
             //TODO check replication Degree
             System.out.println("PutChunk for fileID:\""+message.getFileId()+"\" chunkNo:"+message.getChunkNo()+" failed try number "+tryNo+". Retrying...");
-            Peer.threadPool.schedule(new PutChunkVerification(++tryNo,message),TIMEOUT, TimeUnit.MILLISECONDS);
+            tryNo++;
+            Peer.threadPool.schedule(this,TIMEOUT, TimeUnit.MILLISECONDS);
         }
     }
 }
