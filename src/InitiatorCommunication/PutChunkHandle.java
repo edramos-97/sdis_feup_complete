@@ -16,6 +16,7 @@ public class PutChunkHandle implements Runnable{
     @Override
     public void run() {
         //TODO check replication deg
+        //TODO send stored message
         FileHandler.saveChunk(this.message);
     }
 }

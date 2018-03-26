@@ -21,6 +21,7 @@ public class PutChunkRequest implements Callable<String>{
         if(new File(filePath).isDirectory()){
             throw new Exception("File path specified in PUTCHUNK request is a directory.\nFile Path: "+filePath);
         }
+        //TODO check if putChunk is from RECLAIM sub protocol
         this.filePath = filePath;
         this.chunkNo = chunkNo;
         this.replicationDeg = replicationDeg;

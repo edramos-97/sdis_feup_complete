@@ -1,12 +1,9 @@
 package Utilities;
 
-import InitiatorCommunication.DiskReclaimRequest;
 import InitiatorCommunication.PutChunkHandleComplete;
-import InitiatorCommunication.PutChunkRequest;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
-import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -43,7 +40,7 @@ public class FileHandler {
      * Getter for the allocated disk space
      * @return Returns the allocated disk space in bytes
      */
-    public static long getAllocatedSpace() {
+    private static long getAllocatedSpace() {
         return allocatedSpace;
     }
 
@@ -294,10 +291,10 @@ public class FileHandler {
         File[] folderContents = folder.listFiles();
         if (folderContents!=null){
             for (File file : folderContents) {
-                if(!removeFolder(file))return false;
+                if(removeFolder(file))return false;
             }
         }
-        return folder.delete();
+        return !folder.delete();
     }
 
     public static long getAvailableSpace(){
@@ -317,5 +314,9 @@ public class FileHandler {
             // make for the difference of deleted space and allocated space, possibly output deleted fileChunks
         }
         return removedFiles;
+    }
+
+    public static String getPath(String fileId, short chunkNo) {
+        return savePath+fileId+File.separator+chunkNo+EXTENSION;
     }
 }

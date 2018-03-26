@@ -8,9 +8,9 @@ import java.security.InvalidParameterException;
 
 public class DiskReclaimRequest extends Thread{
 
-    private int allocGoal;
+    private long allocGoal;
 
-    public DiskReclaimRequest(int desiredAllocation){
+    public DiskReclaimRequest(long desiredAllocation){
         if (desiredAllocation<0){
             throw new InvalidParameterException("Disk space allocated must be greater or equal to 0");
         }

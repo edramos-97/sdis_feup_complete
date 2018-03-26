@@ -1,6 +1,7 @@
 package PackageRMI;
 
 import Executables.Peer;
+import InitiatorCommunication.DiskReclaimRequest;
 import InitiatorCommunication.GetChunkRequest;
 import InitiatorCommunication.PutChunkRequest;
 import InitiatorCommunication.DeleteRequest;
@@ -63,6 +64,7 @@ public class Control implements ControlInterface {
 
     @Override
     public boolean reclaim(long desiredAllocation) throws RemoteException {
+        Peer.threadPool.submit(new DiskReclaimRequest(desiredAllocation));
         return false;
     }
 
