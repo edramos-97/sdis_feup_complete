@@ -23,7 +23,7 @@ public class FileHandler {
     private static long allocatedSpace;
 
     public static void main(String[] args){
-        Path filePath = Paths.get(savePath+"/NewFolder/1.txt");
+        /*Path filePath = Paths.get(savePath+"/NewFolder/1.txt");
         Path dirPath = Paths.get(savePath+"/NewFolder/");
         try {
             if (Files.notExists(dirPath)){
@@ -36,8 +36,7 @@ public class FileHandler {
             file.write(ByteBuffer.wrap("ola isto e um array".getBytes()),0);
         } catch (IOException e) {
             e.printStackTrace();
-        }
-
+        }*/
     }
 
     /**
@@ -291,7 +290,7 @@ public class FileHandler {
      * @param folder - File object representing the folder to be deleted
      * @return Returns true if the folder is successfully deleted, false otherwise
      */
-    private static boolean removeFolder(File folder){
+    public static boolean removeFolder(File folder){
         File[] folderContents = folder.listFiles();
         if (folderContents!=null){
             for (File file : folderContents) {
@@ -305,19 +304,18 @@ public class FileHandler {
         return new File(savePath).getFreeSpace();
     }
 
-    public static File[] setAllocation(long allocSpace){
+    /**
+     * Decides what files should be deleted to achieve the amount of space allocated
+     * @param allocSpace - size to be allocated in bytes
+     */
+    public static String[] setAllocation(long allocSpace){
+        String[] removedFiles = new String[]{};
         if(getDiskUsage()<allocSpace){
             setAllocatedSpace(allocSpace);
-            return null;
+        }else{
+            //TODO get all backed files, sort by desiredRepDeg-repDeg, start deleting until deletions
+            // make for the difference of deleted space and allocated space, possibly output deleted fileChunks
         }
-        File[] removedFiles = new File[]{};
-
-        //TODO choose files to delete and add them to removedFiles array
-        /*for (File folder: selectedFiles ) {
-            removeFolder(folder);
-        }*/
-
-        System.out.println("allocating space");
         return removedFiles;
     }
 }

@@ -3,13 +3,10 @@ package PackageRMI;
 import Executables.Peer;
 import InitiatorCommunication.GetChunkRequest;
 import InitiatorCommunication.PutChunkRequest;
+import InitiatorCommunication.DeleteRequest;
 import Utilities.FileHandler;
 
 import java.rmi.RemoteException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public class Control implements ControlInterface {
 
@@ -57,4 +54,22 @@ public class Control implements ControlInterface {
         Peer.threadPool.submit(worker);
         return true;
     }
+
+    @Override
+    public boolean delete(String path) throws RemoteException {
+        Peer.threadPool.submit(new DeleteRequest(path));
+        return true;
+    }
+
+    @Override
+    public boolean reclaim(long desiredAllocation) throws RemoteException {
+        return false;
+    }
+
+    @Override
+    public boolean getState() throws RemoteException {
+        return false;
+    }
+
+
 }

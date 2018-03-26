@@ -1,6 +1,7 @@
 package InitiatorCommunication;
 
 import Utilities.FileHandler;
+import Utilities.ProtocolMessage;
 
 import java.io.File;
 import java.security.InvalidParameterException;
@@ -24,19 +25,24 @@ public class DiskReclaimRequest extends Thread{
     @Override
     public void run() {
         if(FileHandler.getAvailableSpace()<this.allocGoal){
-            System.out.println("Not enough space available on SavePath location");
-        }
-        try{
-            FileHandler.setAllocation(this.allocGoal);
-        }catch (Exception e){
-            System.out.println(e.getMessage());
+            System.out.println("RECLAIM not enough space available on SavePath location");
             return;
         }
-        System.out.println("Allocation successfully set to "+this.allocGoal);
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+
+        String[] removedFiles = FileHandler.setAllocation(this.allocGoal);
+        String[] temp;
+        ProtocolMessage message = new ProtocolMessage(ProtocolMessage.PossibleTypes.REMOVED);
+        for (String fileInfo: removedFiles) {
+            temp = fileInfo.split(";");
+            try {
+                message.setFileId(temp[1]);
+                message.setChunkNo(temp[2]);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            //TODO send message
         }
+
+        System.out.println("Allocation successfully set to "+this.allocGoal);
     }
 }

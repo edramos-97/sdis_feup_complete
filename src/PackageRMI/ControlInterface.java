@@ -12,11 +12,11 @@ public interface ControlInterface extends Remote {
 
     boolean getChunk(String fileId, short chunkNo) throws RemoteException;
 
-    // delete
+    boolean delete(String path) throws RemoteException;
 
-    // reclaim
+    boolean reclaim (long desiredAllocation) throws RemoteException;
 
-    // state
+    boolean getState () throws RemoteException;
 
 
 }
