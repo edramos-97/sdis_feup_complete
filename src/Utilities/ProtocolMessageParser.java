@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 public class ProtocolMessageParser {
 
-    public ProtocolMessage parseMessage(String receivedMessage){
+    public static ProtocolMessage parseMessage(String receivedMessage){
         String[] msgFields = receivedMessage.split("\r\n\r\n");
         String[] headerFields = msgFields[0].split("[ ]+");
         ProtocolMessage.PossibleTypes tempType = verifyType(headerFields[0]);
@@ -31,7 +31,7 @@ public class ProtocolMessageParser {
      * @param value - Received data as a String
      * @return Returns a PossibleType value or null
      */
-    private ProtocolMessage.PossibleTypes verifyType(String value){
+    private static ProtocolMessage.PossibleTypes verifyType(String value){
         for (ProtocolMessage.PossibleTypes c : ProtocolMessage.PossibleTypes.values()) {
             if (c.name().equals(value)) {
                 return c;
@@ -46,7 +46,7 @@ public class ProtocolMessageParser {
      * @param headerFields - String array with information about a message
      * @return False if an invalid message field is received, true otherwise
      */
-    private boolean setFields(ProtocolMessage tempMessage,String[] headerFields) {
+    private static boolean setFields(ProtocolMessage tempMessage,String[] headerFields) {
         try {
             tempMessage.setVersion(headerFields[1]);
             tempMessage.setSenderId(headerFields[2]);

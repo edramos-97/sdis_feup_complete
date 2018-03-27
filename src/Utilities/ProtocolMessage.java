@@ -50,7 +50,7 @@ public class ProtocolMessage {
     }
 
     public void setVersion(String version) throws Exception {
-        if (!version.matches("[0-9]/.[0-9]")){
+        if (!version.matches("[0-9]\\.[0-9]")){
             throw new Exception("Invalid message field received: version="+version);
         }
         this.version = version;
@@ -123,7 +123,7 @@ public class ProtocolMessage {
                 result = String.format("%s %s %s\r\n\r\n%s", result, getChunkNo(),getReplicationDeg(),new String(body.array()));
                 break;
             case CHUNK:
-                result = String.format("%s %s\r\n\r\n%s", result, getChunkNo(),new String(body.array()));
+                result = String.format("%s %s\r\n\r\n%s", result, getChunkNo(),new String(body.array()).trim());
             case STORED:
             case GETCHUNK:
             case REMOVED:

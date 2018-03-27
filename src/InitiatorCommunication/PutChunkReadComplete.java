@@ -24,49 +24,25 @@ public class PutChunkReadComplete implements CompletionHandler<Integer, File_IO_
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //TODO send message
-/*        MulticastSocket data_socket = MulticastChanel.multicast_data_socket;
-        String message_bytes = new String(attachment.getMessage().toCharArray()).trim();
-        System.out.println(message_bytes);
 
-        DatagramPacket packet = null;
-        try {
-            packet = new DatagramPacket(
-                    message_bytes.getBytes(),
-                    FileHandler.MAX_SIZE_MESSAGE, //TODO check this
-                    InetAddress.getByName(MulticastChanel.multicast_data_address),
-                    Integer.parseInt(MulticastChanel.multicast_data_port));
-
-            data_socket.send(packet);
-        } catch (UnknownHostException e) {
-            System.out.println("error in creating datagram packet");
-            e.printStackTrace();
-        } catch (IOException e) {
-            System.out.println("error in sending packet to multicast socket");
-            e.printStackTrace();
-        }*/
 
         System.out.println("READ COMPLETE");
-        MulticastSocket data_socket = null;
-        try {
-            data_socket = new MulticastSocket();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String message_bytes = "hello".trim();
-        //System.out.println(message_bytes);
+        MulticastSocket data_socket = MulticastChanel.multicast_data_socket;
+        String message_bytes = new String(attachment.getMessage().toCharArray()).trim();
+
+        System.out.println(message_bytes.length());
+        System.out.println(attachment.getMessage().body.toString());
 
         DatagramPacket packet = null;
         try {
+
             packet = new DatagramPacket(
                     message_bytes.getBytes(),
-                    5, //TODO check this
+                    message_bytes.getBytes().length,
                     InetAddress.getByName(MulticastChanel.multicast_data_address),
                     Integer.parseInt(MulticastChanel.multicast_data_port));
 
             data_socket.send(packet);
-            System.out.println("SENT PACKET");
-            System.out.println(new String(packet.getData()));
         } catch (UnknownHostException e) {
             System.out.println("error in creating datagram packet");
             e.printStackTrace();

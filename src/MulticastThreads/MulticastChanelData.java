@@ -1,6 +1,10 @@
 package MulticastThreads;
 
+import Executables.Peer;
+import InitiatorCommunication.PutChunkHandle;
 import Utilities.FileHandler;
+import Utilities.ProtocolMessage;
+import Utilities.ProtocolMessageParser;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -18,7 +22,6 @@ public class MulticastChanelData extends MulticastChanel {
 
         //joining group
         multicast_data_socket.joinGroup(InetAddress.getByName(multicast_data_address));
-        System.out.println(multicast_data_address);
 
     }
 
@@ -28,16 +31,22 @@ public class MulticastChanelData extends MulticastChanel {
         System.out.println("STARTING DATA CHANEL");
 
 
-        byte[] raw_message = new byte[5];
-        DatagramPacket packet_received = new DatagramPacket(raw_message, 5);
+        byte[] raw_message = new byte[FileHandler.MAX_SIZE_MESSAGE];
+        DatagramPacket packet_received = new DatagramPacket(raw_message, FileHandler.MAX_SIZE_MESSAGE);
 
 
         while(true){
             try {
                 multicast_data_socket.receive(packet_received);
 
+                System.out.println("received something");
+
+                ProtocolMessage message = ProtocolMessageParser.parseMessage(new String(packet_received.getData()).trim());
+                Peer.threadPool.submit(new PutChunkHandle(message));
+
+
                 // take care of package
-                System.out.println(new String(packet_received.getData()));
+                //System.out.println(new String(packet_received.getData()));
 
             } catch (IOException e) {
                 e.printStackTrace();

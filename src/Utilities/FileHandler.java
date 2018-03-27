@@ -18,7 +18,7 @@ public class FileHandler {
     public static final int MAX_SIZE_MESSAGE = CHUNK_SIZE + 1024;
     private static final String EXTENSION = ".txt";
     private static String savePath = System.getProperty("user.home")+File.separator+"Desktop"+File.separator+"testFolder"+File.separator;
-    private static long allocatedSpace;
+    private static long allocatedSpace = 100000;
 
     public static void main(String[] args){
         /*Path filePath = Paths.get(savePath+"/NewFolder/1.txt");

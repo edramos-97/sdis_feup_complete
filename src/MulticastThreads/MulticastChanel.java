@@ -25,13 +25,10 @@ public class MulticastChanel extends Thread {
         multicast_recover_address = mcr_address;
         multicast_recover_port = mcr_port;
         this.peerID = peerID;
-        // creating sockets
     }
 
     @Override
     public void run(){
-
         // not needed here(?)
-
     }
 }
