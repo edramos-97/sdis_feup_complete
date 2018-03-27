@@ -4,9 +4,9 @@ import java.nio.ByteBuffer;
 
 public class ProtocolMessageParser {
 
-    public static ProtocolMessage parseMessage(String receivedMessage){
-        String[] msgFields = receivedMessage.split("\r\n\r\n",2);
-        String[] headerFields = msgFields[0].split("[ ]+");
+    public static ProtocolMessage parseMessage(byte[] receivedMessage){
+        byte[][] msgFields = splitParts(receivedMessage);
+        String[] headerFields = new String(msgFields[0]).split("[ ]+");
         ProtocolMessage.PossibleTypes tempType = verifyType(headerFields[0]);
         ProtocolMessage tempMessage;
         if (tempType==null){
@@ -18,7 +18,7 @@ public class ProtocolMessageParser {
 
         try{
             if (tempMessage.hasBody){
-                tempMessage.setBody(msgFields[1].getBytes(),msgFields[1].length());
+                tempMessage.setBody(msgFields[1],msgFields[1].length);
             }
         }catch (Exception e){
             System.out.println(e.getMessage());
@@ -83,4 +83,30 @@ public class ProtocolMessageParser {
         return true;
     }
 
+    private static byte[][] splitParts(byte[] message){
+        byte[] key = "\r\n\r\n".getBytes();
+        System.out.println("this is a key: " + new String(key));
+        int i = 0;
+        int k = message.length-1;
+        while (message[k] == 0){
+            k--;
+        }
+        for (; i <= message.length - key.length; i++) {
+            int j = 0;
+            while (j < key.length && message[i + j] == key[j]) {
+                j++;
+            }
+            if (j == key.length) {
+                break;
+            }
+        }
+        byte[][] result = new byte[2][];
+        result[0] = new byte[i];
+        result[1] = new byte[k-i-3];
+        System.arraycopy(message,0,result[0],0,i-1);
+        System.arraycopy(message,i+4,result[1],0,k-i-3);
+
+        return result;
+    }
+    
 }

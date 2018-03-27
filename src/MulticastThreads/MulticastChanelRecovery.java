@@ -40,7 +40,9 @@ public class MulticastChanelRecovery extends MulticastChanel {
 
                 System.out.println("received something");
 
-                ProtocolMessage message = ProtocolMessageParser.parseMessage(new String(packet_received.getData()).trim());
+                ProtocolMessage message = ProtocolMessageParser.parseMessage(packet_received.getData());
+
+                if (message == null)continue;
 
                 switch (message.getMsgType()){
 
