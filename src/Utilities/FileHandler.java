@@ -1,5 +1,6 @@
 package Utilities;
 
+import Executables.Peer;
 import InitiatorCommunication.PutChunkHandleComplete;
 
 import javax.xml.bind.DatatypeConverter;
@@ -17,7 +18,7 @@ public class FileHandler {
     public static final int CHUNK_SIZE = 64000;
     public static final int MAX_SIZE_MESSAGE = CHUNK_SIZE + 1024;
     private static final String EXTENSION = ".txt";
-    public static String savePath = System.getProperty("user.home")+File.separator+"Desktop"+File.separator+"testFolder"+File.separator;
+    public static String savePath = System.getProperty("user.home")+File.separator+"Desktop"+File.separator+"sbs_"+ Peer.peerID +File.separator;
     private static long allocatedSpace = 100000;
 
     public static void main(String[] args){

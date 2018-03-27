@@ -1,5 +1,6 @@
 package InitiatorCommunication;
 
+import Executables.Peer;
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
 import Utilities.File_IO_Wrapper;
@@ -37,6 +38,7 @@ public class PutChunkRequest implements Callable<String>{
             message.setReplicationDeg(this.replicationDeg);
             Path path = Paths.get(filePath);
             AsynchronousFileChannel file = AsynchronousFileChannel.open(path, StandardOpenOption.READ);
+            System.out.println(Peer.peerID + " " + chunkNo);
             file.read(message.body,chunkNo*FileHandler.CHUNK_SIZE,new File_IO_Wrapper(message,file),new PutChunkReadComplete());
         } catch (Exception e) {
             e.printStackTrace();
