@@ -13,13 +13,15 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static java.nio.file.StandardOpenOption.*;
+
 public class FileHandler {
 
     public static final int CHUNK_SIZE = 64000;
     public static final int MAX_SIZE_MESSAGE = CHUNK_SIZE + 1024;
     private static final String EXTENSION = ".txt";
     public static String savePath = System.getProperty("user.home")+File.separator+"Desktop"+File.separator+"sbs_"+ Peer.peerID +File.separator;
-    private static long allocatedSpace = 100000;
+    private static long allocatedSpace = 1000000000;
 
     public static void main(String[] args){
         /*Path filePath = Paths.get(savePath+"/NewFolder/1.txt");
@@ -74,12 +76,16 @@ public class FileHandler {
             if(Files.notExists(dirPath)){
                 Files.createDirectories(dirPath);
             }
-            if(Files.notExists(filePath)){
+            /*if(Files.notExists(filePath)){
                 Files.createFile(filePath);
-            }
-            System.out.println(message.body);
-            AsynchronousFileChannel file = AsynchronousFileChannel.open(filePath,StandardOpenOption.WRITE);
-            file.write(message.body,0,new File_IO_Wrapper(message,file),new PutChunkHandleComplete());
+            }*/
+            System.out.println(new String(message.body.array()));
+
+            
+            Files.write(filePath, new String(message.body.array()).getBytes());
+
+            //AsynchronousFileChannel file = AsynchronousFileChannel.open(filePath,WRITE,CREATE);
+            //file.write(message.body,0,new File_IO_Wrapper(message,file),new PutChunkHandleComplete());
         } catch (IOException e) {
             e.printStackTrace();
         }

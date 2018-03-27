@@ -42,7 +42,7 @@ public class MulticastChanelData extends MulticastChanel {
 
                 System.out.println("received something");
 
-                System.out.println(new String(packet_received.getData()).trim());
+                //System.out.println(new String(packet_received.getData()).trim());
 
                 ProtocolMessage message = ProtocolMessageParser.parseMessage(new String(packet_received.getData()).trim());
                 Peer.threadPool.submit(new PutChunkHandle(message));

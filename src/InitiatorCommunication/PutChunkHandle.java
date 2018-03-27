@@ -9,8 +9,9 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
+import java.util.concurrent.Callable;
 
-public class PutChunkHandle implements Runnable{
+public class PutChunkHandle extends Thread {
 
     private ProtocolMessage message;
 
@@ -47,5 +48,6 @@ public class PutChunkHandle implements Runnable{
             System.out.println("error in sending packet to multicast socket");
             e.printStackTrace();
         }
+
     }
 }
