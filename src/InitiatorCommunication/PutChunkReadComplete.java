@@ -46,6 +46,7 @@ public class PutChunkReadComplete implements CompletionHandler<Integer, File_IO_
             e.printStackTrace();
         }*/
 
+        System.out.println("READ COMPLETE");
         MulticastSocket data_socket = null;
         try {
             data_socket = new MulticastSocket();
@@ -64,6 +65,8 @@ public class PutChunkReadComplete implements CompletionHandler<Integer, File_IO_
                     Integer.parseInt(MulticastChanel.multicast_data_port));
 
             data_socket.send(packet);
+            System.out.println("SENT PACKET");
+            System.out.println(new String(packet.getData()));
         } catch (UnknownHostException e) {
             System.out.println("error in creating datagram packet");
             e.printStackTrace();

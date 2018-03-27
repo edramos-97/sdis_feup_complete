@@ -5,6 +5,7 @@ import Utilities.FileHandler;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.MulticastSocket;
 
 public class MulticastChanelData extends MulticastChanel {
 
@@ -13,15 +14,18 @@ public class MulticastChanelData extends MulticastChanel {
 
         // creating common variables
         super(mcc_address,mcc_port,mcb_address,mcb_port,mcr_address,mcr_port, peerID);
+        multicast_data_socket = new MulticastSocket(Integer.parseInt(multicast_data_port));
 
         //joining group
         multicast_data_socket.joinGroup(InetAddress.getByName(multicast_data_address));
+        System.out.println(multicast_data_address);
 
     }
 
     @Override
     public void run() {
         // listen on data
+        System.out.println("STARTING DATA CHANEL");
 
 
         byte[] raw_message = new byte[5];

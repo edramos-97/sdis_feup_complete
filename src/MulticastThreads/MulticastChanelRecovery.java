@@ -3,6 +3,7 @@ package MulticastThreads;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.MulticastSocket;
 
 public class MulticastChanelRecovery extends MulticastChanel {
 
@@ -11,6 +12,7 @@ public class MulticastChanelRecovery extends MulticastChanel {
 
         // creating common variables
         super(mcc_address,mcc_port,mcb_address,mcb_port,mcr_address,mcr_port, peerID);
+        multicast_recover_socket = new MulticastSocket(Integer.parseInt(multicast_recover_port));
 
         //joining group
         multicast_recover_socket.joinGroup(InetAddress.getByName(multicast_recover_address));

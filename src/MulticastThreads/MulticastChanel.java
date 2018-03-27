@@ -26,10 +26,6 @@ public class MulticastChanel extends Thread {
         multicast_recover_port = mcr_port;
         this.peerID = peerID;
         // creating sockets
-        multicast_control_socket = new MulticastSocket(Integer.parseInt(multicast_control_port));
-        multicast_data_socket = new MulticastSocket(Integer.parseInt(multicast_data_port));
-        multicast_recover_socket = new MulticastSocket(Integer.parseInt(multicast_recover_port));
-
     }
 
     @Override
