@@ -19,6 +19,7 @@ public class Client {
             return;
         }
 
+        // TODO: change address:name -> to -> host:port/name in args[0]
         String[] access_point_info = args[0].split(":");
         String host = access_point_info[0];
         String name = access_point_info[1];
@@ -100,6 +101,8 @@ public class Client {
             // Send message to backup a given file
 
             rmi_stub.say_this("BACKUP CALLED");
+            System.out.println(replication_degree.charAt(0));
+            rmi_stub.putChunk(filepath, replication_degree.charAt(0));
             System.out.println("Backed up...");
             return;
         }

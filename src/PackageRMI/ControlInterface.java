@@ -16,7 +16,7 @@ public interface ControlInterface extends Remote {
 
     boolean reclaim (long desiredAllocation) throws RemoteException;
 
-    boolean getState () throws RemoteException;
+    boolean getState() throws RemoteException;
 
 
 }

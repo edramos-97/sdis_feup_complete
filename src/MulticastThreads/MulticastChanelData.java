@@ -1,5 +1,7 @@
 package MulticastThreads;
 
+import Utilities.FileHandler;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -22,8 +24,8 @@ public class MulticastChanelData extends MulticastChanel {
         // listen on data
 
 
-        byte[] raw_message = new byte[100];
-        DatagramPacket packet_received = new DatagramPacket(raw_message, 100);
+        byte[] raw_message = new byte[5];
+        DatagramPacket packet_received = new DatagramPacket(raw_message, 5);
 
 
         while(true){
@@ -31,6 +33,7 @@ public class MulticastChanelData extends MulticastChanel {
                 multicast_data_socket.receive(packet_received);
 
                 // take care of package
+                System.out.println(new String(packet_received.getData()));
 
             } catch (IOException e) {
                 e.printStackTrace();

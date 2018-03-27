@@ -3,17 +3,17 @@ package MulticastThreads;
 import java.io.IOException;
 import java.net.MulticastSocket;
 
-class MulticastChanel extends Thread {
+public class MulticastChanel extends Thread {
 
-    protected String multicast_control_address;
-    protected String multicast_control_port;
-    protected MulticastSocket multicast_control_socket;
-    protected String multicast_data_address;
-    protected String multicast_data_port;
-    protected MulticastSocket multicast_data_socket;
-    protected String multicast_recover_address;
-    protected String multicast_recover_port;
-    protected MulticastSocket multicast_recover_socket;
+    public static String multicast_control_address;
+    public static String multicast_control_port;
+    public static MulticastSocket multicast_control_socket;
+    public static String multicast_data_address;
+    public static String multicast_data_port;
+    public static MulticastSocket multicast_data_socket;
+    public static String multicast_recover_address;
+    public static String multicast_recover_port;
+    public static MulticastSocket multicast_recover_socket;
     protected int peerID;
 
     MulticastChanel(String mcc_address, String mcc_port, String mcb_address,

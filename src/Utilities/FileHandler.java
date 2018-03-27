@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class FileHandler {
 
     public static final int CHUNK_SIZE = 65535;
+    public static final int MAX_SIZE_MESSAGE = CHUNK_SIZE + 1024;
     private static final String EXTENSION = ".txt";
     private static String savePath = System.getProperty("user.home")+File.separator+"Desktop"+File.separator+"testFolder"+File.separator;
     private static long allocatedSpace;

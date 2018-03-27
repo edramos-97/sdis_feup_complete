@@ -22,8 +22,12 @@ public class PutChunkVerification implements Runnable {
         if(tryNo>=MAX_TRIES){
             System.out.println("PutChunk for fileID:\""+message.getFileId()+"\" chunkNo:"+message.getChunkNo()+" finished unsuccessfully after "+MAX_TRIES+" tries.");
         }else{
-            //TODO check replication Degree
+            // TODO check replication Degree
             System.out.println("PutChunk for fileID:\""+message.getFileId()+"\" chunkNo:"+message.getChunkNo()+" failed try number "+tryNo+". Retrying...");
+            // TODO resend message here
+
+
+
             tryNo++;
             Peer.threadPool.schedule(this,TIMEOUT, TimeUnit.MILLISECONDS);
         }
