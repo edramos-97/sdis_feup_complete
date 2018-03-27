@@ -1,15 +1,20 @@
 package Utilities;
 
 
+import java.io.File;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class VolatileDatabase {
 
-    public static ConcurrentHashMap<String, ConcurrentHashMap<Integer, Integer>> database = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, List<FileInfo>> database = new ConcurrentHashMap<>();
     // fileID -> ( chunkNo -> replicationDegree , , ,)
     public static ConcurrentHashMap<String, String> backed2fileID = new ConcurrentHashMap<>();
     // filename_backup -> fileID
@@ -19,28 +24,53 @@ public final class VolatileDatabase {
 
     }
 
-    public void add_chunk(String fileID, Integer chunk_number){
+    public void add_chunk(String fileID, short chunkNumber, long chunkSize, short requiredReplication){
         if(database.containsKey(fileID)){
-            ConcurrentHashMap<Integer, Integer> data = database.get(fileID);
-            if(data.containsKey(chunk_number)){
-                Integer replication_degree = data.remove(chunk_number);
-                data.put(chunk_number, replication_degree+1);
-            }else {
-                data.put(chunk_number, 1);
+
+            List<FileInfo> data = database.get(fileID);
+
+            boolean found = false;
+            for (FileInfo fi : data) {
+                if (fi.getChunkNo() == chunkNumber) {
+                    found = true;
+                    fi.incrementRepDeg();
+                    break;
+                }
             }
 
+            if(!found){
+                FileInfo fi = new FileInfo(requiredReplication, (short) 1, chunkNumber, chunkSize);
+                data.add(fi);
+            }
+
+
         }else{
-            ConcurrentHashMap<Integer,Integer> entry = new ConcurrentHashMap<>();
-            entry.put(chunk_number, 1);
+
+            List<FileInfo> entry = new ArrayList<FileInfo>(){
+                public boolean add(FileInfo fi){
+                    int index = Collections.binarySearch(this, fi);
+                    if (index < 0)
+                        index = ~index;
+                    super.add(index, fi);
+                    return true;
+                }
+            };
+
+            FileInfo fi = new FileInfo(requiredReplication, (short) 1, chunkNumber, chunkSize);
+
+            entry.add(fi);
             database.put(fileID, entry);
         }
     }
 
-    public Integer get_rep_degree(String fileID, Integer chunk_number){
+    public short get_rep_degree(String fileID, short chunkNumber){
         if(database.containsKey(fileID)){
-            ConcurrentHashMap<Integer, Integer> data = database.get(fileID);
-            if(data.containsKey(chunk_number)){
-                return data.get(chunk_number);
+            List<FileInfo> data = database.get(fileID);
+
+            for (FileInfo fi : data) {
+                if (fi.getChunkNo() == chunkNumber) {
+                    return fi.getRepDeg();
+                }
             }
         }
         return 0;
