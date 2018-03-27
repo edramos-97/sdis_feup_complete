@@ -4,15 +4,22 @@ import Executables.Peer;
 import MulticastThreads.MulticastChanel;
 import Utilities.FileHandler;
 import Utilities.File_IO_Wrapper;
-import MulticastThreads.MulticastChanelControl;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
+
+import static java.nio.file.StandardOpenOption.*;
 
 
 public class PutChunkReadComplete implements CompletionHandler<Integer, File_IO_Wrapper>{
@@ -25,23 +32,16 @@ public class PutChunkReadComplete implements CompletionHandler<Integer, File_IO_
             e.printStackTrace();
         }
 
-
-        System.out.println("READ COMPLETE");
         MulticastSocket data_socket = MulticastChanel.multicast_data_socket;
-        String message_bytes = new String(attachment.getMessage().toCharArray()).trim();
-
-        System.out.println(message_bytes.length());
-        System.out.println(attachment.getMessage().body.toString());
+        byte[] message_bytes = attachment.getMessage().toCharArray();
 
         DatagramPacket packet = null;
         try {
-
             packet = new DatagramPacket(
-                    message_bytes.getBytes(),
-                    message_bytes.getBytes().length,
+                    message_bytes,
+                    message_bytes.length,
                     InetAddress.getByName(MulticastChanel.multicast_data_address),
                     Integer.parseInt(MulticastChanel.multicast_data_port));
-
             data_socket.send(packet);
         } catch (UnknownHostException e) {
             System.out.println("error in creating datagram packet");

@@ -3,6 +3,7 @@ package Utilities;
 import Executables.Peer;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidParameterException;
 
 public class ProtocolMessage {
@@ -109,7 +110,7 @@ public class ProtocolMessage {
     }
 
     public byte[] toCharArray(){
-        String result = String.format("%s %s %s %s",msgType,version,senderId,fileId);
+        byte[] common = String.format("%s %s %s %s",msgType,version,senderId,fileId).getBytes(StandardCharsets.ISO_8859_1);
 
         // PUTCHUNK <version> <senderId> <fileId> <ChunkNo> <ReplicationDeg> <CRLF><CRLF><Body>
         // STORED <version> <senderId> <fileId> <ChunkNo> <CRLF><CRLF>
@@ -118,20 +119,36 @@ public class ProtocolMessage {
         // DELETE <version> <senderId> <fileId> <CRLF><CRLF>
         // REMOVED <version> <senderId> <fileId> <ChunkNo> <CRLF><CRLF>
 
+        byte[] complement = new byte[]{};
+
         switch (msgType){
             case PUTCHUNK:
-                result = String.format("%s %s %s\r\n\r\n%s", result, getChunkNo(),getReplicationDeg(),new String(body.array()));
+                complement = String.format(" %s %s\r\n\r\n", getChunkNo(),getReplicationDeg()).getBytes();
                 break;
             case CHUNK:
-                result = String.format("%s %s\r\n\r\n%s", result, getChunkNo(),new String(body.array()).trim());
             case STORED:
             case GETCHUNK:
             case REMOVED:
-                result = String.format("%s %s\r\n\r\n", result, getChunkNo());
+                complement = String.format(" %s\r\n\r\n",getChunkNo()).getBytes();
             case DELETE:
                 break;
         }
 
-        return result.getBytes();
+        byte[] header = new byte[common.length + complement.length];
+        System.arraycopy(common,0,header,0,common.length);
+        System.arraycopy(complement,0,header,common.length,complement.length);
+
+
+        if (hasBody){
+            byte[] temp = new byte[body.position()];
+            body.flip();
+            body.get(temp);
+            byte[] result = new byte[header.length + temp.length];
+            System.arraycopy(header,0,header,0,header.length);
+            System.arraycopy(temp,0,result,header.length,temp.length);
+            return result;
+        }else{
+            return header;
+        }
     }
 }
