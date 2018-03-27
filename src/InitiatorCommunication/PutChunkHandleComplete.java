@@ -11,8 +11,6 @@ public class PutChunkHandleComplete implements CompletionHandler<Integer, File_I
     @Override
     public void completed(Integer result, File_IO_Wrapper attachment) {
         System.out.println("STORED file with Id:\""+attachment.getMessage().getFileId()+"\" and chunkNo:\""+attachment.getMessage().getChunkNo());
-        attachment.getMessage().setMsgType(ProtocolMessage.PossibleTypes.STORED);
-        //TODO send message
         try {
             attachment.getFile().close();
         } catch (IOException e) {
