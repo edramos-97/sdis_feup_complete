@@ -15,8 +15,11 @@ public class PutChunkHandle implements Runnable{
 
     @Override
     public void run() {
-        //TODO check replication deg
-        //TODO send stored message
+        if(message.getVersion().equals("1.1")){
+            //TODO check replication deg
+        }
+        message.setMsgType(ProtocolMessage.PossibleTypes.STORED);
+        //TODO send STORED message
         FileHandler.saveChunk(this.message);
     }
 }

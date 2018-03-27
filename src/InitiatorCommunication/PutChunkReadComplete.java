@@ -16,7 +16,7 @@ public class PutChunkReadComplete implements CompletionHandler<Integer, File_IO_
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //TODO send message
+        //TODO send PUTCHUNK message
         Peer.threadPool.schedule(new PutChunkVerification(1,attachment.getMessage()),1000, TimeUnit.MILLISECONDS);
     }
 
