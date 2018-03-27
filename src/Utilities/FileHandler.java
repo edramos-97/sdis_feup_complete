@@ -79,9 +79,9 @@ public class FileHandler {
             /*if(Files.notExists(filePath)){
                 Files.createFile(filePath);
             }*/
-            System.out.println(new String(message.body.array()));
+            System.out.println(message.body.toString());
 
-            
+
             Files.write(filePath, new String(message.body.array()).getBytes());
 
             //AsynchronousFileChannel file = AsynchronousFileChannel.open(filePath,WRITE,CREATE);
