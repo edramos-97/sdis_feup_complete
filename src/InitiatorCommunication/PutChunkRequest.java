@@ -6,6 +6,7 @@ import Utilities.ProtocolMessage;
 import Utilities.File_IO_Wrapper;
 
 import java.io.File;
+import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -39,7 +40,7 @@ public class PutChunkRequest implements Callable<String>{
             Path path = Paths.get(filePath);
             AsynchronousFileChannel file = AsynchronousFileChannel.open(path, StandardOpenOption.READ);
             System.out.println(Peer.peerID + " " + chunkNo);
-            file.read(message.body,chunkNo*FileHandler.CHUNK_SIZE,new File_IO_Wrapper(message,file),new PutChunkReadComplete());
+            file.read(ByteBuffer.wrap(message.body),chunkNo*FileHandler.CHUNK_SIZE,new File_IO_Wrapper(message,file),new PutChunkReadComplete());
         } catch (Exception e) {
             e.printStackTrace();
             return "PutChunk for fileID:\""+filePath+"\" chunkNo:"+chunkNo+" finished unsuccessfully\n"+e.getMessage();

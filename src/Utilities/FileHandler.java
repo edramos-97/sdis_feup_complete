@@ -5,6 +5,7 @@ import InitiatorCommunication.PutChunkHandleComplete;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -79,13 +80,12 @@ public class FileHandler {
             /*if(Files.notExists(filePath)){
                 Files.createFile(filePath);
             }*/
-            System.out.println(message.body.toString());
 
             // TODO change this to async
-            Files.write(filePath, new String(message.body.array()).getBytes());
+            //Files.write(filePath, new String(message.body.array()).getBytes());
 
-            //AsynchronousFileChannel file = AsynchronousFileChannel.open(filePath,WRITE,CREATE);
-            //file.write(message.body,0,new File_IO_Wrapper(message,file),new PutChunkHandleComplete());
+            AsynchronousFileChannel file = AsynchronousFileChannel.open(filePath,WRITE,CREATE,TRUNCATE_EXISTING);
+            file.write(ByteBuffer.wrap(message.body),0,new File_IO_Wrapper(message,file),new PutChunkHandleComplete());
         } catch (IOException e) {
             e.printStackTrace();
         }

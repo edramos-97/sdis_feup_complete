@@ -1,8 +1,6 @@
 package Utilities;
 
 import Executables.Peer;
-
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidParameterException;
 
@@ -16,7 +14,7 @@ public class ProtocolMessage {
     private String fileId;
     private String ChunkNo;
     private char ReplicationDeg;
-    public ByteBuffer body;
+    public byte[] body = new byte[FileHandler.CHUNK_SIZE];
     boolean hasBody;
 
     public ProtocolMessage(PossibleTypes msgType){
@@ -35,7 +33,6 @@ public class ProtocolMessage {
             default:
                 System.out.println("Invalid message type in Message Constructor");
         }
-        this.body = ByteBuffer.allocate(FileHandler.CHUNK_SIZE);
     }
 
     public PossibleTypes getMsgType() {
@@ -101,13 +98,14 @@ public class ProtocolMessage {
         ReplicationDeg = replicationDeg;
     }
 
-    public ByteBuffer getBody() {
+    public byte[] getBody() {
         return body;
     }
 
-    public void setBody(ByteBuffer body, int len) {
+    public void setBody(byte[] body, int len) {
         this.body = body;
-        this.body.limit(len);
+        System.out.println("Body Length: "+body.length);
+        System.out.println("Message Body length: "+ this.body.length);
     }
 
     public byte[] toCharArray(){
@@ -141,12 +139,9 @@ public class ProtocolMessage {
 
 
         if (hasBody){
-            byte[] temp = new byte[body.position()];
-            body.flip();
-            body.get(temp);
-            byte[] result = new byte[header.length + temp.length];
+            byte[] result = new byte[header.length + body.length];
             System.arraycopy(header,0,result,0,header.length);
-            System.arraycopy(temp,0,result,header.length,temp.length);
+            System.arraycopy(body,0,result,header.length,body.length);
             return result;
         }else{
             return header;

@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class ProtocolMessageParser {
 
     public static ProtocolMessage parseMessage(String receivedMessage){
-        String[] msgFields = receivedMessage.split("\r\n\r\n");
+        String[] msgFields = receivedMessage.split("\r\n\r\n",2);
         String[] headerFields = msgFields[0].split("[ ]+");
         ProtocolMessage.PossibleTypes tempType = verifyType(headerFields[0]);
         ProtocolMessage tempMessage;
@@ -18,8 +18,7 @@ public class ProtocolMessageParser {
 
         try{
             if (tempMessage.hasBody){
-                tempMessage.setBody(ByteBuffer.wrap(msgFields[1].getBytes()), msgFields[1].getBytes().length);
-                System.out.println("++" + tempMessage.body.toString());
+                tempMessage.setBody(msgFields[1].getBytes(),msgFields[1].length());
             }
         }catch (Exception e){
             System.out.println(e.getMessage());

@@ -25,17 +25,12 @@ import static java.nio.file.StandardOpenOption.*;
 public class PutChunkReadComplete implements CompletionHandler<Integer, File_IO_Wrapper>{
     @Override
     public void completed(Integer result, File_IO_Wrapper attachment) {
-        //System.out.println(new String(attachment.getMessage().toCharArray()).trim());
-//        try {
-//            //attachment.getFile().close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
         MulticastSocket data_socket = MulticastChanel.multicast_data_socket;
         byte[] message_bytes = attachment.getMessage().toCharArray();
 
-        DatagramPacket packet = null;
+        System.out.println("\nSENT MESSAGE\n"+new String(message_bytes));
+
+        DatagramPacket packet;
         try {
             packet = new DatagramPacket(
                     message_bytes,
