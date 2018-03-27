@@ -45,7 +45,7 @@ public final class VolatileDatabase {
 
 
         }else{
-
+            //https://stackoverflow.com/questions/4903611/java-list-sorting-is-there-a-way-to-keep-a-list-permantly-sorted-automatically?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
             List<FileInfo> entry = new ArrayList<FileInfo>(){
                 public boolean add(FileInfo fi){
                     int index = Collections.binarySearch(this, fi);

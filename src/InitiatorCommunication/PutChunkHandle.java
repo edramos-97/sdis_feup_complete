@@ -23,6 +23,9 @@ public class PutChunkHandle implements Runnable{
         if(message.getVersion().equals("1.1")){
             //TODO check replication deg
         }
+
+        FileHandler.saveChunk(this.message);
+
         message.setMsgType(ProtocolMessage.PossibleTypes.STORED);
 
         MulticastSocket data_socket = MulticastChanel.multicast_control_socket;
@@ -44,7 +47,5 @@ public class PutChunkHandle implements Runnable{
             System.out.println("error in sending packet to multicast socket");
             e.printStackTrace();
         }
-
-        FileHandler.saveChunk(this.message);
     }
 }

@@ -144,7 +144,7 @@ public class ProtocolMessage {
             body.flip();
             body.get(temp);
             byte[] result = new byte[header.length + temp.length];
-            System.arraycopy(header,0,header,0,header.length);
+            System.arraycopy(header,0,result,0,header.length);
             System.arraycopy(temp,0,result,header.length,temp.length);
             return result;
         }else{

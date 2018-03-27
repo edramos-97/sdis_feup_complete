@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.nio.charset.StandardCharsets;
 
 public class MulticastChanelData extends MulticastChanel {
 
@@ -40,6 +41,8 @@ public class MulticastChanelData extends MulticastChanel {
                 multicast_data_socket.receive(packet_received);
 
                 System.out.println("received something");
+
+                System.out.println(new String(packet_received.getData()).trim());
 
                 ProtocolMessage message = ProtocolMessageParser.parseMessage(new String(packet_received.getData()).trim());
                 Peer.threadPool.submit(new PutChunkHandle(message));
