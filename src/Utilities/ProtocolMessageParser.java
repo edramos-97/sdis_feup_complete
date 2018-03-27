@@ -18,7 +18,7 @@ public class ProtocolMessageParser {
 
         try{
             if (tempMessage.hasBody){
-                tempMessage.setBody(ByteBuffer.wrap(msgFields[1].getBytes()));
+                tempMessage.setBody(ByteBuffer.wrap(msgFields[1].getBytes()), msgFields[1].getBytes().length);
                 System.out.println("++" + tempMessage.body.toString());
             }
         }catch (Exception e){

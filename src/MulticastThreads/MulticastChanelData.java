@@ -42,10 +42,19 @@ public class MulticastChanelData extends MulticastChanel {
 
                 System.out.println("received something");
 
-                //System.out.println(new String(packet_received.getData()).trim());
-
                 ProtocolMessage message = ProtocolMessageParser.parseMessage(new String(packet_received.getData()).trim());
-                Peer.threadPool.submit(new PutChunkHandle(message));
+
+                switch (message.getMsgType()){
+
+                    case PUTCHUNK:
+                        //CHECK ID
+                        Peer.threadPool.submit(new PutChunkHandle(message));
+                        break;
+                    default:
+                        System.out.println("wrong type of message");
+                        break;
+                }
+
 
 
                 // take care of package

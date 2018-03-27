@@ -81,7 +81,7 @@ public class FileHandler {
             }*/
             System.out.println(message.body.toString());
 
-
+            // TODO change this to async
             Files.write(filePath, new String(message.body.array()).getBytes());
 
             //AsynchronousFileChannel file = AsynchronousFileChannel.open(filePath,WRITE,CREATE);

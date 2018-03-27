@@ -1,5 +1,11 @@
 package MulticastThreads;
 
+import Executables.Peer;
+import InitiatorCommunication.PutChunkHandle;
+import Utilities.FileHandler;
+import Utilities.ProtocolMessage;
+import Utilities.ProtocolMessageParser;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -24,15 +30,27 @@ public class MulticastChanelRecovery extends MulticastChanel {
         // listen on recover
 
 
-        byte[] raw_message = new byte[100];
-        DatagramPacket packet_received = new DatagramPacket(raw_message, 100);
+        byte[] raw_message = new byte[FileHandler.MAX_SIZE_MESSAGE];
+        DatagramPacket packet_received = new DatagramPacket(raw_message, FileHandler.MAX_SIZE_MESSAGE);
 
 
         while(true){
             try {
                 multicast_recover_socket.receive(packet_received);
 
-                // take care of package
+                System.out.println("received something");
+
+                ProtocolMessage message = ProtocolMessageParser.parseMessage(new String(packet_received.getData()).trim());
+
+                switch (message.getMsgType()){
+
+                    case CHUNK:
+
+                        break;
+                    default:
+                        System.out.println("wrong type of message");
+                        break;
+                }
 
             } catch (IOException e) {
                 e.printStackTrace();

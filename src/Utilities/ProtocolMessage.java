@@ -105,8 +105,9 @@ public class ProtocolMessage {
         return body;
     }
 
-    public void setBody(ByteBuffer body) {
+    public void setBody(ByteBuffer body, int len) {
         this.body = body;
+        this.body.limit(len);
     }
 
     public byte[] toCharArray(){
