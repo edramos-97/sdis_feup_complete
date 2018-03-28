@@ -2,14 +2,13 @@ package Utilities;
 
 
 import java.io.File;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class VolatileDatabase {
@@ -76,16 +75,13 @@ public final class VolatileDatabase {
         return 0;
     }
 
-    // from:
-    // https://stackoverflow.com/questions/3103652/hash-string-via-sha-256-in-java
-    public static String sha256(String input) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance( "SHA-256" );
-
-        // Change this to UTF-16 if needed
-        md.update( input.getBytes( StandardCharsets.UTF_8 ) );
-        byte[] digest = md.digest();
-
-        return String.format( "%064x", new BigInteger( 1, digest ) );
+    public void print(PrintStream stream){
+        for (Map.Entry<String, List<FileInfo>> pair : database.entrySet()) {
+            stream.println(pair.getKey());
+            for (FileInfo info : pair.getValue()) {
+                info.print();
+            }
+            stream.println("");
+        }
     }
-
 }
