@@ -5,6 +5,7 @@ import InitiatorCommunication.PutChunkHandle;
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
 import Utilities.ProtocolMessageParser;
+import Utilities.VolatileDatabase;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -52,6 +53,10 @@ public class MulticastChanelData extends MulticastChanel {
 
                 switch (message.getMsgType()){
                     case PUTCHUNK:
+                        // Checking if chunk is already saved by this peer.
+                        if(VolatileDatabase.check_has_chunk(message.getFileId()), message.getChunkNo())
+                            break;
+
                         Peer.threadPool.schedule(new PutChunkHandle(message),delay, TimeUnit.MILLISECONDS);
                         break;
                     default:

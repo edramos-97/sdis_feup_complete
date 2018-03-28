@@ -62,6 +62,18 @@ public final class VolatileDatabase {
         }
     }
 
+    public static boolean check_has_chunk(String fileID, short chunkNumber){
+        if(database.containsKey(fileID)){
+            List<FileInfo> data = database.get(fileID);
+            for (FileInfo fi : data) {
+                if (fi.getChunkNo() == chunkNumber) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public short get_rep_degree(String fileID, short chunkNumber){
         if(database.containsKey(fileID)){
             List<FileInfo> data = database.get(fileID);
@@ -79,7 +91,7 @@ public final class VolatileDatabase {
         for (Map.Entry<String, List<FileInfo>> pair : database.entrySet()) {
             stream.println(pair.getKey());
             for (FileInfo info : pair.getValue()) {
-                info.print();
+                info.print(stream);
             }
             stream.println("");
         }
