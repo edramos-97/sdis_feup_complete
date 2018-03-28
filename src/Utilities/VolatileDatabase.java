@@ -23,7 +23,7 @@ public final class VolatileDatabase {
 
     }
 
-    public static void add_chunk(String fileID, short chunkNumber, short requiredReplication){
+    public static void add_chunk(String fileID, short chunkNumber, short requiredReplication, int stored_peerID){
         if(database.containsKey(fileID)){
 
             List<FileInfo> data = database.get(fileID);
@@ -32,7 +32,7 @@ public final class VolatileDatabase {
             for (FileInfo fi : data) {
                 if (fi.getChunkNo() == chunkNumber) {
                     found = true;
-                    fi.incrementRepDeg();
+                    fi.incrementRepDeg(stored_peerID);
                     break;
                 }
             }

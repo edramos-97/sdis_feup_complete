@@ -2,11 +2,13 @@ package Utilities;
 
 import java.io.PrintStream;
 import java.io.Serializable;
+import java.util.HashSet;
 
 public class FileInfo implements Serializable, Comparable<FileInfo>{
 
     private short requiredRepDeg;
     private short repDeg;
+    private HashSet<Integer> stored_peers = new HashSet<Integer>();
     private short chunkNo;
     private long size;
 
@@ -28,8 +30,9 @@ public class FileInfo implements Serializable, Comparable<FileInfo>{
         return repDeg;
     }
 
-    public void incrementRepDeg() {
-        this.repDeg += 1;
+    public void incrementRepDeg(int peerID) {
+        stored_peers.add(peerID);
+        this.repDeg = (short) stored_peers.size();
     }
 
     public short getChunkNo() {
