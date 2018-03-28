@@ -4,6 +4,7 @@ import Executables.Peer;
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
 
+import java.io.File;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -20,8 +21,12 @@ public class DiskReclaimHandle implements Runnable{
 
     @Override
     public void run() {
-        String path = FileHandler.getPath(fileId,chunkNo);
-        //TODO get file desired repDeg
+        if(!FileHandler.hasChunk(fileId,chunkNo)){
+            return;
+        }else{
+            System.out.println("CHECKING FOR REPLICATION DEGREE");
+        }
+        //TODO get file desired repDeg and send PUTCHUNK
         short repDeg = 1;
         int delay = new Random().nextInt(400);
         try {

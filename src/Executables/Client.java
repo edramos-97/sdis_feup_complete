@@ -80,10 +80,11 @@ public class Client {
         }
 
         if(sub_protocol.equals("RECLAIM")){
-            String size_to_reclaim = arguments[2];
+            long size_to_reclaim = Long.valueOf(arguments[2]);
             // Send message to reclaim some space
 
             rmi_stub.say_this("RECLAIM CALLED");
+            rmi_stub.reclaim(size_to_reclaim);
             System.out.println("Reclaimed...");
             return;
         }
@@ -97,7 +98,7 @@ public class Client {
             // Send message to delete the given fileID
 
             rmi_stub.say_this("DELETE CALLED");
-            rmi_stub.delete(arguments[2]);
+            rmi_stub.delete(filepath);
             System.out.println("Deleted...");
             return;
         }

@@ -48,7 +48,7 @@ public class DiskReclaimRequest extends Thread{
             }
 
             //SEND MESSAGE
-            MulticastSocket data_socket = MulticastChanel.multicast_data_socket;
+            MulticastSocket data_socket = MulticastChanel.multicast_control_socket;
             byte[] message_bytes = message.toCharArray();
 
             DatagramPacket packet;
@@ -56,8 +56,8 @@ public class DiskReclaimRequest extends Thread{
                 packet = new DatagramPacket(
                         message_bytes,
                         message_bytes.length,
-                        InetAddress.getByName(MulticastChanel.multicast_data_address),
-                        Integer.parseInt(MulticastChanel.multicast_data_port));
+                        InetAddress.getByName(MulticastChanel.multicast_control_address),
+                        Integer.parseInt(MulticastChanel.multicast_control_port));
                 data_socket.send(packet);
             } catch (UnknownHostException e) {
                 System.out.println("error in creating datagram packet");

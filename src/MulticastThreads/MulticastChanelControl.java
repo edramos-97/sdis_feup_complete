@@ -1,7 +1,7 @@
 package MulticastThreads;
 
 import Executables.Peer;
-import InitiatorCommunication.PutChunkHandle;
+import InitiatorCommunication.DiskReclaimHandle;
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
 import Utilities.ProtocolMessageParser;
@@ -12,9 +12,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.util.Arrays;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 public class MulticastChanelControl extends MulticastChanel {
 
@@ -62,7 +59,8 @@ public class MulticastChanelControl extends MulticastChanel {
                         });
                         break;
                     case REMOVED:
-                        //TODO run reclaim protocol
+                        System.out.println("REMOVED RECEIVED");
+                        Peer.threadPool.submit(new DiskReclaimHandle(message.getFileId(),Short.valueOf(message.getChunkNo())));
                         break;
                     default:
                         System.out.println("Unknown message type received on data channel");

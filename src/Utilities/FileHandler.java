@@ -12,6 +12,8 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.security.InvalidParameterException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static java.nio.file.StandardOpenOption.*;
@@ -242,7 +244,7 @@ public class FileHandler {
 
     /**
      * Encodes file name and date created to protocol standard
-     * @param filePath - Path of the file to be encoded
+     * @param file - File object of the file identifier to be encoded
      * @return - Returns the encoded file id or null if the path doesn't point to a file
      */
     public static String getFileId(File file){
@@ -307,14 +309,15 @@ public class FileHandler {
      * @param allocSpace - size to be allocated in bytes
      */
     public static String[] setAllocation(long allocSpace){
-        String[] removedFiles = new String[]{};
+        ArrayDeque<String> removedFiles = new ArrayDeque<String>();
         if(getDiskUsage()<allocSpace){
             setAllocatedSpace(allocSpace);
         }else{
+            removedFiles.add("cb84f53102629a3dda06c23f74b29e2627b52a2a62622741bde09a9f22b0bda9;2");
             //TODO get all backed files, sort by desiredRepDeg-repDeg, start deleting until deletions
-            // make for the difference of deleted space and allocated space, possibly output deleted fileChunks
+            //make for the difference of deleted space and allocated space, possibly output deleted fileChunks
         }
-        return removedFiles;
+        return removedFiles.toArray(new String[]{});
     }
 
     public static String getPath(String fileId, short chunkNo) {
