@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class VolatileDatabase {
 
-    public static ConcurrentHashMap<String, List<FileInfo>> database = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<String, List<FileInfo>> database = new ConcurrentHashMap<>();
     // fileID -> ( chunkNo -> replicationDegree , , ,)
     public static ConcurrentHashMap<String, String> backed2fileID = new ConcurrentHashMap<>();
     // filename_backup -> fileID
@@ -24,7 +24,7 @@ public final class VolatileDatabase {
 
     }
 
-    public void add_chunk(String fileID, short chunkNumber, long chunkSize, short requiredReplication){
+    public static void add_chunk(String fileID, short chunkNumber, short requiredReplication){
         if(database.containsKey(fileID)){
 
             List<FileInfo> data = database.get(fileID);
@@ -39,7 +39,7 @@ public final class VolatileDatabase {
             }
 
             if(!found){
-                FileInfo fi = new FileInfo(requiredReplication, (short) 1, chunkNumber, chunkSize);
+                FileInfo fi = new FileInfo(requiredReplication, (short) 1, chunkNumber);
                 data.add(fi);
             }
 
@@ -56,7 +56,7 @@ public final class VolatileDatabase {
                 }
             };
 
-            FileInfo fi = new FileInfo(requiredReplication, (short) 1, chunkNumber, chunkSize);
+            FileInfo fi = new FileInfo(requiredReplication, (short) 1, chunkNumber);
 
             entry.add(fi);
             database.put(fileID, entry);

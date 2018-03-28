@@ -3,6 +3,7 @@ package InitiatorCommunication;
 import MulticastThreads.MulticastChanel;
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
+import Utilities.VolatileDatabase;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -26,14 +27,12 @@ public class PutChunkHandle extends Thread {
             //TODO check replication deg
         }
 
-        FileHandler.saveChunk(this.message);
-
         message.setMsgType(ProtocolMessage.PossibleTypes.STORED);
 
         MulticastSocket data_socket = MulticastChanel.multicast_control_socket;
         byte[] message_bytes = message.toCharArray();
 
-        System.out.println(Arrays.toString(message_bytes));
+        System.out.println("STORED TO SEND: "+ Arrays.toString(message_bytes));
 
         DatagramPacket packet;
         try {
@@ -51,5 +50,8 @@ public class PutChunkHandle extends Thread {
             e.printStackTrace();
         }
 
+        FileHandler.saveChunk(this.message);
+
+        VolatileDatabase.add_chunk(message.getFileId(),Short.valueOf(message.getChunkNo()),(short)message.getReplicationDeg());
     }
 }

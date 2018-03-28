@@ -77,13 +77,6 @@ public class FileHandler {
             if(Files.notExists(dirPath)){
                 Files.createDirectories(dirPath);
             }
-            /*if(Files.notExists(filePath)){
-                Files.createFile(filePath);
-            }*/
-
-            // TODO change this to async
-            //Files.write(filePath, new String(message.body.array()).getBytes());
-
             AsynchronousFileChannel file = AsynchronousFileChannel.open(filePath,WRITE,CREATE,TRUNCATE_EXISTING);
             file.write(ByteBuffer.wrap(message.body),0,new File_IO_Wrapper(message,file),new PutChunkHandleComplete());
         } catch (IOException e) {

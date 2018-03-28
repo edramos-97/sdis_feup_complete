@@ -5,6 +5,7 @@ import InitiatorCommunication.PutChunkHandle;
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
 import Utilities.ProtocolMessageParser;
+import Utilities.VolatileDatabase;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -41,11 +42,12 @@ public class MulticastChanelControl extends MulticastChanel {
                 multicast_control_socket.receive(packet_received);
                 ProtocolMessage message = ProtocolMessageParser.parseMessage(packet_received.getData());
 
-                if(message == null)//|| message.getSenderId().equals(String.valueOf(Peer.peerID)))
+                if(message == null || message.getSenderId().equals(String.valueOf(Peer.peerID)))
                     continue;
 
                 switch (message.getMsgType()){
                     case STORED:
+                        VolatileDatabase.add_chunk(message.getFileId(),Short.valueOf(message.getChunkNo()),(short)message.getReplicationDeg());
                         //TODO update local chunk count
                         break;
                     case GETCHUNK:

@@ -9,11 +9,10 @@ public class FileInfo implements Serializable, Comparable<FileInfo>{
     private short chunkNo;
     private long size;
 
-    public FileInfo(short requiredRepDeg, short repDeg, short chunkNo, long size) {
+    public FileInfo(short requiredRepDeg, short repDeg, short chunkNo) {
         this.requiredRepDeg = requiredRepDeg;
         this.repDeg = repDeg;
         this.chunkNo = chunkNo;
-        this.size = size;
     }
 
     public short getRequiredRepDeg() {
@@ -30,10 +29,6 @@ public class FileInfo implements Serializable, Comparable<FileInfo>{
 
     public void incrementRepDeg() {
         this.repDeg += 1;
-    }
-
-    public long getSize() {
-        return size;
     }
 
     public short getChunkNo() {
