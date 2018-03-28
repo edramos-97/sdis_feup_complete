@@ -1,5 +1,6 @@
 package InitiatorCommunication;
 
+import Executables.Peer;
 import MulticastThreads.MulticastChanel;
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
@@ -28,6 +29,11 @@ public class PutChunkHandle extends Thread {
         }
 
         message.setMsgType(ProtocolMessage.PossibleTypes.STORED);
+        try {
+            message.setSenderId(String.valueOf(Peer.peerID));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         MulticastSocket data_socket = MulticastChanel.multicast_control_socket;
         byte[] message_bytes = message.toCharArray();

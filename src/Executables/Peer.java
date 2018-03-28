@@ -75,7 +75,7 @@ public class Peer {
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             public void run() {
                 System.out.println("This was the state of my internals...");
-                // VolatileDatabase.print();
+                VolatileDatabase.print(System.out);
             }
         }));
 
