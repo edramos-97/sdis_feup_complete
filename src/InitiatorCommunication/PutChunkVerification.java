@@ -35,7 +35,6 @@ public class PutChunkVerification implements Runnable {
             if (current_rep_degree < message.getReplicationDeg()){
 
                 // Resending message to everyone, hoping someone new accepts the chunk.
-
                 System.out.println("PutChunk for fileID:\""+message.getFileId()+"\" chunkNo:"+message.getChunkNo()+" failed try number "+tryNo+". Retrying...");
 
                 MulticastSocket data_socket = MulticastChanel.multicast_data_socket;
@@ -55,6 +54,16 @@ public class PutChunkVerification implements Runnable {
 
 
             }else{
+                //TODO close file
+                //TODO Possibly stop if too many fails
+                int nextChunkNo = Integer.parseInt(message.getChunkNo())+Peer.MAX_CONCURRENCY;
+                if (nextChunkNo < message.getThreadNo()){
+                    try {
+                        Peer.threadPool.submit(new PutChunkRequest(message.getFile(),(short)nextChunkNo, Short.toString(message.getReplicationDeg()).charAt(0),message.getThreadNo()));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
                 return;
             }
 

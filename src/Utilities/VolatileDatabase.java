@@ -89,7 +89,7 @@ public final class VolatileDatabase {
 
     public static void print(PrintStream stream){
         for (Map.Entry<String, List<FileInfo>> pair : database.entrySet()) {
-            stream.println(pair.getKey());
+            stream.println("File: "+pair.getKey());
             for (FileInfo info : pair.getValue()) {
                 info.print(stream);
             }

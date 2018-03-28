@@ -5,6 +5,7 @@ import MulticastThreads.MulticastChanelData;
 import MulticastThreads.MulticastChanelRecovery;
 import PackageRMI.Control;
 import PackageRMI.ControlInterface;
+import Utilities.VolatileDatabase;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -18,18 +19,18 @@ public class Peer {
 
     public static int peerID = 0;
     public static String VERSION = "1.0";
+    public static int MAX_CONCURRENCY = 2;
     public static ScheduledThreadPoolExecutor threadPool = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors());
     private final RejectedExecutionHandler rejectedExecutionHandler = new RejectedExecutionHandler() {
         @Override
         public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+            System.out.println("Delaying some thread");
             int delay = 500 + new Random().nextInt(500);
-            threadPool.schedule(r, 400, TimeUnit.MILLISECONDS);
+            threadPool.schedule(r, delay, TimeUnit.MILLISECONDS);
         }
     };
 
-
     public static void main(String[] args) {
-
         if(args.length < 7){
             System.out.println("one of two usages:");
             System.out.println("usage -> java Executables.Peer PeerID  <MC_addr> <MC_port> <MDB_addr> <MDB_port> <MDR_addr> <MDR_port>");
@@ -74,11 +75,9 @@ public class Peer {
             System.out.println("Error in RMI setup.");
         }
 
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            public void run() {
-                System.out.println("This was the state of my internals...");
-                VolatileDatabase.print(System.out);
-            }
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("This was the state of my internals...");
+            VolatileDatabase.print(System.out);
         }));
 
         /*

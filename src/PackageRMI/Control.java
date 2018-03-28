@@ -22,11 +22,9 @@ public class Control implements ControlInterface {
     public boolean putChunk(String filePath, char replicationDeg) {
         int threadNo;
 
-        //check if the file exists
         try {
             threadNo = FileHandler.getChunkNo(filePath);
         } catch (Exception e) {
-            //e.printStackTrace();
             System.out.println("PutChunk for fileID:\""+filePath+"\" finished unsuccessfully\n"+e.getMessage());
             return false;
         }
@@ -35,8 +33,8 @@ public class Control implements ControlInterface {
         //TODO save to backed2file
         //start working threads
         try {
-            for (int i = 0; i < threadNo; i++) {
-                PutChunkRequest worker = new PutChunkRequest(filePath, (short)i, replicationDeg);
+            for (int i = 0; i < Peer.MAX_CONCURRENCY; i++) {
+                PutChunkRequest worker = new PutChunkRequest(filePath, (short)i, replicationDeg, threadNo);
                 Peer.threadPool.submit(worker);
             }
         } catch (Exception e) {

@@ -18,7 +18,7 @@ public class ProtocolMessageParser {
 
         try{
             if (tempMessage.hasBody){
-                tempMessage.setBody(msgFields[1],msgFields[1].length);
+                tempMessage.setBody(msgFields[1]);
             }
         }catch (Exception e){
             System.out.println(e.getMessage());

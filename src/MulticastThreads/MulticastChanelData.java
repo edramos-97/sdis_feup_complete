@@ -42,8 +42,6 @@ public class MulticastChanelData extends MulticastChanel {
             try {
                 multicast_data_socket.receive(packet_received);
 
-                System.out.println("received something");
-
                 ProtocolMessage message = ProtocolMessageParser.parseMessage(packet_received.getData());
 
                 if(message == null || message.getSenderId().equals(String.valueOf(Peer.peerID)))
@@ -53,6 +51,7 @@ public class MulticastChanelData extends MulticastChanel {
 
                 switch (message.getMsgType()){
                     case PUTCHUNK:
+                        System.out.println("PUTCHUNK RECEIVED");
                         // Checking if chunk is already saved by this peer.
                         if(VolatileDatabase.check_has_chunk(message.getFileId(), Short.valueOf(message.getChunkNo())))
                             break;

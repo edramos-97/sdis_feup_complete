@@ -14,13 +14,23 @@ public class ProtocolMessage {
     private String fileId;
     private String ChunkNo;
     private char ReplicationDeg;
+    private int threadNo;
+    private String filePath;
     public byte[] body = new byte[FileHandler.CHUNK_SIZE];
     boolean hasBody;
 
     public ProtocolMessage(PossibleTypes msgType){
-        this.msgType = msgType;
+        setMsgType(msgType);
         this.version = Peer.VERSION;
         this.senderId = String.valueOf(Peer.peerID);
+    }
+
+    public PossibleTypes getMsgType() {
+        return msgType;
+    }
+
+    public void setMsgType(PossibleTypes type) {
+        this.msgType = type;
         switch (msgType){
             case PUTCHUNK:
             case CHUNK:
@@ -33,14 +43,6 @@ public class ProtocolMessage {
             default:
                 System.out.println("Invalid message type in Message Constructor");
         }
-    }
-
-    public PossibleTypes getMsgType() {
-        return msgType;
-    }
-
-    public void setMsgType(PossibleTypes type) {
-        this.msgType = type;
     }
 
     public String getVersion() {
@@ -88,8 +90,6 @@ public class ProtocolMessage {
     }
 
     public short getReplicationDeg() {
-        System.out.println("-----------------------------------------------------------------");
-        System.out.println(ReplicationDeg);
         return (short) Character.getNumericValue(ReplicationDeg);
     }
 
@@ -104,10 +104,26 @@ public class ProtocolMessage {
         return body;
     }
 
-    public void setBody(byte[] body, int len) {
+    public void setBody(byte[] body) {
         this.body = body;
-        System.out.println("Body Length: "+body.length);
-        System.out.println("Message Body length: "+ this.body.length);
+        //System.out.println("Body Length: "+body.length);
+        //System.out.println("Message Body length: "+ this.body.length);
+    }
+
+    public void setThreadNo(int threadNo) {
+        this.threadNo = threadNo;
+    }
+
+    public int getThreadNo() {
+        return threadNo;
+    }
+
+    public String getFile() {
+        return filePath;
+    }
+
+    public void setFile(String filePath) {
+        this.filePath = filePath;
     }
 
     public byte[] toCharArray(){

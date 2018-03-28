@@ -25,7 +25,7 @@ public class DiskReclaimHandle implements Runnable{
         short repDeg = 1;
         int delay = new Random().nextInt(400);
         try {
-            Peer.threadPool.schedule(new PutChunkRequest(path,chunkNo,Short.toString(repDeg).toCharArray()[1]),delay, TimeUnit.MILLISECONDS);
+            //Peer.threadPool.schedule(new PutChunkRequest(path,chunkNo,Short.toString(repDeg).toCharArray()[1]),delay, TimeUnit.MILLISECONDS);
         } catch (Exception e) {
             e.printStackTrace();
         }
