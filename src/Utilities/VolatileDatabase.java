@@ -74,7 +74,7 @@ public final class VolatileDatabase {
         return false;
     }
 
-    public short get_rep_degree(String fileID, short chunkNumber){
+    public static short get_rep_degree(String fileID, short chunkNumber){
         if(database.containsKey(fileID)){
             List<FileInfo> data = database.get(fileID);
 
