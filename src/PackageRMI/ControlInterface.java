@@ -1,5 +1,7 @@
 package PackageRMI;
 
+import Utilities.StateOfPeer;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -16,7 +18,7 @@ public interface ControlInterface extends Remote {
 
     boolean reclaim (long desiredAllocation) throws RemoteException;
 
-    boolean getState() throws RemoteException;
+    StateOfPeer getState() throws RemoteException;
 
 
 }
