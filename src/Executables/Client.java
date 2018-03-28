@@ -19,23 +19,37 @@ public class Client {
             return;
         }
 
-        // TODO: change address:name -> to -> host:port/name in args[0]
-        String[] access_point_info = args[0].split(":");
-        String host = access_point_info[0];
-        String name = access_point_info[1];
+        // localhost:peer10 BACKUP teste.txt 3
+        // TODO: change address:name -> to -> //host:port/name in args[0]
+        String[] access_and_name = args[0].split("/+");
+        String[] host_and_port = access_and_name[1].split(":");
+
+        String host = host_and_port[0];
+        String name = access_and_name[2];
+        int port = 0;
+        if(host_and_port.length > 1)
+            port  = Integer.parseInt(host_and_port[1]);
+
+        System.out.print("HOST:");
+        System.out.println(host);
+        System.out.print("PORT:");
+        System.out.println(port);
+        System.out.print("NAME:");
+        System.out.println(name);
 
         try {
-            Registry registry = LocateRegistry.getRegistry(); // TODO: change this to go with other hosts
+            Registry registry;
+            if(port == 0){
+                registry = LocateRegistry.getRegistry(host);
+            }
+            else{
+                registry = LocateRegistry.getRegistry(host, port);
+            }
             ControlInterface control_rmi_stub = (ControlInterface) registry.lookup(name);
 
             send_messages(args, control_rmi_stub);
 
-            //boolean response = control_rmi_stub.putChunk(FileHandler.savePath+"1.txt",'1');
-            //boolean response2 = control_rmi_stub.putChunk(FileHandler.savePath+"2.txt",'1');
-            //boolean response3 = control_rmi_stub.getChunk("51c36c365ca845a0c509c74d88fe6c06ac830bf06832b2a832bd6eee3e310627",(short)0);
-            //System.out.println("returned: " + response);
-            //System.out.println("returned2: " + response2);
-            //System.out.println("returned2: " + response3);
+
         } catch (Exception e) {
             System.err.println("Executables.Client exception: " + e.toString());
             e.printStackTrace();
