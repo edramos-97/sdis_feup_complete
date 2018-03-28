@@ -47,7 +47,7 @@ public class MulticastChanelData extends MulticastChanel {
                 if(message == null || message.getSenderId().equals(String.valueOf(Peer.peerID)))
                     continue;
 
-                int delay = new Random().nextInt(4000);
+                int delay = new Random().nextInt(400);// TODO-CheckEnhancement 10x this to get better results
 
                 switch (message.getMsgType()){
                     case PUTCHUNK:
