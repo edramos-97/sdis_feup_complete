@@ -85,7 +85,6 @@ public class ProtocolMessageParser {
 
     private static byte[][] splitParts(byte[] message){
         byte[] key = "\r\n\r\n".getBytes();
-        //System.out.println("this is a key: " + new String(key));
         int i = 0;
         int k = message.length-1;
         while (message[k] == 0){
@@ -100,6 +99,7 @@ public class ProtocolMessageParser {
                 break;
             }
         }
+
         byte[][] result = new byte[2][];
         result[0] = new byte[i];
         result[1] = new byte[k-i-3];

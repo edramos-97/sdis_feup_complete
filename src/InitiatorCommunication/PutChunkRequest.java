@@ -38,7 +38,7 @@ public class PutChunkRequest implements Callable<String>{
         message = new ProtocolMessage(ProtocolMessage.PossibleTypes.PUTCHUNK);
         message.setThreadNo(threadNo);
         try {
-            String fileID = FileHandler.getFileId(filePath);
+            String fileID = FileHandler.getFileId(new File(filePath));
 
             if(fileID == null){
                 System.out.println("PUTCHUNK filepath points to a directory, stopping protocol...");

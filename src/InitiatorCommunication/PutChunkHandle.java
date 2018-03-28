@@ -49,12 +49,7 @@ public class PutChunkHandle extends Thread {
             e.printStackTrace();
         }
 
-        MulticastSocket data_socket = MulticastChanel.multicast_control_socket;
         byte[] message_bytes = message.toCharArray();
-
-        System.out.println("STORED TO SEND: "+ Arrays.toString(message_bytes));
-        System.out.println("STORED TO SEND: "+ new String(message_bytes));
-
         DatagramPacket packet;
         try {
             packet = new DatagramPacket(
@@ -62,7 +57,7 @@ public class PutChunkHandle extends Thread {
                     message_bytes.length,
                     InetAddress.getByName(MulticastChanel.multicast_control_address),
                     Integer.parseInt(MulticastChanel.multicast_control_port));
-            data_socket.send(packet);
+            MulticastChanel.multicast_control_socket.send(packet);
         } catch (UnknownHostException e) {
             System.out.println("Error in creating datagram packet");
             e.printStackTrace();

@@ -7,10 +7,12 @@ import Utilities.ProtocolMessage;
 import Utilities.ProtocolMessageParser;
 import Utilities.VolatileDatabase;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -53,7 +55,10 @@ public class MulticastChanelControl extends MulticastChanel {
                         System.out.println("RECEIVED CHUNK, ignoring for now");
                         break;
                     case DELETE:
-                        //TODO run delete protocol
+                        System.out.println(new String(message.toCharArray()));
+                        Peer.threadPool.submit(() -> {
+                            FileHandler.removeFolder(new File(FileHandler.savePath + message.getFileId()));
+                        });
                         break;
                     case REMOVED:
                         //TODO run reclaim protocol

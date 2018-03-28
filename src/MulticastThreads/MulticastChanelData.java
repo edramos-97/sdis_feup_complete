@@ -51,7 +51,6 @@ public class MulticastChanelData extends MulticastChanel {
 
                 switch (message.getMsgType()){
                     case PUTCHUNK:
-                        System.out.println("PUTCHUNK RECEIVED");
                         // Checking if chunk is already saved by this peer.
                         if(VolatileDatabase.check_has_chunk(message.getFileId(), Short.valueOf(message.getChunkNo())))
                             break;

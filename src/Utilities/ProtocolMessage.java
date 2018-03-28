@@ -147,7 +147,9 @@ public class ProtocolMessage {
             case GETCHUNK:
             case REMOVED:
                 complement = String.format(" %s\r\n\r\n",getChunkNo()).getBytes();
+                break;
             case DELETE:
+                complement = "\r\n\r\n".getBytes();
                 break;
         }
 

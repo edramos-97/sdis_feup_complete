@@ -2,26 +2,32 @@ package InitiatorCommunication;
 
 import Executables.Peer;
 import MulticastThreads.MulticastChanel;
+import Utilities.File_IO_Wrapper;
 import Utilities.ProtocolMessage;
 import Utilities.VolatileDatabase;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
+import java.nio.channels.AsynchronousChannel;
+import java.nio.channels.AsynchronousFileChannel;
 import java.util.concurrent.TimeUnit;
 
 public class PutChunkVerification implements Runnable {
     private static short TIMEOUT = 1000;
     private static short MAX_TRIES = 5;
+    private final Closeable openFile;
 
     private int tryNo;
     private ProtocolMessage message;
 
-    PutChunkVerification(int tryNo,ProtocolMessage message){
+    PutChunkVerification(int tryNo, File_IO_Wrapper info){
         this.tryNo = tryNo;
-        this.message = message;
+        this.message = info.getMessage();
+        this.openFile = info.getFile();
     }
 
     @Override

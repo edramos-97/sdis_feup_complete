@@ -46,7 +46,7 @@ public class PutChunkReadComplete implements CompletionHandler<Integer, File_IO_
             e.printStackTrace();
         }
 
-        Peer.threadPool.schedule(new PutChunkVerification(1,attachment.getMessage()),1000, TimeUnit.MILLISECONDS);
+        Peer.threadPool.schedule(new PutChunkVerification(1,attachment),1000, TimeUnit.MILLISECONDS);
     }
 
     @Override

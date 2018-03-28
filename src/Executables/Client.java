@@ -86,13 +86,14 @@ public class Client {
 
         String filepath = System.getProperty("user.dir") + File.separator + arguments[2];
         System.out.println(filepath);
-        String fileID = FileHandler.getFileId(filepath);
+        String fileID = FileHandler.getFileId(new File(filepath));
         System.out.println(fileID);
 
         if(sub_protocol.equals("DELETE")){
             // Send message to delete the given fileID
 
             rmi_stub.say_this("DELETE CALLED");
+            rmi_stub.delete(arguments[2]);
             System.out.println("Deleted...");
             return;
         }

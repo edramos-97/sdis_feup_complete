@@ -20,15 +20,15 @@ public class Peer {
     public static int peerID = 0;
     public static String VERSION = "1.1";
     public static int MAX_CONCURRENCY = 2;
-    public static ScheduledThreadPoolExecutor threadPool = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors());
-    private final RejectedExecutionHandler rejectedExecutionHandler = new RejectedExecutionHandler() {
+    private static final RejectedExecutionHandler rejectedExecutionHandler = new RejectedExecutionHandler() {
         @Override
         public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-            System.out.println("Delaying some thread");
+            System.out.println("DELAYING SOME THREAD");
             int delay = 500 + new Random().nextInt(500);
             threadPool.schedule(r, delay, TimeUnit.MILLISECONDS);
         }
     };
+    public static ScheduledThreadPoolExecutor threadPool = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors(),rejectedExecutionHandler);
 
     public static void main(String[] args) {
         if(args.length < 7){
@@ -80,34 +80,6 @@ public class Peer {
             VolatileDatabase.print(System.out);
         }));
 
-
         System.out.println("INITIATING PROGRAM");
-
-        /*
-        boolean is_initiator = Integer.parseInt(args[1]) == 1;
-
-        if(is_initiator){
-            System.out.println("Initiating command given.");
-           String subprotocol, operand_1, operand_2;
-            if(args.length < 9){
-                System.out.println("Subprotocol not given, exiting now.");
-                return;
-            }
-            subprotocol = args[8];
-            if(args.length < 10){
-                System.out.println("First operand not given, exiting now.");
-                return;
-            }
-            operand_1 = args[9];
-
-
-            String operand_2 = args[10]
-        }*/
-
-//        regular peer:
-//          java Executables.Peer 0 <MC_addr> <MC_port> <MDB_addr> <MDB_port> <MDR_addr> <MDR_port>
-//        initiator peer:
-//          java Executables.Peer 1 <MC_addr> <MC_port> <MDB_addr> <MDB_port> <MDR_addr> <MDR_port> <sub_protocol> <opnd_1> <opnd_2>
-
     }
 }

@@ -245,10 +245,10 @@ public class FileHandler {
      * @param filePath - Path of the file to be encoded
      * @return - Returns the encoded file id or null if the path doesn't point to a file
      */
-    public static String getFileId(String filePath){
-        File file = new File(filePath);
+    public static String getFileId(File file){
         if(!file.isDirectory()){
             String fileInfo = file.getName()+file.lastModified();
+            System.out.println("FILE NAME: "+file.getName());
             MessageDigest digest;
             try {
                 digest = MessageDigest.getInstance("SHA-256");
@@ -287,7 +287,7 @@ public class FileHandler {
     /**
      * Method used to delete a folder
      * @param folder - File object representing the folder to be deleted
-     * @return Returns true if the folder is successfully deleted, false otherwise
+     * @return Returns false if the folder is successfully deleted, true otherwise
      */
     public static boolean removeFolder(File folder){
         File[] folderContents = folder.listFiles();
