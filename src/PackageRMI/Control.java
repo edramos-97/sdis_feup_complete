@@ -33,7 +33,7 @@ public class Control implements ControlInterface {
         //TODO save to backed2file
         //start working threads
         try {
-            for (int i = 0; i < Peer.MAX_CONCURRENCY; i++) {
+            for (int i = 0; i < Peer.MAX_CONCURRENCY && i < threadNo; i++) {
                 PutChunkRequest worker = new PutChunkRequest(filePath, (short)i, replicationDeg, threadNo);
                 Peer.threadPool.submit(worker);
             }
