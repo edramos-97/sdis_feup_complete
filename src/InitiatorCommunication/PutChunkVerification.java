@@ -63,6 +63,14 @@ public class PutChunkVerification implements Runnable {
                 //TODO close file
                 //TODO Possibly stop if too many fails
                 int nextChunkNo = Integer.parseInt(message.getChunkNo())+Peer.MAX_CONCURRENCY;
+                /*if(message.getChunkNo().equals(Short.toString((short)(message.getThreadNo()-1)))){
+                    System.out.println("CLOSING FILE OF PUTCHUNK");
+                    try {
+                        openFile.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }*/
                 if (nextChunkNo < message.getThreadNo()){
                     try {
                         Peer.threadPool.submit(new PutChunkRequest(message.getFile(),(short)nextChunkNo, Short.toString(message.getReplicationDeg()).charAt(0),message.getThreadNo()));

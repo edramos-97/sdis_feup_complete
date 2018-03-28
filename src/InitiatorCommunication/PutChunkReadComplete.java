@@ -32,6 +32,7 @@ public class PutChunkReadComplete implements CompletionHandler<Integer, File_IO_
 
         DatagramPacket packet;
         try {
+            attachment.getFile().close();
             packet = new DatagramPacket(
                     message_bytes,
                     message_bytes.length,

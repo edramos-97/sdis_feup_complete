@@ -19,7 +19,7 @@ public class Peer {
 
     public static int peerID = 0;
     public static String VERSION = "1.1";
-    public static int MAX_CONCURRENCY = 2;
+    public static int MAX_CONCURRENCY = 4;
     private static final RejectedExecutionHandler rejectedExecutionHandler = new RejectedExecutionHandler() {
         @Override
         public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
