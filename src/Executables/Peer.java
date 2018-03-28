@@ -5,26 +5,28 @@ import MulticastThreads.MulticastChanelData;
 import MulticastThreads.MulticastChanelRecovery;
 import PackageRMI.Control;
 import PackageRMI.ControlInterface;
-import Utilities.FileInfo;
-import Utilities.VolatileDatabase;
 
 import java.io.IOException;
-import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.Random;
+import java.util.concurrent.*;
 
 public class Peer {
 
     public static int peerID = 0;
     public static String VERSION = "1.0";
     public static ScheduledThreadPoolExecutor threadPool = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors());
+    private final RejectedExecutionHandler rejectedExecutionHandler = new RejectedExecutionHandler() {
+        @Override
+        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+            int delay = 500 + new Random().nextInt(500);
+            threadPool.schedule(r, 400, TimeUnit.MILLISECONDS);
+        }
+    };
+
 
     public static void main(String[] args) {
 
