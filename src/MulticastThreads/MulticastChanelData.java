@@ -11,6 +11,8 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.nio.charset.StandardCharsets;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class MulticastChanelData extends MulticastChanel {
 
@@ -35,7 +37,6 @@ public class MulticastChanelData extends MulticastChanel {
         byte[] raw_message = new byte[FileHandler.MAX_SIZE_MESSAGE];
         DatagramPacket packet_received = new DatagramPacket(raw_message, FileHandler.MAX_SIZE_MESSAGE);
 
-
         while(true){
             try {
                 multicast_data_socket.receive(packet_received);
@@ -44,22 +45,19 @@ public class MulticastChanelData extends MulticastChanel {
 
                 ProtocolMessage message = ProtocolMessageParser.parseMessage(packet_received.getData());
 
-                switch (message.getMsgType()){
+                if(message == null || message.getSenderId().equals(String.valueOf(Peer.peerID)))
+                    continue;
 
+                int delay = new Random().nextInt(400);
+
+                switch (message.getMsgType()){
                     case PUTCHUNK:
-                        //CHECK ID
-                        Peer.threadPool.submit(new PutChunkHandle(message));
+                        Peer.threadPool.schedule(new PutChunkHandle(message),delay, TimeUnit.MILLISECONDS);
                         break;
                     default:
-                        System.out.println("wrong type of message");
+                        System.out.println("Unknown message type received on data channel");
                         break;
                 }
-
-
-
-                // take care of package
-                //System.out.println(new String(packet_received.getData()));
-
             } catch (IOException e) {
                 e.printStackTrace();
                 System.out.println("MCD+" + peerID +": There was an error reading from the socket!");

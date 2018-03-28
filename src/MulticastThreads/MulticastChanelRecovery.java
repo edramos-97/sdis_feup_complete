@@ -38,16 +38,13 @@ public class MulticastChanelRecovery extends MulticastChanel {
             try {
                 multicast_recover_socket.receive(packet_received);
 
-                System.out.println("received something");
-
                 ProtocolMessage message = ProtocolMessageParser.parseMessage(packet_received.getData());
 
                 if (message == null)continue;
 
                 switch (message.getMsgType()){
-
                     case CHUNK:
-
+                        System.out.println("RECEIVED CHUNK, ignoring for now...");
                         break;
                     default:
                         System.out.println("wrong type of message");
