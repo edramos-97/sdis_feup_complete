@@ -68,7 +68,7 @@ public class Client {
 
             rmi_stub.say_this("STATE CALLED");
 
-            StateOfPeer sop = rmi_stub.getState();
+            StateOfPeer sop = (StateOfPeer) rmi_stub.getState();
             sop.printState();
 
             return;

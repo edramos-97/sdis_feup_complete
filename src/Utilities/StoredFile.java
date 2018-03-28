@@ -1,8 +1,10 @@
 package Utilities;
 
+import java.io.Serializable;
+import java.rmi.Remote;
 import java.util.ArrayList;
 
-public class StoredFile {
+public class StoredFile implements Serializable, Remote{
 
     public String fileID;
     public String filePathname;

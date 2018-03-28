@@ -1,6 +1,9 @@
 package Utilities;
 
-public class ChunkFile {
+import java.io.Serializable;
+import java.rmi.Remote;
+
+public class ChunkFile implements Serializable, Remote {
 
     public int chunkNumber;
     public short perceivedReplicationDegree;
