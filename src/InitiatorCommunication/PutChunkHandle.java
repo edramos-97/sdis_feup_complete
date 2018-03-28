@@ -33,6 +33,7 @@ public class PutChunkHandle extends Thread {
         byte[] message_bytes = message.toCharArray();
 
         System.out.println("STORED TO SEND: "+ Arrays.toString(message_bytes));
+        System.out.println("STORED TO SEND: "+ new String(message_bytes));
 
         DatagramPacket packet;
         try {

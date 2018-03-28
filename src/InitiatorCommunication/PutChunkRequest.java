@@ -4,6 +4,7 @@ import Executables.Peer;
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
 import Utilities.File_IO_Wrapper;
+import Utilities.VolatileDatabase;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -34,7 +35,13 @@ public class PutChunkRequest implements Callable<String>{
         ProtocolMessage message;
         message = new ProtocolMessage(ProtocolMessage.PossibleTypes.PUTCHUNK);
         try {
-            message.setFileId(FileHandler.getFileId(filePath));
+            String fileID = FileHandler.getFileId(filePath);
+            message.setFileId(fileID);
+
+            // TODO change this to elaborate further
+            if(!VolatileDatabase.backed2fileID.containsKey(filePath))
+                VolatileDatabase.backed2fileID.put(filePath, fileID);
+
             message.setChunkNo(String.valueOf(chunkNo));
             message.setReplicationDeg(this.replicationDeg);
             Path path = Paths.get(filePath);
