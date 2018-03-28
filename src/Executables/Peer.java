@@ -5,6 +5,8 @@ import MulticastThreads.MulticastChanelData;
 import MulticastThreads.MulticastChanelRecovery;
 import PackageRMI.Control;
 import PackageRMI.ControlInterface;
+import Utilities.FileInfo;
+import Utilities.VolatileDatabase;
 
 import java.io.IOException;
 import java.rmi.AlreadyBoundException;
@@ -12,6 +14,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -68,7 +71,15 @@ public class Peer {
             e.printStackTrace();
             System.out.println("Error in RMI setup.");
         }
-/*
+
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            public void run() {
+                System.out.println("This was the state of my internals...");
+                // VolatileDatabase.print();
+            }
+        }));
+
+        /*
         boolean is_initiator = Integer.parseInt(args[1]) == 1;
 
         if(is_initiator){
