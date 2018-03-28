@@ -5,48 +5,6 @@ import java.util.List;
 
 public class StateOfPeer {
 
-    public class StoredFile {
-
-        public class ChunkFile {
-
-            public int chunkNumber;
-            public short perceivedReplicationDegree;
-            public int sizeKBs;
-
-            public ChunkFile(int cn, short rd, int s){
-                chunkNumber = cn;
-                perceivedReplicationDegree = rd;
-                sizeKBs = s;
-            }
-
-        }
-
-        public String fileID;
-        public String filePathname;
-        public int desiredReplicationDegree;
-        public ArrayList<ChunkFile> chunks = new ArrayList<>();
-
-
-        public StoredFile(String fd, String pn, int rp){
-            fileID = fd;
-            filePathname = pn;
-            desiredReplicationDegree = rp;
-        }
-
-        public boolean addChunk(ChunkFile cf){
-
-            for(ChunkFile cftemp : chunks){
-                if(cftemp.chunkNumber == cf.chunkNumber){
-                    return false;
-                }
-            }
-
-            chunks.add(cf);
-            return true;
-        }
-
-    }
-
     private int PeerID;
     private ArrayList<StoredFile> files = new ArrayList<>();
 

@@ -49,7 +49,8 @@ public class MulticastChanelControl extends MulticastChanel {
 
                 switch (message.getMsgType()){
                     case STORED:
-                        VolatileDatabase.add_chunk(message.getFileId(),Short.valueOf(message.getChunkNo()),message.getReplicationDeg(), Integer.parseInt(message.getSenderId()));
+                        int size_message = message.body.length;
+                        VolatileDatabase.add_chunk(message.getFileId(),Short.valueOf(message.getChunkNo()),message.getReplicationDeg(), Integer.parseInt(message.getSenderId()),size_message);
                         break;
                     case GETCHUNK:
                         System.out.println("RECEIVED CHUNK, ignoring for now");

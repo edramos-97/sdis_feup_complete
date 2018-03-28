@@ -5,10 +5,12 @@ import InitiatorCommunication.DiskReclaimRequest;
 import InitiatorCommunication.GetChunkRequest;
 import InitiatorCommunication.PutChunkRequest;
 import InitiatorCommunication.DeleteRequest;
-import Utilities.FileHandler;
-import Utilities.StateOfPeer;
+import Utilities.*;
 
 import java.rmi.RemoteException;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Control implements ControlInterface {
 
@@ -70,10 +72,46 @@ public class Control implements ControlInterface {
     @Override
     public StateOfPeer getState() throws RemoteException {
 
+        StateOfPeer sop = new StateOfPeer(Peer.peerID);
+
+        ConcurrentHashMap<String, List<FileInfo>> database = VolatileDatabase.get_database();
+        ConcurrentHashMap<String, String> backed_files = VolatileDatabase.get_backed_up();
+
+        for (Map.Entry<String, List<FileInfo>> pair : database.entrySet()) {
+            // Declaring Stored File
+            StoredFile sf;
+            String fileID = pair.getKey();
+            String pathname="";
+            int desiredReplicationDegree = 0;
+
+            // Searching for pathname
+            for (Map.Entry<String, String> pair2  : backed_files.entrySet()) {
+                if(pair2.getValue().equals(fileID)){
+                    pathname = pair2.getKey();
+                    break;
+                }
+            }
+
+            // Searching for desired replication degree
+            desiredReplicationDegree = pair.getValue().get(0).getRequiredRepDeg();
+
+            // Creating Stored File
+            sf = new StoredFile(fileID, pathname, desiredReplicationDegree);
+
+            // Getting all the Chunk's Info
+            for(FileInfo fi : pair.getValue()){
+                ChunkFile cf = new ChunkFile(fi.getChunkNo(), fi.getRepDeg(), 0);
+                sf.addChunk(cf);
+            }
+
+            // Add Stored File to StateOfPeer
+            sop.addFile(sf);
+        }
+
+        // TODO create file to then return it
 
 
-
-        return null;
+        return sop;
     }
 
 

@@ -23,7 +23,7 @@ public final class VolatileDatabase {
 
     }
 
-    public static void add_chunk(String fileID, short chunkNumber, short requiredReplication, int stored_peerID){
+    public static void add_chunk(String fileID, short chunkNumber, short requiredReplication, int stored_peerID, int size){
         if(database.containsKey(fileID)){
 
             List<FileInfo> data = database.get(fileID);
@@ -38,7 +38,7 @@ public final class VolatileDatabase {
             }
 
             if(!found){
-                FileInfo fi = new FileInfo(requiredReplication, (short) 1, chunkNumber);
+                FileInfo fi = new FileInfo(requiredReplication, (short) 1, chunkNumber, size);
                 data.add(fi);
             }
 
@@ -55,7 +55,7 @@ public final class VolatileDatabase {
                 }
             };
 
-            FileInfo fi = new FileInfo(requiredReplication, (short) 1, chunkNumber);
+            FileInfo fi = new FileInfo(requiredReplication, (short) 1, chunkNumber, size);
 
             entry.add(fi);
             database.put(fileID, entry);
@@ -96,4 +96,14 @@ public final class VolatileDatabase {
             stream.println("");
         }
     }
+
+    public static ConcurrentHashMap<String, List<FileInfo>> get_database(){
+        return database;
+    }
+
+    public static ConcurrentHashMap<String, String> get_backed_up(){
+        return backed2fileID;
+    }
+
+
 }

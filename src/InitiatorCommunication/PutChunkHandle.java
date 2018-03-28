@@ -39,7 +39,8 @@ public class PutChunkHandle extends Thread {
             }
         }
 
-        VolatileDatabase.add_chunk(message.getFileId(),Short.valueOf(message.getChunkNo()),message.getReplicationDeg(),Integer.parseInt(message.getSenderId()));
+        int size_message = this.message.body.length;
+        VolatileDatabase.add_chunk(message.getFileId(),Short.valueOf(message.getChunkNo()),message.getReplicationDeg(),Integer.parseInt(message.getSenderId()), size_message);
 
 
         message.setMsgType(ProtocolMessage.PossibleTypes.STORED);
