@@ -6,6 +6,7 @@ import InitiatorCommunication.GetChunkRequest;
 import InitiatorCommunication.PutChunkRequest;
 import InitiatorCommunication.DeleteRequest;
 import Utilities.FileHandler;
+import Utilities.StateOfPeer;
 
 import java.rmi.RemoteException;
 
@@ -67,8 +68,12 @@ public class Control implements ControlInterface {
     }
 
     @Override
-    public boolean getState() throws RemoteException {
-        return false;
+    public StateOfPeer getState() throws RemoteException {
+
+
+
+
+        return null;
     }
 
 
