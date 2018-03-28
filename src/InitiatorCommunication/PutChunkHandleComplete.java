@@ -10,7 +10,7 @@ import java.nio.channels.CompletionHandler;
 public class PutChunkHandleComplete implements CompletionHandler<Integer, File_IO_Wrapper> {
     @Override
     public void completed(Integer result, File_IO_Wrapper attachment) {
-        System.out.println("STORED file with Id:\""+attachment.getMessage().getFileId()+"\" and chunkNo:\""+attachment.getMessage().getChunkNo());
+        System.out.println("STORED file with Id:\""+attachment.getMessage().getFileId()+"\" and chunkNo:\""+attachment.getMessage().getChunkNo()+"\"");
         try {
             attachment.getFile().close();
         } catch (IOException e) {

@@ -248,7 +248,6 @@ public class FileHandler {
     public static String getFileId(File file){
         if(!file.isDirectory()){
             String fileInfo = file.getName()+file.lastModified();
-            System.out.println("FILE NAME: "+file.getName());
             MessageDigest digest;
             try {
                 digest = MessageDigest.getInstance("SHA-256");
