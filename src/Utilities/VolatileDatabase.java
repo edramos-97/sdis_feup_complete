@@ -74,7 +74,7 @@ public final class VolatileDatabase {
         return false;
     }
 
-    public short get_rep_degree(String fileID, short chunkNumber){
+    public static short get_rep_degree(String fileID, short chunkNumber){
         if(database.containsKey(fileID)){
             List<FileInfo> data = database.get(fileID);
 
@@ -87,7 +87,7 @@ public final class VolatileDatabase {
         return 0;
     }
 
-    public void print(PrintStream stream){
+    public static void print(PrintStream stream){
         for (Map.Entry<String, List<FileInfo>> pair : database.entrySet()) {
             stream.println(pair.getKey());
             for (FileInfo info : pair.getValue()) {
