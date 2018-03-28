@@ -32,7 +32,7 @@ public class MulticastChanelData extends MulticastChanel {
     @Override
     public void run() {
         // listen on data
-        System.out.println("STARTING DATA CHANEL");
+        //System.out.println("STARTING DATA CHANEL");
 
 
         byte[] raw_message = new byte[FileHandler.MAX_SIZE_MESSAGE];
@@ -47,7 +47,7 @@ public class MulticastChanelData extends MulticastChanel {
                 if(message == null || message.getSenderId().equals(String.valueOf(Peer.peerID)))
                     continue;
 
-                int delay = new Random().nextInt(400);
+                int delay = new Random().nextInt(4000);
 
                 switch (message.getMsgType()){
                     case PUTCHUNK:

@@ -42,6 +42,6 @@ public class FileInfo implements Serializable, Comparable<FileInfo>{
     }
 
     public void print(PrintStream stream) {
-        stream.printf("ChunkNo: %-6s|Current Replication degree: %s|Replication degree threshold: %s",chunkNo,repDeg,requiredRepDeg);
+        stream.printf("ChunkNo: %-6s|Current Replication degree: %s|Replication degree threshold: %s \n",chunkNo,repDeg,requiredRepDeg);
     }
 }

@@ -18,7 +18,7 @@ import java.util.concurrent.*;
 public class Peer {
 
     public static int peerID = 0;
-    public static String VERSION = "1.0";
+    public static String VERSION = "1.1";
     public static int MAX_CONCURRENCY = 2;
     public static ScheduledThreadPoolExecutor threadPool = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors());
     private final RejectedExecutionHandler rejectedExecutionHandler = new RejectedExecutionHandler() {
@@ -79,6 +79,9 @@ public class Peer {
             System.out.println("This was the state of my internals...");
             VolatileDatabase.print(System.out);
         }));
+
+
+        System.out.println("INITIATING PROGRAM");
 
         /*
         boolean is_initiator = Integer.parseInt(args[1]) == 1;

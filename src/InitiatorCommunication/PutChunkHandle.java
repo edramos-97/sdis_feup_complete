@@ -25,7 +25,18 @@ public class PutChunkHandle extends Thread {
     @Override
     public void run() {
         if(message.getVersion().equals("1.1")){
-            //TODO check replication deg
+            System.out.println("ENHANCEMENT BACKUP");
+
+            // TODO-Enhancement Backup Checking if already have enough replication degree then its meaningless to store any more
+
+            short current_rep_degree = VolatileDatabase.get_rep_degree(message.getFileId(), Short.valueOf(message.getChunkNo()));
+
+            System.out.println("curr: " + current_rep_degree);
+            System.out.println("thrs: " + message.getReplicationDeg());
+
+            if (current_rep_degree >= message.getReplicationDeg()){
+                return;
+            }
         }
 
         VolatileDatabase.add_chunk(message.getFileId(),Short.valueOf(message.getChunkNo()),message.getReplicationDeg());
