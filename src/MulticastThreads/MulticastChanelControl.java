@@ -47,7 +47,7 @@ public class MulticastChanelControl extends MulticastChanel {
 
                 switch (message.getMsgType()){
                     case STORED:
-                        VolatileDatabase.add_chunk(message.getFileId(),Short.valueOf(message.getChunkNo()),(short) message.getReplicationDeg());
+                        VolatileDatabase.add_chunk(message.getFileId(),Short.valueOf(message.getChunkNo()),message.getReplicationDeg());
                         //TODO update local chunk count
                         break;
                     case GETCHUNK:

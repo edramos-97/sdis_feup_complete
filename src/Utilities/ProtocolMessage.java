@@ -87,8 +87,10 @@ public class ProtocolMessage {
         ChunkNo = chunkNo;
     }
 
-    public int getReplicationDeg() {
-        return Character.getNumericValue(ReplicationDeg);
+    public short getReplicationDeg() {
+        System.out.println("-----------------------------------------------------------------");
+        System.out.println(ReplicationDeg);
+        return (short) Character.getNumericValue(ReplicationDeg);
     }
 
     public void setReplicationDeg(char replicationDeg) throws Exception {

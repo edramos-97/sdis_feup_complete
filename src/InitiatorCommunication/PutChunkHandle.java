@@ -28,6 +28,9 @@ public class PutChunkHandle extends Thread {
             //TODO check replication deg
         }
 
+        VolatileDatabase.add_chunk(message.getFileId(),Short.valueOf(message.getChunkNo()),message.getReplicationDeg());
+
+
         message.setMsgType(ProtocolMessage.PossibleTypes.STORED);
         try {
             message.setSenderId(String.valueOf(Peer.peerID));
@@ -59,6 +62,5 @@ public class PutChunkHandle extends Thread {
 
         FileHandler.saveChunk(this.message);
 
-        VolatileDatabase.add_chunk(message.getFileId(),Short.valueOf(message.getChunkNo()),(short)message.getReplicationDeg());
     }
 }
