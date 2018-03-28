@@ -1,5 +1,6 @@
 package Utilities;
 
+import java.io.PrintStream;
 import java.io.Serializable;
 
 public class FileInfo implements Serializable, Comparable<FileInfo>{
@@ -38,5 +39,9 @@ public class FileInfo implements Serializable, Comparable<FileInfo>{
     @Override
     public int compareTo(FileInfo o) {
         return Integer.compare(this.repDeg-this.requiredRepDeg,o.repDeg-o.requiredRepDeg);
+    }
+
+    public void print(PrintStream stream) {
+        stream.printf("ChunkNo: %-6s|Current Replication degree: %s|Replication degree threshold: %s",chunkNo,repDeg,requiredRepDeg);
     }
 }
