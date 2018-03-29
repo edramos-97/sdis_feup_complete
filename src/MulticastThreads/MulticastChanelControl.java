@@ -2,16 +2,21 @@ package MulticastThreads;
 
 import Executables.Peer;
 import InitiatorCommunication.DiskReclaimHandle;
+import InitiatorCommunication.GetChunkHandle;
+import InitiatorCommunication.GetChunkRequest;
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
 import Utilities.ProtocolMessageParser;
 import Utilities.VolatileDatabase;
+import com.sun.xml.internal.ws.api.model.MEP;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class MulticastChanelControl extends MulticastChanel {
 
@@ -50,7 +55,16 @@ public class MulticastChanelControl extends MulticastChanel {
                         VolatileDatabase.add_chunk(message.getFileId(),Short.valueOf(message.getChunkNo()),message.getReplicationDeg(), Integer.parseInt(message.getSenderId()),size_message);
                         break;
                     case GETCHUNK:
-                        System.out.println("RECEIVED CHUNK, ignoring for now");
+                        System.out.println("RECEIVED GETCHUNK");
+                        System.out.println("FILEiD: "+ message.getFileId());
+                        System.out.println("ChunkNo: "+ message.getChunkNo());
+                        if (!FileHandler.hasChunk(message.getFileId(),Short.valueOf(message.getChunkNo()))){
+                            System.out.println("GETCHUNK file is not backed up, ignoring...");
+                            continue;
+                        }
+                        VolatileDatabase.getChunkMemory.add(message.getFileId()+message.getChunkNo());
+                        int delay = new Random().nextInt(400);
+                        Peer.threadPool.schedule(new GetChunkHandle(message),delay, TimeUnit.MILLISECONDS);
                         break;
                     case DELETE:
                         System.out.println(new String(message.toCharArray()));

@@ -7,6 +7,7 @@ import InitiatorCommunication.PutChunkRequest;
 import InitiatorCommunication.DeleteRequest;
 import Utilities.*;
 
+import java.io.File;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
@@ -50,10 +51,21 @@ public class Control implements ControlInterface {
     }
 
     @Override
-    public boolean getChunk(String fileId, short chunkNo){
+    public boolean getChunk(String filePath){
+        File file = new File(filePath);
+        if (!file.exists()){
+            System.out.println("RESTORE terminated, file doesn't exist: "+filePath);
+            return false;
+        }
+        String fileId = FileHandler.getFileId(file);
+        if (fileId == null){
+            System.out.println("RESTORE terminated, file is a directory: "+filePath);
+            return false;
+        }
         System.out.println("Started GETCHUNK for fileID:\""+fileId+"\"");
-        GetChunkRequest worker = new GetChunkRequest(fileId,chunkNo);
-        Peer.threadPool.submit(worker);
+        //initialize getchunk request in data base
+        VolatileDatabase.restoreMemory.put(fileId,new Integer[]{-1,-1});
+        Peer.threadPool.submit(new GetChunkRequest(fileId,(short)0));
         return true;
     }
 
@@ -113,6 +125,4 @@ public class Control implements ControlInterface {
 
         return sop;
     }
-
-
 }

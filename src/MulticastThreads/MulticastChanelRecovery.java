@@ -5,11 +5,14 @@ import InitiatorCommunication.PutChunkHandle;
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
 import Utilities.ProtocolMessageParser;
+import Utilities.VolatileDatabase;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.time.Period;
 
 public class MulticastChanelRecovery extends MulticastChanel {
 
@@ -40,11 +43,24 @@ public class MulticastChanelRecovery extends MulticastChanel {
 
                 ProtocolMessage message = ProtocolMessageParser.parseMessage(packet_received.getData());
 
-                if (message == null)continue;
+                if (message == null || Integer.parseInt(message.getSenderId()) == Peer.peerID)continue;
 
                 switch (message.getMsgType()){
                     case CHUNK:
-                        System.out.println("RECEIVED CHUNK, ignoring for now...");
+                        System.out.println("RECEIVED CHUNK");
+                        if(VolatileDatabase.restoreMemory.get(message.getFileId())==null) {
+                            System.out.println("RECEIVED CHUNK CONTROL CHUNK");
+                            VolatileDatabase.getChunkMemory.remove(message.getFileId() + message.getChunkNo());
+                        }else{
+                            System.out.println("SAVING MESSAGE");
+                            if(message.getVersion().equals("1.1")){
+                                // launch chunk handle
+                            }else{
+                                System.out.println("SAVED CHUNK SIZE: "+message.getBody().length);
+                                VolatileDatabase.restoreMemory.put(message.getFileId(),new Integer[]{Integer.parseInt(message.getChunkNo()),message.getBody().length});
+                                FileHandler.saveChunk(message,"restore");
+                            }
+                        }
                         break;
                     default:
                         System.out.println("wrong type of message");

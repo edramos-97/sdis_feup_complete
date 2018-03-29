@@ -57,8 +57,6 @@ public class PutChunkVerification implements Runnable {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-
             }else{
                 //TODO Possibly stop if too many fails
                 int nextChunkNo = Integer.parseInt(message.getChunkNo())+Peer.MAX_CONCURRENCY;
@@ -74,7 +72,7 @@ public class PutChunkVerification implements Runnable {
             }
 
             tryNo++;
-            Peer.threadPool.schedule(this,TIMEOUT, TimeUnit.MILLISECONDS);
+            Peer.threadPool.schedule(this,(2^tryNo)*TIMEOUT, TimeUnit.MILLISECONDS);
         }
     }
 }

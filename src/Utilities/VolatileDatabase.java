@@ -15,10 +15,20 @@ public final class VolatileDatabase {
 
     private static ConcurrentHashMap<String, List<FileInfo>> database = new ConcurrentHashMap<>();
     // fileID -> ( chunkNo -> replicationDegree , , ,)
+
     public static ConcurrentHashMap<String, String> backed2fileID = new ConcurrentHashMap<>();
     // filename_backup -> fileID
     // by examining this we can know if the file has been altered because repeated filenames
     // will have equal fileIDs if the same file and different otherwise...
+
+    public static ConcurrentHashMap<String, Integer[]> restoreMemory = new ConcurrentHashMap<>();
+    // fileID -> [last chunkNo received ; size of the last chunk received for that fileID]
+    // used to determine if the last chunk of a file has been restored
+
+    public static  Vector<String> getChunkMemory = new Vector<>();
+    // fileID+chunkNo -> boolean
+    // used to check if a chunk message has already been sent for the respective getchunk request;
+
     private VolatileDatabase(){
 
     }

@@ -89,7 +89,7 @@ public class Client {
             return;
         }
 
-        String filepath = System.getProperty("user.dir") + File.separator + arguments[2];
+        String filepath = arguments[2];
         System.out.println(filepath);
         String fileID = FileHandler.getFileId(new File(filepath));
         System.out.println(fileID);
@@ -107,6 +107,7 @@ public class Client {
             // Send message to restore a given fileID
 
             rmi_stub.say_this("RESTORE CALLED");
+            rmi_stub.getChunk(filepath);
             System.out.println("Restored..");
             return;
         }

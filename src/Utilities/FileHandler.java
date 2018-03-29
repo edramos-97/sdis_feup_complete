@@ -23,7 +23,8 @@ public class FileHandler {
     public static final int CHUNK_SIZE = 64000;
     public static final int MAX_SIZE_MESSAGE = CHUNK_SIZE + 1024;
     private static final String EXTENSION = ".txt";
-    public static String savePath = System.getProperty("user.home")+File.separator+"Desktop"+File.separator+"sbs_"+ Peer.peerID +File.separator;
+    public static String savePath = System.getProperty("user.home")+File.separator+"Desktop"+File.separator+"sbs_"+ Peer.peerID + File.separator + "backup" +File.separator;
+    public static String restorePath = System.getProperty("user.home")+File.separator+"Desktop"+File.separator+"sbs_"+ Peer.peerID + File.separator + "restore" +File.separator;
     private static long allocatedSpace = 1000000000;
 
     public static void main(String[] args){
@@ -71,10 +72,23 @@ public class FileHandler {
      * Function used to save a file chunk after a putChunk message is received
      * @param message - received putChunk message
      */
-    public static void saveChunk(ProtocolMessage message){
+    public static void saveChunk(ProtocolMessage message,String type){
         if(!canSave())System.out.println("Back up space is full! Not saving putChunk");
-        Path dirPath = Paths.get(savePath+message.getFileId());
-        Path filePath = Paths.get(savePath+message.getFileId()+File.separator+message.getChunkNo()+EXTENSION);
+        Path dirPath;
+        Path filePath;
+        switch (type){
+            case "backup":
+                dirPath = Paths.get(savePath+message.getFileId());
+                filePath = Paths.get(savePath+message.getFileId()+ File.separator+message.getChunkNo()+EXTENSION);
+                break;
+            case "restore":
+                dirPath = Paths.get(restorePath+message.getFileId());
+                filePath = Paths.get(restorePath+message.getFileId()+ File.separator+message.getChunkNo()+EXTENSION);
+                break;
+            default:
+                System.out.println("SaveChunk type was unknown, not saving...");
+                return;
+        }
         try {
             if(Files.notExists(dirPath)){
                 Files.createDirectories(dirPath);
@@ -101,6 +115,7 @@ public class FileHandler {
         if(paths != null){
             for (File file:paths) {
                 if(file.getName().equals(fileId)) {
+                    System.out.println("GOT HERE");
                     return hasChunk(file,chunkNo);
                 }
             }
@@ -110,13 +125,19 @@ public class FileHandler {
 
     /**
      * Verifies if a file chunk is present in the file being analysed
-     * @param file - File object pointing to a backed up file
+     * @param folder - File object pointing to a backed up file
      * @param chunkNo - chunk number to be checked
      * @return True if the chunk is present, false otherwise
      */
-    private static boolean hasChunk(File file,short chunkNo){
-        File[] chunks = file.listFiles();
-        return chunks!= null && chunkNo < chunks.length && chunks[chunkNo].getName().equals(chunkNo+EXTENSION);
+    private static boolean hasChunk(File folder,short chunkNo){
+        File[] chunks = folder.listFiles();
+        if (chunks != null){
+            for (File file :chunks) {
+                if(file.getName().equals(chunkNo+EXTENSION))
+                    return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -276,12 +297,14 @@ public class FileHandler {
         }else{
             byte[] chunk = new byte[CHUNK_SIZE];
             RandomAccessFile file;
-            file =  new RandomAccessFile(savePath+fileId+File.pathSeparator+chunkNo+EXTENSION,"r");
-            if (file.read(chunk)!=CHUNK_SIZE){
+            file =  new RandomAccessFile(savePath+fileId+File.separator+chunkNo+EXTENSION,"r");
+            /*if (file.read(chunk)!=CHUNK_SIZE){
                 throw new Exception("File with Id:"+fileId+"has been corrupted on chunk No:"+chunkNo);
             }else{
                 return chunk;
-            }
+            }*/
+            file.read(chunk);
+            return chunk;
         }
     }
 
@@ -298,6 +321,16 @@ public class FileHandler {
             }
         }
         return !folder.delete();
+    }
+
+    public static void restoreFile(String fileId,String fileName){
+        /*Path path = Paths.get(restorePath+File.separator+fileName);
+        try {
+            AsynchronousFileChannel file = AsynchronousFileChannel.open(path,WRITE,CREATE,TRUNCATE_EXISTING);
+            file.read()
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
     }
 
     public static long getAvailableSpace(){

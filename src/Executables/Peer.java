@@ -18,8 +18,8 @@ import java.util.concurrent.*;
 public class Peer {
 
     public static int peerID = 0;
-    public static String VERSION = "1.1";
-    public static int MAX_CONCURRENCY = 4;
+    public static String VERSION = "1.0";
+    public static int MAX_CONCURRENCY = 20;
     private static final RejectedExecutionHandler rejectedExecutionHandler = new RejectedExecutionHandler() {
         @Override
         public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
@@ -77,6 +77,8 @@ public class Peer {
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("This was the state of my internals...");
+            System.out.println("RESTORE INITIATED IS EMPTY: "+VolatileDatabase.restoreMemory.isEmpty());
+            System.out.println("GETCHUNK WAITING ANSWER IS EMPTY: "+VolatileDatabase.getChunkMemory.isEmpty());
             VolatileDatabase.print(System.out);
         }));
 

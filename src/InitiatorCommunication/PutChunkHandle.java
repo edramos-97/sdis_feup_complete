@@ -64,7 +64,7 @@ public class PutChunkHandle extends Thread {
             e.printStackTrace();
         }
 
-        FileHandler.saveChunk(this.message);
+        FileHandler.saveChunk(this.message,"backup");
 
     }
 }
