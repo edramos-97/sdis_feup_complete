@@ -17,8 +17,8 @@ import java.nio.channels.AsynchronousFileChannel;
 import java.util.concurrent.TimeUnit;
 
 public class PutChunkVerification implements Runnable {
-    private static short TIMEOUT = 1000;
-    private static short MAX_TRIES = 5;
+    private final static short TIMEOUT = 1000;
+    private final static short MAX_TRIES = 5;
     private final Closeable openFile;
 
     private int tryNo;
@@ -71,8 +71,9 @@ public class PutChunkVerification implements Runnable {
                 return;
             }
 
+            int delay = (int)Math.pow(2,tryNo)*TIMEOUT;
             tryNo++;
-            Peer.threadPool.schedule(this,(2^tryNo)*TIMEOUT, TimeUnit.MILLISECONDS);
+            Peer.threadPool.schedule(this,delay, TimeUnit.MILLISECONDS);
         }
     }
 }
