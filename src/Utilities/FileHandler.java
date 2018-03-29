@@ -7,6 +7,7 @@ import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
+import java.nio.channels.CompletionHandler;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.security.InvalidParameterException;
@@ -14,6 +15,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static java.nio.file.StandardOpenOption.*;
@@ -324,13 +326,48 @@ public class FileHandler {
     }
 
     public static void restoreFile(String fileId,String fileName){
-        /*Path path = Paths.get(restorePath+File.separator+fileName);
+        Path outputPath = Paths.get(restorePath+fileName);
         try {
-            AsynchronousFileChannel file = AsynchronousFileChannel.open(path,WRITE,CREATE,TRUNCATE_EXISTING);
-            file.read()
+            AsynchronousFileChannel file = AsynchronousFileChannel.open(outputPath,WRITE,CREATE,TRUNCATE_EXISTING);
+            File[] chunks = new File(restorePath+fileId).listFiles();
+            if (chunks == null){
+                System.out.println("RESTORE error in getting file chunks");
+                file.close();
+                return;
+            }
+            for (File chunk : chunks) {
+                try {
+                    byte[] chunkBytes = new byte[FileHandler.CHUNK_SIZE];
+                    AsynchronousFileChannel openFile = AsynchronousFileChannel.open(chunk.toPath(), READ);
+                    openFile.read(ByteBuffer.wrap(chunkBytes), 0, Integer.parseInt(chunk.getName().split(EXTENSION)[0]),
+                            new CompletionHandler<Integer, Integer>() {
+                                @Override
+                                public void completed(Integer result, Integer attachment) {
+                                    file.write(ByteBuffer.wrap(Arrays.copyOfRange(chunkBytes, 0, result)), attachment * FileHandler.CHUNK_SIZE);
+                                    try {
+                                        openFile.close();
+                                        if (attachment == chunks.length - 1) {
+                                            file.close();
+                                            FileHandler.removeFolder(new File(restorePath+fileId));
+                                            System.out.println("ENDED FILE RESTORE");
+                                        }
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
+                                @Override
+                                public void failed(Throwable exc, Integer attachment) {
+                                    System.out.println("ERROR IN RESTORE FILE READCHUNK");
+                                }
+                            });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
     }
 
     public static long getAvailableSpace(){

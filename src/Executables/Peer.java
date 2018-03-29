@@ -25,7 +25,7 @@ public class Peer {
         public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
             System.out.println("DELAYING SOME THREAD");
             int delay = 500 + new Random().nextInt(500);
-            threadPool.schedule(r, delay, TimeUnit.MILLISECONDS);
+            ((ScheduledThreadPoolExecutor)executor).schedule(r, delay, TimeUnit.MILLISECONDS);
         }
     };
     public static ScheduledThreadPoolExecutor threadPool = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors(),rejectedExecutionHandler);

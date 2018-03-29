@@ -18,10 +18,12 @@ import java.util.concurrent.TimeUnit;
 public class GetChunkRequest implements Callable<String>{
     private String fileId;
     private short chunkNo;
+    private String fileName;
 
-    public GetChunkRequest(String fileId, short chunkNo){
+    public GetChunkRequest(String fileId, short chunkNo,String fileName){
         this.fileId=fileId;
         this.chunkNo = chunkNo;
+        this.fileName = fileName;
     }
 
     @Override
@@ -58,7 +60,7 @@ public class GetChunkRequest implements Callable<String>{
             e.printStackTrace();
         }
 
-        Peer.threadPool.schedule(new GetChunkVerification(0,message),450, TimeUnit.MILLISECONDS);
+        Peer.threadPool.schedule(new GetChunkVerification(0,message,fileName),450, TimeUnit.MILLISECONDS);
         return "";
     }
 }

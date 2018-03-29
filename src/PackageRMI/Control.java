@@ -65,7 +65,7 @@ public class Control implements ControlInterface {
         System.out.println("Started GETCHUNK for fileID:\""+fileId+"\"");
         //initialize getchunk request in data base
         VolatileDatabase.restoreMemory.put(fileId,new Integer[]{-1,-1});
-        Peer.threadPool.submit(new GetChunkRequest(fileId,(short)0));
+        Peer.threadPool.submit(new GetChunkRequest(fileId,(short)0,file.getName()));
         return true;
     }
 

@@ -18,10 +18,12 @@ public class GetChunkVerification implements Runnable {
     private static short MAX_TRIES = 2;
     private ProtocolMessage message;
     private int tryNo;
+    private String fileName;
 
-    GetChunkVerification(int i, ProtocolMessage message) {
+    GetChunkVerification(int i, ProtocolMessage message, String fileName) {
         this.tryNo = i;
         this.message = message;
+        this.fileName = fileName;
         //TODO create tcp socket
     }
 
@@ -41,11 +43,12 @@ public class GetChunkVerification implements Runnable {
                     //last chunk of file
                     System.out.println("GETCHUNK for fileID:\"" + message.getFileId() + "\" finished successfully");
                     VolatileDatabase.restoreMemory.remove(message.getFileId());
+                    FileHandler.restoreFile(message.getFileId(),fileName);
                     return;
                 } else {
                     //get next chunk from file
                     System.out.println("GETCHUNK for fileID:\"" + message.getFileId() + "\" chunkNo:" + message.getChunkNo() + "\" successful");
-                    Peer.threadPool.submit(new GetChunkRequest(message.getFileId(), (short) (Short.valueOf(message.getChunkNo()) + 1)));
+                    Peer.threadPool.submit(new GetChunkRequest(message.getFileId(), (short) (Short.valueOf(message.getChunkNo()) + 1),fileName));
                     return;
                 }
             }
