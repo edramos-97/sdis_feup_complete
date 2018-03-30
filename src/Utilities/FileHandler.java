@@ -388,7 +388,16 @@ public class FileHandler {
 
             ArrayList<OurPair> DBdump = VolatileDatabase.dump();
             for (OurPair pair: DBdump) {
+                if(deleteAmount <= 0)
+                    break;
+
                 System.out.println(pair);
+                long sizeOfChunk = pair.info.getSize();
+
+                removedFiles.add(pair.fileID+";"+pair.info.getChunkNo());
+                removeFolder(new File(savePath+pair.fileID+File.separator+pair.info.getChunkNo()+EXTENSION));
+
+                deleteAmount -= sizeOfChunk;
             }
             //TODO get all backed files, sort by desiredRepDeg-repDeg, start deleting until deletions
             //make for the difference of deleted space and allocated space, possibly output deleted fileChunks

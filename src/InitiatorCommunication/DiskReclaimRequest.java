@@ -41,8 +41,7 @@ public class DiskReclaimRequest extends Thread{
         }
 
         String[] removedFiles = FileHandler.setAllocation(this.allocGoal);
-        if(true)
-            return;
+
         String[] temp;
         ProtocolMessage message = new ProtocolMessage(ProtocolMessage.PossibleTypes.REMOVED);
         for (String fileInfo: removedFiles) {
@@ -67,7 +66,7 @@ public class DiskReclaimRequest extends Thread{
                         Integer.parseInt(MulticastChanel.multicast_control_port));
                 data_socket.send(packet);
             } catch (UnknownHostException e) {
-                System.out.println("error in creating datagram packet");
+                System.out.println("error in creating datagram packet...");
                 e.printStackTrace();
             } catch (IOException e) {
                 System.out.println("error in sending packet to multicast socket");
