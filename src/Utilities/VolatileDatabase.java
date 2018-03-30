@@ -33,7 +33,7 @@ public final class VolatileDatabase {
 
     }
 
-    public static void add_chunk(String fileID, short chunkNumber, short requiredReplication, int stored_peerID, int size){
+    public static void add_chunk_stored(String fileID, short chunkNumber, int stored_peerID){
         if(database.containsKey(fileID)){
 
             List<FileInfo> data = database.get(fileID);
@@ -47,25 +47,93 @@ public final class VolatileDatabase {
                 }
             }
 
+            /*
             if(!found){
-                FileInfo fi = new FileInfo(requiredReplication, (short) 1, chunkNumber, size);
+                FileInfo fi = new FileInfo(chunkNumber);
+                fi.incrementRepDeg(stored_peerID);
+                data.add(fi);
+            }*/
+
+
+        }else{
+            //https://stackoverflow.com/questions/4903611/java-list-sorting-is-there-a-way-to-keep-a-list-permantly-sorted-automatically?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+            /*
+            List<FileInfo> entry = create_array();
+
+            FileInfo fi = new FileInfo(chunkNumber);
+            fi.incrementRepDeg(stored_peerID);
+
+            entry.add(fi);
+            database.put(fileID, entry);
+            */
+        }
+    }
+
+    public static FileInfo getReplication(String fileID, short chunkNumber){
+        if(database.containsKey(fileID)){
+
+            List<FileInfo> data = database.get(fileID);
+            for (FileInfo fi : data) {
+                if (fi.getChunkNo() == chunkNumber) {
+                    return fi;
+                }
+            }
+
+        }
+
+        return null;
+    }
+
+    public static void chunkDeleted(String fileID, short chunkNumber, int peerID){
+        if(database.containsKey(fileID)){
+
+            List<FileInfo> data = database.get(fileID);
+            for (FileInfo fi : data) {
+                if (fi.getChunkNo() == chunkNumber) {
+                    fi.decrementReplicationDegree(peerID);
+                }
+            }
+
+        }
+    }
+
+    private static ArrayList<FileInfo> create_array(){
+        return new ArrayList<FileInfo>(){
+            public boolean add(FileInfo fi){
+                int index = Collections.binarySearch(this, fi);
+                if (index < 0)
+                    index = ~index;
+                super.add(index, fi);
+                return true;
+            }
+        };
+    }
+
+    public static void add_chunk_putchunk(String fileID, short chunkNumber, short requiredReplication, int size){
+        if(database.containsKey(fileID)){
+
+            List<FileInfo> data = database.get(fileID);
+
+            boolean found = false;
+            for (FileInfo fi : data) {
+                if (fi.getChunkNo() == chunkNumber) {
+                    found = true;
+                    fi.setRequiredRepDeg(requiredReplication);
+                    break;
+                }
+            }
+
+            if(!found){
+                FileInfo fi = new FileInfo(requiredReplication, (short) 0, chunkNumber, size);
                 data.add(fi);
             }
 
 
         }else{
             //https://stackoverflow.com/questions/4903611/java-list-sorting-is-there-a-way-to-keep-a-list-permantly-sorted-automatically?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-            List<FileInfo> entry = new ArrayList<FileInfo>(){
-                public boolean add(FileInfo fi){
-                    int index = Collections.binarySearch(this, fi);
-                    if (index < 0)
-                        index = ~index;
-                    super.add(index, fi);
-                    return true;
-                }
-            };
+            List<FileInfo> entry = create_array();
 
-            FileInfo fi = new FileInfo(requiredReplication, (short) 1, chunkNumber, size);
+            FileInfo fi = new FileInfo(requiredReplication, (short) 0, chunkNumber, size);
 
             entry.add(fi);
             database.put(fileID, entry);

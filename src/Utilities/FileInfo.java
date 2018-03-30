@@ -19,6 +19,11 @@ public class FileInfo implements Serializable, Comparable<FileInfo>{
         this.size = size;
     }
 
+    public FileInfo(short chunkNo) {
+        this.chunkNo = chunkNo;
+
+    }
+
     public int getSize(){
         return size;
     }
@@ -37,6 +42,11 @@ public class FileInfo implements Serializable, Comparable<FileInfo>{
 
     public void incrementRepDeg(int peerID) {
         stored_peers.add(peerID);
+        this.repDeg = (short) stored_peers.size();
+    }
+
+    public void decrementReplicationDegree(int peerID){
+        stored_peers.remove(peerID);
         this.repDeg = (short) stored_peers.size();
     }
 
