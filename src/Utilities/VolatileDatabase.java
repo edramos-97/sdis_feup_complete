@@ -27,10 +27,6 @@ public final class VolatileDatabase implements Serializable{
     // fileID+ChunkNo
     // used to check if another putchunk has already been sent to not overflow with putchunks
 
-    private VolatileDatabase(){
-
-    }
-
     public static void add_chunk_stored(String fileID, short chunkNumber, int stored_peerID){
         if(database.containsKey(fileID)){
 
@@ -238,18 +234,26 @@ public final class VolatileDatabase implements Serializable{
 
 
     public static void populateExisting() {
-
-
+        try {
+            FileInputStream fin = new FileInputStream(FileHandler.dbserPath);
+            ObjectInputStream ios = new ObjectInputStream(fin);
+            database = (ConcurrentHashMap<String,List<FileInfo>>)ios.readObject();
+            backed2fileID = (ConcurrentHashMap<String,String>)ios.readObject();
+        } catch (IOException e){
+            System.out.println("Data base wasn't present, creating an empty one");
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void writeObject(ObjectOutputStream oos) throws IOException{
-        oos.defaultWriteObject();
-        oos.writeObject(new ConcurrentHashMap<String, List<FileInfo>>(database));
-
+        oos.writeObject(database);
+        oos.writeObject(backed2fileID);
     }
 
-    public void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException{
-        ois.defaultReadObject();
+    public static void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException{
         database = (ConcurrentHashMap<String,List<FileInfo>>)ois.readObject();
+        backed2fileID = (ConcurrentHashMap<String,String>)ois.readObject();
     }
 }

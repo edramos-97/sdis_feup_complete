@@ -23,14 +23,11 @@ public class Peer {
 
     public static int peerID = 0;
     public static String VERSION = "1.0";
-    public static int MAX_CONCURRENCY = 20;
-    private static final RejectedExecutionHandler rejectedExecutionHandler = new RejectedExecutionHandler() {
-        @Override
-        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-            System.out.println("DELAYING SOME THREAD");
-            int delay = 500 + new Random().nextInt(500);
-            ((ScheduledThreadPoolExecutor)executor).schedule(r, delay, TimeUnit.MILLISECONDS);
-        }
+    public static int MAX_CONCURRENCY = 4;
+    private static final RejectedExecutionHandler rejectedExecutionHandler = (r, executor) -> {
+        System.out.println("DELAYING SOME THREAD");
+        int delay = 500 + new Random().nextInt(500);
+        ((ScheduledThreadPoolExecutor)executor).schedule(r, delay, TimeUnit.MILLISECONDS);
     };
     public static ScheduledThreadPoolExecutor threadPool = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors(),rejectedExecutionHandler);
 
@@ -79,21 +76,21 @@ public class Peer {
             System.out.println("Error in RMI setup.");
         }
 
+        FileHandler.startPeerFileSystem();
+
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("This was the state of my internals...");
             System.out.println("RESTORE INITIATED IS EMPTY: "+VolatileDatabase.restoreMemory.isEmpty());
             System.out.println("GETCHUNK WAITING ANSWER IS EMPTY: "+VolatileDatabase.getChunkMemory.isEmpty());
             VolatileDatabase.print(System.out);
 
-            FileOutputStream fout = null;
             try {
-                fout = new FileOutputStream(FileHandler.dbserPath);
+                FileOutputStream fout = new FileOutputStream(FileHandler.dbserPath);
                 ObjectOutputStream oos = new ObjectOutputStream(fout);
                 VolatileDatabase.writeObject(oos);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }));
 
         VolatileDatabase.populateExisting();
