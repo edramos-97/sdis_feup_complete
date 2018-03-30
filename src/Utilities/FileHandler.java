@@ -67,6 +67,9 @@ public class FileHandler {
      * @return Returns true if there is enough space to save a chunk, false otherwise
      */
     public static boolean canSave(){
+        /*System.out.println("hey can I save this file   " + Peer.peerID);
+        System.out.println("ALLOC " + getAllocatedSpace());
+        System.out.println("DSK " + getDiskUsage());*/
         return getAllocatedSpace()>getDiskUsage()+CHUNK_SIZE;
     }
 
@@ -383,6 +386,7 @@ public class FileHandler {
         if(diskUsage<allocSpace){
             setAllocatedSpace(allocSpace);
         }else{
+            setAllocatedSpace(allocSpace);
             long deleteAmount = diskUsage-allocSpace;
             System.out.println(deleteAmount);
 
