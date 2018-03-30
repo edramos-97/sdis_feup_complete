@@ -14,10 +14,12 @@ public class DiskReclaimHandle implements Runnable{
 
     private String fileId;
     private short chunkNo;
+    private int peerR;
 
-    public DiskReclaimHandle(String fileId, short chunkNo){
+    public DiskReclaimHandle(String fileId, short chunkNo, int peerRemoved){
         this.fileId = fileId;
         this.chunkNo = chunkNo;
+        this.peerR = peerRemoved;
     }
 
 
@@ -30,6 +32,7 @@ public class DiskReclaimHandle implements Runnable{
                 System.out.println("RECLAIM could not find an entry for the file requested");
                 return;
             }
+            info.decrementReplicationDegree(peerR);
             if (info.getRequiredRepDeg()>info.getRepDeg()){
                 int delay = new Random().nextInt(400);
                 try {

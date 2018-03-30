@@ -73,7 +73,7 @@ public class MulticastChanelControl extends MulticastChanel {
                         break;
                     case REMOVED:
                         System.out.println("REMOVED RECEIVED");
-                        Peer.threadPool.submit(new DiskReclaimHandle(message.getFileId(),Short.valueOf(message.getChunkNo())));
+                        Peer.threadPool.submit(new DiskReclaimHandle(message.getFileId(),Short.valueOf(message.getChunkNo()),Integer.parseInt(message.getSenderId())));
                         break;
                     default:
                         System.out.println("Unknown message type received on data channel");
