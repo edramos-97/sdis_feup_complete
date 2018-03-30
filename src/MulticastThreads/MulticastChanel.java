@@ -1,7 +1,10 @@
 package MulticastThreads;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.net.ServerSocket;
+import java.net.SocketAddress;
 
 public class MulticastChanel extends Thread {
 
@@ -14,6 +17,15 @@ public class MulticastChanel extends Thread {
     public static String multicast_recover_address;
     public static String multicast_recover_port;
     public static MulticastSocket multicast_recover_socket;
+
+    /* TODO RESTORE-ENHANCEMENT
+    public static String tcp_socket_address;
+    public static int tcp_socket_port;
+    public static ServerSocket tcp_ss;
+    */
+
+
+
     protected int peerID;
 
     MulticastChanel(String mcc_address, String mcc_port, String mcb_address,

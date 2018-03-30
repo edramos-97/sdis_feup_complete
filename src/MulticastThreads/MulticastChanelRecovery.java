@@ -63,7 +63,8 @@ public class MulticastChanelRecovery extends MulticastChanel {
                         }
                         break;
                     default:
-                        System.out.println("wrong type of message");
+                        System.out.println(new String(message.toCharArray()));
+                        System.out.println("mcr - wrong type of message");
                         break;
                 }
 

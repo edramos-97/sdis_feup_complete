@@ -1,13 +1,13 @@
 package PackageRMI;
 
 import Executables.Peer;
-import InitiatorCommunication.DiskReclaimRequest;
-import InitiatorCommunication.GetChunkRequest;
-import InitiatorCommunication.PutChunkRequest;
-import InitiatorCommunication.DeleteRequest;
+import InitiatorCommunication.*;
+import MulticastThreads.MulticastChanel;
 import Utilities.*;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +63,19 @@ public class Control implements ControlInterface {
             return false;
         }
         System.out.println("Started GETCHUNK for fileID:\""+fileId+"\"");
+
+
+        /* TODO RESTORE-ENHANCEMENT
+        if(Peer.VERSION.equals("1.1")){
+            MulticastChanel.tcp_socket_port = 44677;
+            try {
+                MulticastChanel.tcp_ss = new ServerSocket(MulticastChanel.tcp_socket_port);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Peer.threadPool.submit(new RestoreEnhancement(fileId, file.getName()));
+        }*/
+
         //initialize getchunk request in data base
         VolatileDatabase.restoreMemory.put(fileId,new Integer[]{-1,-1});
         Peer.threadPool.submit(new GetChunkRequest(fileId,(short)0,file.getName()));

@@ -2,6 +2,7 @@ package InitiatorCommunication;
 
 import Executables.Peer;
 import MulticastThreads.MulticastChanel;
+import MulticastThreads.MulticastChanelControl;
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
 import Utilities.VolatileDatabase;
@@ -9,6 +10,7 @@ import Utilities.VolatileDatabase;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
@@ -24,17 +26,19 @@ public class GetChunkVerification implements Runnable {
         this.tryNo = i;
         this.message = message;
         this.fileName = fileName;
+
         //TODO create tcp socket
+
     }
 
     @Override
     public void run() {
-        if (message.getVersion().equals("1.1")){
+        //if (message.getVersion().equals("1.1")){
             //TODO call tcp socket accept to wait for connection
             //TODO possibly use socket.setSoTimeout
             //TODO do some stuff to start data connection and get data
             //TODO save data
-        }else{
+        //}else{
             Integer[] info  = VolatileDatabase.restoreMemory.get(message.getFileId());
             //check if current chunk was received
 
@@ -52,7 +56,7 @@ public class GetChunkVerification implements Runnable {
                     return;
                 }
             }
-        }
+        //}
         tryNo++;
         if (tryNo >= MAX_TRIES){
             VolatileDatabase.restoreMemory.remove(message.getFileId());
