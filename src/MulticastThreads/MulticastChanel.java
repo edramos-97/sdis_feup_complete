@@ -18,10 +18,11 @@ public class MulticastChanel extends Thread {
     public static String multicast_recover_port;
     public static MulticastSocket multicast_recover_socket;
 
+    /* TODO RESTORE-ENHANCEMENT
     public static String tcp_socket_address;
     public static int tcp_socket_port;
     public static ServerSocket tcp_ss;
-
+    */
 
 
 
@@ -36,9 +37,6 @@ public class MulticastChanel extends Thread {
         multicast_recover_address = mcr_address;
         multicast_recover_port = mcr_port;
         this.peerID = peerID;
-
-        tcp_socket_port = 6788;
-        tcp_ss = new ServerSocket(tcp_socket_port);
     }
 
     @Override

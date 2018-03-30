@@ -9,8 +9,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.Callable;
 
-public class RestoreEnhancement implements Runnable {
-
+public abstract class RestoreEnhancement implements Runnable {
+/* TODO RESTORE-ENHANCEMENT
     private String fileID;
     private String name;
 
@@ -38,4 +38,5 @@ public class RestoreEnhancement implements Runnable {
             }
         }
     }
+    */
 }

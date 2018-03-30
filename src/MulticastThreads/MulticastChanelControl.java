@@ -54,7 +54,9 @@ public class MulticastChanelControl extends MulticastChanel {
                         VolatileDatabase.add_chunk_stored(message.getFileId(),Short.valueOf(message.getChunkNo()),Integer.parseInt(message.getSenderId()));
                         break;
                     case GETCHUNK:
+                        /* TODO RESTORE-ENHANCEMENT
                         tcp_socket_address = (packet_received.getAddress()).getHostAddress();
+                        */
 
                         System.out.println("RECEIVED GETCHUNK");
                         System.out.println("FILEiD: "+ message.getFileId());
