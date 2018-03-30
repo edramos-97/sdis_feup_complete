@@ -7,11 +7,9 @@ import Utilities.ProtocolMessage;
 import Utilities.VolatileDatabase;
 import org.omg.CORBA.PERSIST_STORE;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
-import java.net.UnknownHostException;
+import java.net.*;
 
 public class GetChunkHandle extends Thread {
 
@@ -28,7 +26,15 @@ public class GetChunkHandle extends Thread {
             System.out.println("SENDING CHUNK BACK");
             //send message and remove table entry for fileID+chunkNo
             try {
-                message.setBody(FileHandler.getChunk(message.getFileId(),Short.valueOf(message.getChunkNo())));
+
+                if(Peer.VERSION.equals("1.1")){
+                    Socket cs = new Socket(MulticastChanel.tcp_socket_address, MulticastChanel.tcp_socket_port);
+                    DataOutputStream dos = new DataOutputStream(cs.getOutputStream());
+                    dos.write(FileHandler.getChunk(message.getFileId(),Short.valueOf(message.getChunkNo())));
+                    dos.writeBytes("\n");
+                }else{
+                    message.setBody(FileHandler.getChunk(message.getFileId(),Short.valueOf(message.getChunkNo())));
+                }
                 message.setMsgType(ProtocolMessage.PossibleTypes.CHUNK);
                 message.setSenderId(Integer.toString(Peer.peerID));
             } catch (Exception e) {
