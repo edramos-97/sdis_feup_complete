@@ -2,7 +2,9 @@ package InitiatorCommunication;
 
 import Executables.Peer;
 import Utilities.FileHandler;
+import Utilities.FileInfo;
 import Utilities.ProtocolMessage;
+import Utilities.VolatileDatabase;
 
 import java.io.File;
 import java.util.Random;
@@ -21,18 +23,21 @@ public class DiskReclaimHandle implements Runnable{
 
     @Override
     public void run() {
-        if(!FileHandler.hasChunk(fileId,chunkNo)){
-            return;
-        }else{
+        if(FileHandler.hasChunk(fileId,chunkNo)){
             System.out.println("CHECKING FOR REPLICATION DEGREE");
-        }
-        //TODO get file desired repDeg and send PUTCHUNK
-        short repDeg = 1;
-        int delay = new Random().nextInt(400);
-        try {
-            //Peer.threadPool.schedule(new PutChunkRequest(path,chunkNo,Short.toString(repDeg).toCharArray()[1]),delay, TimeUnit.MILLISECONDS);
-        } catch (Exception e) {
-            e.printStackTrace();
+            FileInfo info = VolatileDatabase.getInfo(fileId,chunkNo);
+            if (info == null){
+                System.out.println("RECLAIM could not find an entry for the file requested");
+                return;
+            }
+            if (info.getRequiredRepDeg()>info.getRepDeg()){
+                int delay = new Random().nextInt(400);
+                try {
+                    Peer.threadPool.schedule(new PutChunkRequest(FileHandler.getPath(fileId,chunkNo),chunkNo,Short.toString(info.getRequiredRepDeg()).charAt(0),0),delay, TimeUnit.MILLISECONDS);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }

@@ -383,7 +383,10 @@ public class FileHandler {
         if(getDiskUsage()<allocSpace){
             setAllocatedSpace(allocSpace);
         }else{
-            removedFiles.add("cb84f53102629a3dda06c23f74b29e2627b52a2a62622741bde09a9f22b0bda9;2");
+            ArrayList<OurPair> DBdump = VolatileDatabase.dump();
+            for (OurPair pair: DBdump) {
+                System.out.println(pair);
+            }
             //TODO get all backed files, sort by desiredRepDeg-repDeg, start deleting until deletions
             //make for the difference of deleted space and allocated space, possibly output deleted fileChunks
         }
