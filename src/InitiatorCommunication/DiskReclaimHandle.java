@@ -25,7 +25,7 @@ public class DiskReclaimHandle implements Runnable{
 
     @Override
     public void run() {
-        System.out.println("CHECKING FOR REPLICATION DEGREE");
+        //System.out.println("CHECKING FOR REPLICATION DEGREE");
         FileInfo info = VolatileDatabase.getInfo(fileId,chunkNo);
         if (info == null){
             System.out.println("RECLAIM could not find an entry for the file requested");
