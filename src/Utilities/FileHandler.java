@@ -66,7 +66,7 @@ public class FileHandler {
      * Checks if it is possible to save a chunk without exceeding the allocated disk space
      * @return Returns true if there is enough space to save a chunk, false otherwise
      */
-    private static boolean canSave(){
+    public static boolean canSave(){
         return getAllocatedSpace()>getDiskUsage()+CHUNK_SIZE;
     }
 
@@ -75,7 +75,6 @@ public class FileHandler {
      * @param message - received putChunk message
      */
     public static void saveChunk(ProtocolMessage message,String type){
-        if(!canSave())System.out.println("Back up space is full! Not saving putChunk");
         Path dirPath;
         Path filePath;
         switch (type){
@@ -167,7 +166,7 @@ public class FileHandler {
      * Function that returns the current backed up files size on disk
      * @return Returns the size in bytes of the used disk space
      */
-    private static long getDiskUsage() {
+    public static long getDiskUsage() {
 
         Path path = Paths.get(savePath);
 
@@ -379,10 +378,14 @@ public class FileHandler {
      * @param allocSpace - size to be allocated in bytes
      */
     public static String[] setAllocation(long allocSpace){
+        long diskUsage = getDiskUsage();
         ArrayDeque<String> removedFiles = new ArrayDeque<String>();
-        if(getDiskUsage()<allocSpace){
+        if(diskUsage<allocSpace){
             setAllocatedSpace(allocSpace);
         }else{
+            long deleteAmount = diskUsage-allocSpace;
+            System.out.println(deleteAmount);
+
             ArrayList<OurPair> DBdump = VolatileDatabase.dump();
             for (OurPair pair: DBdump) {
                 System.out.println(pair);

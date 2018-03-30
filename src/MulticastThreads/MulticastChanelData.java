@@ -7,6 +7,7 @@ import Utilities.ProtocolMessage;
 import Utilities.ProtocolMessageParser;
 import Utilities.VolatileDatabase;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -51,6 +52,12 @@ public class MulticastChanelData extends MulticastChanel {
 
                 switch (message.getMsgType()){
                     case PUTCHUNK:
+
+                        if(!FileHandler.canSave()){
+                            System.out.println("Back up space is full! Not saving putChunk");
+                            break;
+                        }
+
                         // Checking if chunk is already saved by this peer.
                         /*
                         if(VolatileDatabase.check_has_chunk(message.getFileId(), Short.valueOf(message.getChunkNo()))){

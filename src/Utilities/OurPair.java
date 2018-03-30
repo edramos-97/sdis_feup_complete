@@ -16,7 +16,7 @@ public class OurPair implements Comparable<OurPair> {
     }
 
     public String toString() {
-        return "( " + fileID + " , " + info.getChunkNo() + " - rd" + info.getRepDeg() + " - rrp " + info.getRequiredRepDeg() + " )";
+        return "( " + fileID + " , " + info.getChunkNo() + " - rd: " + info.getRepDeg() + " - rrd: " + info.getRequiredRepDeg() + " - size: "+ info.getSize() + " )";
     }
 
 }

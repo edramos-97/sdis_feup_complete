@@ -20,7 +20,12 @@ public class DiskReclaimRequest extends Thread{
         if (desiredAllocation<0){
             throw new InvalidParameterException("Disk space allocated must be greater or equal to 0");
         }
-        this.allocGoal = desiredAllocation;
+        if(desiredAllocation == 0){
+            this.allocGoal = FileHandler.getDiskUsage();
+        }else{
+            this.allocGoal = desiredAllocation*1000;
+        }
+
     }
 
     @Override
@@ -36,6 +41,8 @@ public class DiskReclaimRequest extends Thread{
         }
 
         String[] removedFiles = FileHandler.setAllocation(this.allocGoal);
+        if(true)
+            return;
         String[] temp;
         ProtocolMessage message = new ProtocolMessage(ProtocolMessage.PossibleTypes.REMOVED);
         for (String fileInfo: removedFiles) {

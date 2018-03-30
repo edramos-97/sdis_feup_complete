@@ -56,7 +56,13 @@ public class FileInfo implements Serializable, Comparable<FileInfo>{
 
     @Override
     public int compareTo(FileInfo o) {
-        return Integer.compare(this.repDeg-this.requiredRepDeg,o.repDeg-o.requiredRepDeg);
+        int compare_result = -1*Integer.compare(this.repDeg-this.requiredRepDeg,o.repDeg-o.requiredRepDeg);
+
+        if(compare_result == 0){
+            return Integer.compare(o.size, this.size);
+        }
+
+        return compare_result;
     }
 
     public void print(PrintStream stream) {
