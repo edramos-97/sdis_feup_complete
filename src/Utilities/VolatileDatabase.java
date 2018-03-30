@@ -1,13 +1,7 @@
 package Utilities;
 
 
-import java.io.File;
-import java.io.OutputStream;
 import java.io.PrintStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.nio.charset.StandardCharsets;
-import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -69,7 +63,7 @@ public final class VolatileDatabase {
         }
     }
 
-    public static FileInfo getReplication(String fileID, short chunkNumber){
+    public static FileInfo getInfo(String fileID, short chunkNumber){
         if(database.containsKey(fileID)){
 
             List<FileInfo> data = database.get(fileID);
@@ -82,6 +76,51 @@ public final class VolatileDatabase {
         }
 
         return null;
+    }
+
+    public static ArrayList<FileInfo> getAllFileInfos(String fileID){
+        if(database.containsKey(fileID)){
+
+            ArrayList<FileInfo> data = (ArrayList<FileInfo>) database.get(fileID);
+            return data;
+        }
+
+        return new ArrayList<FileInfo>();
+    }
+
+    public static ArrayList<OurPair> dump(){
+        ArrayList<OurPair> result = new ArrayList<OurPair>(){
+            public boolean add(OurPair fi){
+                int index = Collections.binarySearch(this, fi);
+                if (index < 0)
+                    index = ~index;
+                super.add(index, fi);
+                return true;
+            }
+        };
+
+        for (Map.Entry<String, List<FileInfo>> pair : database.entrySet()) {
+            for (FileInfo info : pair.getValue()) {
+                result.add(new OurPair(pair.getKey(), info));
+            }
+        }
+
+
+        return result;
+    }
+
+    public static void deleteChunkEntry(String fileID, short chunkNumber){
+        if(database.containsKey(fileID)){
+
+            List<FileInfo> data = database.get(fileID);
+            for (FileInfo fi : data) {
+                if (fi.getChunkNo() == chunkNumber) {
+                    data.remove(fi);
+                    return;
+                }
+            }
+
+        }
     }
 
     public static void chunkDeleted(String fileID, short chunkNumber, int peerID){

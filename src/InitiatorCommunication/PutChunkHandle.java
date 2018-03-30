@@ -32,6 +32,9 @@ public class PutChunkHandle extends Thread {
             //System.out.println("thrs: " + message.getReplicationDeg());
 
             if (current_rep_degree >= message.getReplicationDeg()){
+
+                VolatileDatabase.deleteChunkEntry(message.getFileId(), Short.valueOf(message.getChunkNo()));
+
                 return;
             }
         }
