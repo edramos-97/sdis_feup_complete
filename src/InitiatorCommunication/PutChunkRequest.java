@@ -47,9 +47,8 @@ public class PutChunkRequest implements Callable<String>{
 
             message.setFileId(fileID);
 
-            // TODO change this to elaborate further
-            if(!VolatileDatabase.backed2fileID.containsKey(filePath))
-                VolatileDatabase.backed2fileID.put(filePath, fileID);
+            if(!VolatileDatabase.backed2fileID.containsKey(fileID))
+                VolatileDatabase.backed2fileID.put(fileID, filePath);
 
             message.setChunkNo(String.valueOf(chunkNo));
             message.setReplicationDeg(this.replicationDeg);

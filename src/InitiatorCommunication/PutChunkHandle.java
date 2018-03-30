@@ -39,8 +39,7 @@ public class PutChunkHandle extends Thread {
             }
         }
 
-        int size_message = this.message.body.length;
-        VolatileDatabase.add_chunk_putchunk(message.getFileId(),Short.valueOf(message.getChunkNo()),message.getReplicationDeg(), size_message);
+
 
 
         message.setMsgType(ProtocolMessage.PossibleTypes.STORED);
@@ -59,6 +58,10 @@ public class PutChunkHandle extends Thread {
                     InetAddress.getByName(MulticastChanel.multicast_control_address),
                     Integer.parseInt(MulticastChanel.multicast_control_port));
             MulticastChanel.multicast_control_socket.send(packet);
+            FileHandler.saveChunk(this.message,"backup");
+
+            VolatileDatabase.add_chunk_stored(message.getFileId(), Short.valueOf(message.getChunkNo()), Peer.peerID);
+
         } catch (UnknownHostException e) {
             System.out.println("Error in creating datagram packet");
             e.printStackTrace();
@@ -67,7 +70,6 @@ public class PutChunkHandle extends Thread {
             e.printStackTrace();
         }
 
-        FileHandler.saveChunk(this.message,"backup");
 
     }
 }

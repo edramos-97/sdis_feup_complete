@@ -68,6 +68,7 @@ public class PutChunkVerification implements Runnable {
                     }
                 }
                 System.out.println("PUTCHUNK completed for fileId:\""+message.getFileId()+"\" Chunk:\""+message.getChunkNo()+"\"");
+                //VolatileDatabase.deleteChunkEntry(message.getFileId(), Short.valueOf(message.getChunkNo()));
                 return;
             }
 

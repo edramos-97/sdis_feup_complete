@@ -11,7 +11,7 @@ public final class VolatileDatabase {
     // fileID -> ( chunkNo -> replicationDegree , , ,)
 
     public static ConcurrentHashMap<String, String> backed2fileID = new ConcurrentHashMap<>();
-    // filename_backup -> fileID
+    // fileID -> filename_backup
     // by examining this we can know if the file has been altered because repeated filenames
     // will have equal fileIDs if the same file and different otherwise...
 
@@ -41,17 +41,18 @@ public final class VolatileDatabase {
                 }
             }
 
-            /*
+
             if(!found){
                 FileInfo fi = new FileInfo(chunkNumber);
                 fi.incrementRepDeg(stored_peerID);
                 data.add(fi);
-            }*/
+            }
+
 
 
         }else{
             //https://stackoverflow.com/questions/4903611/java-list-sorting-is-there-a-way-to-keep-a-list-permantly-sorted-automatically?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-            /*
+
             List<FileInfo> entry = create_array();
 
             FileInfo fi = new FileInfo(chunkNumber);
@@ -59,7 +60,7 @@ public final class VolatileDatabase {
 
             entry.add(fi);
             database.put(fileID, entry);
-            */
+
         }
     }
 
@@ -207,6 +208,15 @@ public final class VolatileDatabase {
     public static void print(PrintStream stream){
         for (Map.Entry<String, List<FileInfo>> pair : database.entrySet()) {
             stream.println("File: "+pair.getKey());
+
+            if(backed2fileID.containsKey(pair.getKey())){
+                String pathname = backed2fileID.get(pair.getKey());
+                stream.println("Backed up from me with path: " + pathname);
+            }
+            else {
+                stream.println("Stored in me with chunks:");
+            }
+
             for (FileInfo info : pair.getValue()) {
                 info.print(stream);
             }

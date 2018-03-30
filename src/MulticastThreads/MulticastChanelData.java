@@ -52,8 +52,13 @@ public class MulticastChanelData extends MulticastChanel {
                 switch (message.getMsgType()){
                     case PUTCHUNK:
                         // Checking if chunk is already saved by this peer.
-                        if(VolatileDatabase.check_has_chunk(message.getFileId(), Short.valueOf(message.getChunkNo())))
+                        /*
+                        if(VolatileDatabase.check_has_chunk(message.getFileId(), Short.valueOf(message.getChunkNo()))){
                             break;
+                        }*/
+
+                        int size_message = message.body.length;
+                        VolatileDatabase.add_chunk_putchunk(message.getFileId(),Short.valueOf(message.getChunkNo()),message.getReplicationDeg(), size_message);
 
                         Peer.threadPool.schedule(new PutChunkHandle(message),delay, TimeUnit.MILLISECONDS);
                         break;

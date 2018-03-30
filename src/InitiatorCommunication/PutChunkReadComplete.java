@@ -4,6 +4,7 @@ import Executables.Peer;
 import MulticastThreads.MulticastChanel;
 import Utilities.FileHandler;
 import Utilities.File_IO_Wrapper;
+import Utilities.VolatileDatabase;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -37,6 +38,9 @@ public class PutChunkReadComplete implements CompletionHandler<Integer, File_IO_
                     InetAddress.getByName(MulticastChanel.multicast_data_address),
                     Integer.parseInt(MulticastChanel.multicast_data_port));
             data_socket.send(packet);
+
+            VolatileDatabase.add_chunk_putchunk(attachment.getMessage().getFileId(), Short.valueOf(attachment.getMessage().getChunkNo()), attachment.getMessage().getReplicationDeg(), -1);
+
         } catch (UnknownHostException e) {
             System.out.println("error in creating datagram packet");
             e.printStackTrace();
