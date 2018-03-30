@@ -36,7 +36,8 @@ public class DiskReclaimHandle implements Runnable{
             if (info.getRequiredRepDeg()>info.getRepDeg()){
                 int delay = new Random().nextInt(400);
                 try {
-                    Peer.threadPool.schedule(new PutChunkRequest(FileHandler.getPath(fileId,chunkNo),chunkNo,Short.toString(info.getRequiredRepDeg()).charAt(0),0),delay, TimeUnit.MILLISECONDS);
+                    VolatileDatabase.removedChunk.add(fileId+chunkNo);
+                    Peer.threadPool.schedule(new PutChunkReclaim(fileId,chunkNo,Short.toString(info.getRequiredRepDeg()).charAt(0),0),delay, TimeUnit.MILLISECONDS);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

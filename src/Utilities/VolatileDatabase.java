@@ -20,8 +20,12 @@ public final class VolatileDatabase {
     // used to determine if the last chunk of a file has been restored
 
     public static  Vector<String> getChunkMemory = new Vector<>();
-    // fileID+chunkNo -> boolean
+    // fileID+chunkNo
     // used to check if a chunk message has already been sent for the respective getchunk request;
+
+    public static Vector<String> removedChunk = new Vector<>();
+    // fileID+ChunkNo
+    // used to check if another putchunk has already been sent to not overflow with putchunks
 
     private VolatileDatabase(){
 

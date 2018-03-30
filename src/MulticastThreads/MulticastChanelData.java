@@ -53,6 +53,9 @@ public class MulticastChanelData extends MulticastChanel {
                 switch (message.getMsgType()){
                     case PUTCHUNK:
 
+                       VolatileDatabase.removedChunk.remove(message.getFileId()+Short.valueOf(message.getChunkNo()));
+
+
                         if(!FileHandler.canSave()){
                             System.out.println("Back up space is full! Not saving putChunk");
                             break;
