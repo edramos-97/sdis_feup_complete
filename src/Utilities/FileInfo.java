@@ -8,7 +8,7 @@ public class FileInfo implements Serializable, Comparable<FileInfo>{
 
     private short requiredRepDeg;
     private short repDeg;
-    private HashSet<Integer> stored_peers = new HashSet<Integer>();
+    public HashSet<Integer> stored_peers = new HashSet<Integer>();
     private short chunkNo;
     private int size;
 
@@ -67,5 +67,10 @@ public class FileInfo implements Serializable, Comparable<FileInfo>{
 
     public void print(PrintStream stream) {
         stream.printf("ChunkNo: %-6s|Current Replication degree: %s|Replication degree threshold: %s |Size: %-6f\n",chunkNo,repDeg,requiredRepDeg, size/1000.0);
+        stream.print("Saved on: ");
+        for(Integer i : stored_peers){
+            stream.print("- " + i + " ");
+        }
+        stream.print("\n");
     }
 }

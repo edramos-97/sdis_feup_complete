@@ -25,19 +25,22 @@ public class DiskReclaimHandle implements Runnable{
 
     @Override
     public void run() {
+        System.out.println("CHECKING FOR REPLICATION DEGREE");
+        FileInfo info = VolatileDatabase.getInfo(fileId,chunkNo);
+        if (info == null){
+            System.out.println("RECLAIM could not find an entry for the file requested");
+            return;
+        }
+        VolatileDatabase.chunkDeleted(fileId,chunkNo,peerR);
+
         if(FileHandler.hasChunk(fileId,chunkNo)){
-            System.out.println("CHECKING FOR REPLICATION DEGREE");
-            FileInfo info = VolatileDatabase.getInfo(fileId,chunkNo);
-            if (info == null){
-                System.out.println("RECLAIM could not find an entry for the file requested");
-                return;
-            }
-            info.decrementReplicationDegree(peerR);
+
             if (info.getRequiredRepDeg()>info.getRepDeg()){
                 int delay = new Random().nextInt(400);
                 try {
                     VolatileDatabase.removedChunk.add(fileId+chunkNo);
-                    Peer.threadPool.schedule(new PutChunkReclaim(fileId,chunkNo,Short.toString(info.getRequiredRepDeg()).charAt(0),0),delay, TimeUnit.MILLISECONDS);
+                    System.out.println(fileId);
+                    Peer.threadPool.schedule(new PutChunkReclaim(fileId,chunkNo,Short.toString(info.getRequiredRepDeg()).charAt(0)),delay, TimeUnit.MILLISECONDS);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

@@ -16,7 +16,7 @@ public class PutChunkReclaim implements Runnable{
     private char replicationDeg;
     private String fileId;
 
-    public PutChunkReclaim(String fileId, short chunkNo, char replicationDeg, int threadNo) throws Exception {
+    public PutChunkReclaim(String fileId, short chunkNo, char replicationDeg) throws Exception {
         this.filePath = FileHandler.getPath(fileId,chunkNo);
 
         if(new File(filePath).isDirectory()){
@@ -32,7 +32,8 @@ public class PutChunkReclaim implements Runnable{
         try {
             if(VolatileDatabase.removedChunk.indexOf(fileId+chunkNo)>=0){
                 VolatileDatabase.removedChunk.remove(fileId+chunkNo);
-                Peer.threadPool.submit(new PutChunkRequest(filePath,chunkNo,replicationDeg,0));
+                System.out.println("Filepath -> " + filePath);
+                Peer.threadPool.submit(new PutChunkRequest(filePath,chunkNo,replicationDeg,0,fileId));
             }
         } catch (Exception e) {
             e.printStackTrace();

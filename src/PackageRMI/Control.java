@@ -113,15 +113,17 @@ public class Control implements ControlInterface {
             // Getting all the Chunk's Info
             for(FileInfo fi : pair.getValue()){
                 ChunkFile cf = new ChunkFile(fi.getChunkNo(), fi.getRepDeg(), 0);
+
+                for(Integer i : fi.stored_peers){
+                    cf.addPeer(i);
+                }
+
                 sf.addChunk(cf);
             }
 
             // Add Stored File to StateOfPeer
             sop.addFile(sf);
         }
-
-        // TODO create file to then return it
-
 
         return sop;
     }

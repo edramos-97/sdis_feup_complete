@@ -1,8 +1,11 @@
 package InitiatorCommunication;
 
+import Executables.Peer;
 import MulticastThreads.MulticastChanel;
 import Utilities.FileHandler;
+import Utilities.FileInfo;
 import Utilities.ProtocolMessage;
+import Utilities.VolatileDatabase;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,6 +52,11 @@ public class DiskReclaimRequest extends Thread{
             try {
                 message.setFileId(temp[0]);
                 message.setChunkNo(temp[1]);
+
+                FileInfo info = VolatileDatabase.getInfo(temp[0],Short.valueOf(temp[1]));
+                if(info != null)
+                    info.decrementReplicationDegree(Peer.peerID);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }

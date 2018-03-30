@@ -20,6 +20,7 @@ public class PutChunkRequest implements Callable<String>{
     private short chunkNo;
     private char replicationDeg;
     private int threadNo;
+    private String fileID = "";
 
     public PutChunkRequest(String filePath, short chunkNo, char replicationDeg, int threadNo) throws Exception {
         if(new File(filePath).isDirectory()){
@@ -31,13 +32,30 @@ public class PutChunkRequest implements Callable<String>{
         this.threadNo = threadNo;
     }
 
+    public PutChunkRequest(String filePath, short chunkNo, char replicationDeg, int threadNo, String fileID) throws Exception {
+        if(new File(filePath).isDirectory()){
+            throw new Exception("File path specified in PUTCHUNK request is a directory.\nFile Path: "+filePath);
+        }
+        this.filePath = filePath;
+        this.chunkNo = chunkNo;
+        this.replicationDeg = replicationDeg;
+        this.threadNo = threadNo;
+        this.fileID = fileID;
+    }
+
     @Override
     public String call() {
         ProtocolMessage message;
         message = new ProtocolMessage(ProtocolMessage.PossibleTypes.PUTCHUNK);
         message.setThreadNo(threadNo);
         try {
-            String fileID = FileHandler.getFileId(new File(filePath));
+            String fileID = "";
+            if(this.fileID.equals(""))
+                fileID = FileHandler.getFileId(new File(filePath));
+            else
+                fileID = this.fileID;
+
+            System.out.println("FIleID2 -> " + fileID);
 
             if(fileID == null){
                 System.out.println("PUTCHUNK filepath points to a directory, stopping protocol...");

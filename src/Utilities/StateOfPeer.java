@@ -37,6 +37,10 @@ public class StateOfPeer implements Serializable, Remote {
             System.out.println("Chunks:");
             for (ChunkFile c : sf.chunks){
                 System.out.println("Chunk-> " + c.chunkNumber + " with size " + c.sizeKBs +"KBs and with replication degree " + c.perceivedReplicationDegree);
+                System.out.println("Saved on: ");
+                for (Integer i : c.peers_stored){
+                    System.out.print("- " + i + " ");
+                }
             }
             System.out.println();
         }
