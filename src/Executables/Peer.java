@@ -5,9 +5,13 @@ import MulticastThreads.MulticastChanelData;
 import MulticastThreads.MulticastChanelRecovery;
 import PackageRMI.Control;
 import PackageRMI.ControlInterface;
+import Utilities.FileHandler;
 import Utilities.VolatileDatabase;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -80,7 +84,19 @@ public class Peer {
             System.out.println("RESTORE INITIATED IS EMPTY: "+VolatileDatabase.restoreMemory.isEmpty());
             System.out.println("GETCHUNK WAITING ANSWER IS EMPTY: "+VolatileDatabase.getChunkMemory.isEmpty());
             VolatileDatabase.print(System.out);
+
+            FileOutputStream fout = null;
+            try {
+                fout = new FileOutputStream(FileHandler.dbserPath);
+                ObjectOutputStream oos = new ObjectOutputStream(fout);
+                VolatileDatabase.writeObject(oos);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }));
+
+        VolatileDatabase.populateExisting();
 
         System.out.println("INITIATING PROGRAM");
     }

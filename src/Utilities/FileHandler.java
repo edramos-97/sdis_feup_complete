@@ -27,6 +27,7 @@ public class FileHandler {
     private static final String EXTENSION = ".txt";
     public static String savePath = System.getProperty("user.home")+File.separator+"Desktop"+File.separator+"sbs_"+ Peer.peerID + File.separator + "backup" +File.separator;
     public static String restorePath = System.getProperty("user.home")+File.separator+"Desktop"+File.separator+"sbs_"+ Peer.peerID + File.separator + "restore" +File.separator;
+    public static String dbserPath =  System.getProperty("user.home")+File.separator+"Desktop"+File.separator+"sbs_"+ Peer.peerID + File.separator + "db.ser";
     private static long allocatedSpace = 1000000000;
 
     public static void main(String[] args){

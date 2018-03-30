@@ -1,11 +1,11 @@
 package Utilities;
 
 
-import java.io.PrintStream;
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class VolatileDatabase {
+public final class VolatileDatabase implements Serializable{
 
     private static ConcurrentHashMap<String, List<FileInfo>> database = new ConcurrentHashMap<>();
     // fileID -> ( chunkNo -> replicationDegree , , ,)
@@ -237,5 +237,19 @@ public final class VolatileDatabase {
     }
 
 
+    public static void populateExisting() {
 
+
+    }
+
+    public static void writeObject(ObjectOutputStream oos) throws IOException{
+        oos.defaultWriteObject();
+        oos.writeObject(new ConcurrentHashMap<String, List<FileInfo>>(database));
+
+    }
+
+    public void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException{
+        ois.defaultReadObject();
+        database = (ConcurrentHashMap<String,List<FileInfo>>)ois.readObject();
+    }
 }
