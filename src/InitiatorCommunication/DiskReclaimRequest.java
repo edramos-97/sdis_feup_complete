@@ -53,9 +53,11 @@ public class DiskReclaimRequest extends Thread{
                 message.setFileId(temp[0]);
                 message.setChunkNo(temp[1]);
 
+                VolatileDatabase.chunkDeleted(temp[0],Short.valueOf(temp[1]), Peer.peerID);
+                /*
                 FileInfo info = VolatileDatabase.getInfo(temp[0],Short.valueOf(temp[1]));
                 if(info != null)
-                    info.decrementReplicationDegree(Peer.peerID);
+                    info.decrementReplicationDegree(Peer.peerID);*/
 
             } catch (Exception e) {
                 e.printStackTrace();
