@@ -2,7 +2,9 @@ package InitiatorCommunication;
 
 import MulticastThreads.MulticastChanel;
 import Utilities.FileHandler;
+import Utilities.FileInfo;
 import Utilities.ProtocolMessage;
+import Utilities.VolatileDatabase;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,6 +47,14 @@ public class DeleteRequest implements Runnable{
                 System.out.println("Error in sending packet to multicast socket");
                 e.printStackTrace();
             }
+
+            //todo check this
+            /*FileInfo[] infoArray = VolatileDatabase.get_database().entrySet()
+            for (FileInfo info : infoArray) {
+                VolatileDatabase.deletedFiles.put(message.getFileId(),)
+            }
+            VolatileDatabase.backed2fileID.remove(message.getFileId());*/
+
             if(FileHandler.removeFolder(file)){
                 System.out.println("DELETE could not delete local copy of the requested file, terminating request...");
             }

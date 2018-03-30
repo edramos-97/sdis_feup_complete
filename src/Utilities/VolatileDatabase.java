@@ -15,6 +15,10 @@ public final class VolatileDatabase implements Serializable{
     // by examining this we can know if the file has been altered because repeated filenames
     // will have equal fileIDs if the same file and different otherwise...
 
+    public static ConcurrentHashMap<String, Integer> deletedFiles = new ConcurrentHashMap<>();
+    // fileID -> number of chunks that have saved the file chunks
+    // used for delete messages enhancement
+
     public static ConcurrentHashMap<String, Integer[]> restoreMemory = new ConcurrentHashMap<>();
     // fileID -> [last chunkNo received ; size of the last chunk received for that fileID]
     // used to determine if the last chunk of a file has been restored
