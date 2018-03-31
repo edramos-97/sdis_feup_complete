@@ -98,7 +98,16 @@ public class Client {
             // Send message to delete the given fileID
 
             rmi_stub.say_this("DELETE CALLED");
-            rmi_stub.delete(filepath);
+            rmi_stub.delete(filepath,true);
+            System.out.println("Deleted...");
+            return;
+        }
+
+        if(sub_protocol.equals("DELETEENH")){
+            // Send message to delete the given fileID
+
+            rmi_stub.say_this("ENHANCED DELETE CALLED");
+            rmi_stub.delete(filepath,false);
             System.out.println("Deleted...");
             return;
         }
@@ -107,7 +116,15 @@ public class Client {
             // Send message to restore a given fileID
 
             rmi_stub.say_this("RESTORE CALLED");
-            rmi_stub.getChunk(filepath);
+            rmi_stub.getChunk(filepath,true);
+            System.out.println("Restored..");
+            return;
+        }
+        if(sub_protocol.equals("RESTOREENH")){
+            // Send message to restore a given fileID
+
+            rmi_stub.say_this("ENHANCED RESTORE CALLED");
+            rmi_stub.getChunk(filepath,false);
             System.out.println("Restored..");
             return;
         }
@@ -123,7 +140,16 @@ public class Client {
 
             rmi_stub.say_this("BACKUP CALLED");
             System.out.println(replication_degree.charAt(0));
-            rmi_stub.putChunk(filepath, replication_degree.charAt(0));
+            rmi_stub.putChunk(filepath, replication_degree.charAt(0),true);
+            System.out.println("Backed up...");
+            return;
+        }
+        if(sub_protocol.equals("BACKUPENH")){
+            // Send message to backup a given file
+
+            rmi_stub.say_this("ENHANCED BACKUP CALLED");
+            System.out.println(replication_degree.charAt(0));
+            rmi_stub.putChunk(filepath, replication_degree.charAt(0),false);
             System.out.println("Backed up...");
             return;
         }

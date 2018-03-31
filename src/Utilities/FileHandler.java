@@ -5,6 +5,9 @@ import InitiatorCommunication.PutChunkHandleComplete;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
@@ -16,6 +19,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static java.nio.file.StandardOpenOption.*;
@@ -31,7 +35,7 @@ public class FileHandler {
     public static String dbserPath =  peerPath + "db.ser";
     private static long allocatedSpace = 1000000000;
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws IOException {
         /*Path filePath = Paths.get(savePath+"/NewFolder/1.txt");
         Path dirPath = Paths.get(savePath+"/NewFolder/");
         try {
@@ -46,6 +50,17 @@ public class FileHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }*/
+
+        //GETCHUNK RECEIVED
+        ServerSocket myPeer = new ServerSocket(1040);
+        String myAddress =  InetAddress.getLocalHost().getHostAddress();
+        Socket mysocket = myPeer.accept();
+        //write stuff to this socket
+
+        //INITIATOR SIDE
+        //read adress from chunk message body
+        //Socket mysoket2 = new Socket(adress,1040);
+        //read stuff from socket
     }
 
     public static void startPeerFileSystem(){
@@ -53,6 +68,14 @@ public class FileHandler {
         if(Files.notExists(dirPath)){
             try {
                 Files.createDirectories(dirPath);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        Path backupPath = Paths.get(savePath);
+        if(Files.notExists(backupPath)){
+            try {
+                Files.createDirectories(backupPath);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -321,7 +344,7 @@ public class FileHandler {
                 return chunk;
             }*/
             int size = file.read(chunk);
-            return Arrays.copyOfRange(chunk,0,size-1);
+            return Arrays.copyOfRange(chunk,0,size);
         }
     }
 
@@ -347,9 +370,10 @@ public class FileHandler {
             File[] chunks = new File(restorePath+fileId).listFiles();
             if (chunks == null){
                 System.out.println("RESTORE error in getting file chunks");
-                file.close();
+                //file.close();
                 return;
             }
+            System.out.println("CHUNKS AMOUNT: "+chunks.length);
             for (File chunk : chunks) {
                 try {
                     byte[] chunkBytes = new byte[FileHandler.CHUNK_SIZE];
@@ -362,7 +386,13 @@ public class FileHandler {
                                     try {
                                         openFile.close();
                                         if (attachment == chunks.length - 1) {
-                                            file.close();
+                                            Peer.threadPool.schedule(()->{
+                                                try {
+                                                    file.close();
+                                                } catch (IOException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            },1000, TimeUnit.MILLISECONDS);
                                             FileHandler.removeFolder(new File(restorePath+fileId));
                                             System.out.println("ENDED FILE RESTORE");
                                         }

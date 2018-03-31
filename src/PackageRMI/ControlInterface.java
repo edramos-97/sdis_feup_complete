@@ -10,11 +10,11 @@ public interface ControlInterface extends Remote {
     //TODO: fill these
     void say_this(String s) throws RemoteException;
 
-    boolean putChunk(String filePath, char replicationDeg) throws RemoteException;
+    boolean putChunk(String filePath, char replicationDeg, boolean enhanced) throws RemoteException;
 
-    boolean getChunk(String filePath) throws RemoteException;
+    boolean getChunk(String filePath, boolean enhanced) throws RemoteException;
 
-    boolean delete(String path) throws RemoteException;
+    boolean delete(String path, boolean enhanced) throws RemoteException;
 
     boolean reclaim (long desiredAllocation) throws RemoteException;
 

@@ -21,8 +21,9 @@ public class PutChunkRequest implements Callable<String>{
     private char replicationDeg;
     private int threadNo;
     private String fileID = "";
+    private String version;
 
-    public PutChunkRequest(String filePath, short chunkNo, char replicationDeg, int threadNo) throws Exception {
+    public PutChunkRequest(String filePath, short chunkNo, char replicationDeg, int threadNo, String version) throws Exception {
         if(new File(filePath).isDirectory()){
             throw new Exception("File path specified in PUTCHUNK request is a directory.\nFile Path: "+filePath);
         }
@@ -30,9 +31,10 @@ public class PutChunkRequest implements Callable<String>{
         this.chunkNo = chunkNo;
         this.replicationDeg = replicationDeg;
         this.threadNo = threadNo;
+        this.version = version;
     }
 
-    public PutChunkRequest(String filePath, short chunkNo, char replicationDeg, int threadNo, String fileID) throws Exception {
+    public PutChunkRequest(String filePath, short chunkNo, char replicationDeg, int threadNo, String fileID, String version) throws Exception {
         if(new File(filePath).isDirectory()){
             throw new Exception("File path specified in PUTCHUNK request is a directory.\nFile Path: "+filePath);
         }
@@ -41,6 +43,7 @@ public class PutChunkRequest implements Callable<String>{
         this.replicationDeg = replicationDeg;
         this.threadNo = threadNo;
         this.fileID = fileID;
+        this.version = version;
     }
 
     @Override

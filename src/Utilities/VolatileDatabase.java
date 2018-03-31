@@ -170,9 +170,8 @@ public final class VolatileDatabase implements Serializable{
         };
     }
 
-    public static void add_chunk_putchunk(String fileID, short chunkNumber, short requiredReplication, int size){
-        if(database.containsKey(fileID)){
-
+    public synchronized static void add_chunk_putchunk(String fileID, short chunkNumber, short requiredReplication, int size) {
+        if (database.containsKey(fileID)) {
             List<FileInfo> data = database.get(fileID);
 
             boolean found = false;
@@ -184,13 +183,13 @@ public final class VolatileDatabase implements Serializable{
                 }
             }
 
-            if(!found){
+            if (!found) {
                 FileInfo fi = new FileInfo(requiredReplication, (short) 0, chunkNumber, size);
                 data.add(fi);
             }
 
 
-        }else{
+        } else {
             //https://stackoverflow.com/questions/4903611/java-list-sorting-is-there-a-way-to-keep-a-list-permantly-sorted-automatically?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
             List<FileInfo> entry = create_array();
 
@@ -199,6 +198,7 @@ public final class VolatileDatabase implements Serializable{
             entry.add(fi);
             database.put(fileID, entry);
         }
+
     }
 
     public static boolean check_has_chunk(String fileID, short chunkNumber){

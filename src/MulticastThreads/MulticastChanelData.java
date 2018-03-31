@@ -48,8 +48,6 @@ public class MulticastChanelData extends MulticastChanel {
                 if(message == null || message.getSenderId().equals(String.valueOf(Peer.peerID)))
                     continue;
 
-                int delay = new Random().nextInt(400);// TODO-CheckEnhancement 10x this to get better results
-
                 switch (message.getMsgType()){
                     case PUTCHUNK:
 
@@ -74,6 +72,7 @@ public class MulticastChanelData extends MulticastChanel {
                         int size_message = message.body.length;
                         VolatileDatabase.add_chunk_putchunk(message.getFileId(),Short.valueOf(message.getChunkNo()),message.getReplicationDeg(), size_message);
 
+                        int delay = new Random().nextInt(400);
                         Peer.threadPool.schedule(new PutChunkHandle(message),delay, TimeUnit.MILLISECONDS);
                         break;
                     default:

@@ -19,11 +19,13 @@ public class GetChunkRequest implements Callable<String>{
     private String fileId;
     private short chunkNo;
     private String fileName;
+    String version;
 
-    public GetChunkRequest(String fileId, short chunkNo,String fileName){
+    public GetChunkRequest(String fileId, short chunkNo,String fileName,String version){
         this.fileId=fileId;
         this.chunkNo = chunkNo;
         this.fileName = fileName;
+        this.version = version;
     }
 
     @Override
@@ -34,6 +36,7 @@ public class GetChunkRequest implements Callable<String>{
         message = new ProtocolMessage(ProtocolMessage.PossibleTypes.GETCHUNK);
         try {
             message.setFileId(fileId);
+            message.setVersion(version);
             message.setChunkNo(String.valueOf(chunkNo));
         } catch (Exception e) {
             //e.printStackTrace();

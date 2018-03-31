@@ -47,9 +47,7 @@ public class MulticastChanelRecovery extends MulticastChanel {
 
                 switch (message.getMsgType()){
                     case CHUNK:
-                        System.out.println("RECEIVED CHUNK");
                         if(VolatileDatabase.restoreMemory.get(message.getFileId())==null) {
-                            System.out.println("RECEIVED CHUNK CONTROL CHUNK");
                             VolatileDatabase.getChunkMemory.remove(message.getFileId() + message.getChunkNo());
                         }else{
                             System.out.println("SAVING MESSAGE");

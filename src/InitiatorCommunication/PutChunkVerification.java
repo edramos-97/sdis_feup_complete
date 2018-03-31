@@ -36,7 +36,6 @@ public class PutChunkVerification implements Runnable {
             System.out.println("PutChunk for fileID:\""+message.getFileId()+"\" chunkNo:"+message.getChunkNo()+" finished unsuccessfully after "+MAX_TRIES+" tries.");
         }else{
             // Checking replication degree of file
-
             short current_rep_degree = VolatileDatabase.get_rep_degree(message.getFileId(), Short.valueOf(message.getChunkNo()));
             if (current_rep_degree < message.getReplicationDeg()){
 
@@ -62,7 +61,7 @@ public class PutChunkVerification implements Runnable {
                 int nextChunkNo = Integer.parseInt(message.getChunkNo())+Peer.MAX_CONCURRENCY;
                 if (nextChunkNo < message.getThreadNo()){
                     try {
-                        Peer.threadPool.submit(new PutChunkRequest(message.getFile(),(short)nextChunkNo, Short.toString(message.getReplicationDeg()).charAt(0),message.getThreadNo()));
+                        Peer.threadPool.submit(new PutChunkRequest(message.getFile(),(short)nextChunkNo, Short.toString(message.getReplicationDeg()).charAt(0),message.getThreadNo(),message.getVersion()));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

@@ -23,7 +23,7 @@ public class Control implements ControlInterface {
     }
 
     @Override
-    public boolean putChunk(String filePath, char replicationDeg) {
+    public boolean putChunk(String filePath, char replicationDeg, boolean enhanced) {
         int threadNo;
 
         try {
@@ -34,11 +34,11 @@ public class Control implements ControlInterface {
         }
         System.out.println("Started PUTCHUNK for file:\""+filePath+"\"");
 
-        //TODO save to backed2file
         //start working threads
+        String version = enhanced?"1.0":"1.1";
         try {
             for (int i = 0; i < Peer.MAX_CONCURRENCY && i < threadNo; i++) {
-                PutChunkRequest worker = new PutChunkRequest(filePath, (short)i, replicationDeg, threadNo);
+                PutChunkRequest worker = new PutChunkRequest(filePath, (short)i, replicationDeg, threadNo,version);
                 Peer.threadPool.submit(worker);
             }
         } catch (Exception e) {
@@ -51,7 +51,7 @@ public class Control implements ControlInterface {
     }
 
     @Override
-    public boolean getChunk(String filePath){
+    public boolean getChunk(String filePath, boolean enhanced){
         File file = new File(filePath);
         if (!file.exists()){
             System.out.println("RESTORE terminated, file doesn't exist: "+filePath);
@@ -78,12 +78,14 @@ public class Control implements ControlInterface {
 
         //initialize getchunk request in data base
         VolatileDatabase.restoreMemory.put(fileId,new Integer[]{-1,-1});
-        Peer.threadPool.submit(new GetChunkRequest(fileId,(short)0,file.getName()));
+        String version = enhanced?"1.0":"1.1";
+        Peer.threadPool.submit(new GetChunkRequest(fileId,(short)0,file.getName(),version));
         return true;
     }
 
     @Override
-    public boolean delete(String path) throws RemoteException {
+    public boolean delete(String path, boolean enhanced) throws RemoteException {
+        String version = enhanced?"1.0":"1.1";
         Peer.threadPool.submit(new DeleteRequest(path));
         return true;
     }
