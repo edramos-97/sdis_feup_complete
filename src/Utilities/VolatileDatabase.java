@@ -50,14 +50,11 @@ public final class VolatileDatabase implements Serializable{
                 }
             }
 
-
             if(!found){
                 FileInfo fi = new FileInfo(chunkNumber);
                 fi.incrementRepDeg(stored_peerID);
                 data.add(fi);
             }
-
-
 
         }else{
             //https://stackoverflow.com/questions/4903611/java-list-sorting-is-there-a-way-to-keep-a-list-permantly-sorted-automatically?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa

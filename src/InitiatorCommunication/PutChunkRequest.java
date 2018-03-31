@@ -52,6 +52,7 @@ public class PutChunkRequest implements Callable<String>{
         message = new ProtocolMessage(ProtocolMessage.PossibleTypes.PUTCHUNK);
         message.setThreadNo(threadNo);
         try {
+            message.setVersion(version);
             String fileID = "";
             if(this.fileID.equals(""))
                 fileID = FileHandler.getFileId(new File(filePath));

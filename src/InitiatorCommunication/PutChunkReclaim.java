@@ -38,8 +38,7 @@ public class PutChunkReclaim implements Runnable{
             if(VolatileDatabase.removedChunk.indexOf(fileId+chunkNo)>=0){
                 VolatileDatabase.removedChunk.remove(fileId+chunkNo);
                 System.out.println("Filepath -> " + filePath);
-                Peer.threadPool.submit(new PutChunkRequest(filePath,chunkNo,replicationDeg,0,fileId));
-
+                Peer.threadPool.submit(new PutChunkRequest(filePath,chunkNo,replicationDeg,0,fileId,"1.0"));
 
                 ProtocolMessage message;
                 message = new ProtocolMessage(ProtocolMessage.PossibleTypes.STORED);

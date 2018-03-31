@@ -13,6 +13,7 @@ import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 public class PutChunkHandle extends Thread {
 
@@ -30,11 +31,10 @@ public class PutChunkHandle extends Thread {
             short current_rep_degree = VolatileDatabase.get_rep_degree(message.getFileId(), Short.valueOf(message.getChunkNo()));
 
             if (current_rep_degree >= message.getReplicationDeg()){
-                VolatileDatabase.deleteChunkEntry(message.getFileId(), Short.valueOf(message.getChunkNo()));
+                Peer.threadPool.schedule(()-> VolatileDatabase.deleteChunkEntry(message.getFileId(), Short.valueOf(message.getChunkNo())),1000, TimeUnit.MILLISECONDS);
                 return;
             }
         }
-
 
         message.setMsgType(ProtocolMessage.PossibleTypes.STORED);
         try {
