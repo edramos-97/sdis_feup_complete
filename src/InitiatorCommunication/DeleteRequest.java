@@ -48,12 +48,7 @@ public class DeleteRequest implements Runnable{
                 e.printStackTrace();
             }
 
-            //todo check this
-            /*FileInfo[] infoArray = VolatileDatabase.get_database().entrySet()
-            for (FileInfo info : infoArray) {
-                VolatileDatabase.deletedFiles.put(message.getFileId(),)
-            }
-            VolatileDatabase.backed2fileID.remove(message.getFileId());*/
+            VolatileDatabase.deleteFile(message.getFileId());
 
             if(FileHandler.removeFolder(file)){
                 System.out.println("DELETE could not delete local copy of the requested file, terminating request...");

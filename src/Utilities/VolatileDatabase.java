@@ -15,7 +15,7 @@ public final class VolatileDatabase implements Serializable{
     // by examining this we can know if the file has been altered because repeated filenames
     // will have equal fileIDs if the same file and different otherwise...
 
-    public static ConcurrentHashMap<String, Integer> deletedFiles = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<String, HashSet<Integer>> deletedFiles = new ConcurrentHashMap<>();
     // fileID -> number of chunks that have saved the file chunks
     // used for delete messages enhancement
 
@@ -128,6 +128,18 @@ public final class VolatileDatabase implements Serializable{
         }
     }
 
+    public static void deleteFile(String fileID){
+        HashSet<Integer> result = new HashSet<>();
+
+        for (FileInfo info: database.get(fileID)) {
+            result.addAll(info.stored_peers);
+        }
+
+        VolatileDatabase.deletedFiles.put(fileID,result);
+        VolatileDatabase.database.remove(fileID);
+        VolatileDatabase.backed2fileID.remove(fileID);
+    }
+
     public static void chunkDeleted(String fileID, short chunkNumber, int peerID){
         if(database.containsKey(fileID)){
 
@@ -210,21 +222,36 @@ public final class VolatileDatabase implements Serializable{
     }
 
     public static void print(PrintStream stream){
-        for (Map.Entry<String, List<FileInfo>> pair : database.entrySet()) {
+        stream.println("::::::::::::::: BACKED UP :::::::::::::::");
+        for (Map.Entry<String, String> pair : backed2fileID.entrySet()){
+            String pathname = backed2fileID.get(pair.getKey());
+            stream.println("Backed up from path: " + pathname);
             stream.println("File: "+pair.getKey());
+            for (FileInfo info : database.get(pair.getKey())) {
+                info.print(stream);
+            }
+        }
+
+        stream.println("\n::::::::::::::: BACKING UP :::::::::::::::");
+        for (Map.Entry<String, List<FileInfo>> pair : database.entrySet()) {
 
             if(backed2fileID.containsKey(pair.getKey())){
-                String pathname = backed2fileID.get(pair.getKey());
-                stream.println("Backed up from me with path: " + pathname);
+                continue;
             }
             else {
-                stream.println("Stored in me with chunks:");
+                stream.println("File: "+pair.getKey());
+                stream.println("Stored with chunks:");
             }
-
             for (FileInfo info : pair.getValue()) {
                 info.print(stream);
             }
             stream.println("");
+        }
+
+        stream.println("\n::::::::::::::: WAITING FOR DELETE CONFIRMATION :::::::::::::::");
+        for (Map.Entry<String, HashSet<Integer>> pair : deletedFiles.entrySet()){
+            stream.println("File: "+pair.getKey());
+            stream.println("Still backed up on peer(s): " + pair.getValue());
         }
     }
 
@@ -236,13 +263,11 @@ public final class VolatileDatabase implements Serializable{
         return backed2fileID;
     }
 
-
     public static void populateExisting() {
         try {
             FileInputStream fin = new FileInputStream(FileHandler.dbserPath);
             ObjectInputStream ios = new ObjectInputStream(fin);
-            database = (ConcurrentHashMap<String,List<FileInfo>>)ios.readObject();
-            backed2fileID = (ConcurrentHashMap<String,String>)ios.readObject();
+            readObject(ios);
         } catch (IOException e){
             System.out.println("Data base wasn't present, creating an empty one");
             e.printStackTrace();

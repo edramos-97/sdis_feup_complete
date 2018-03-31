@@ -71,6 +71,6 @@ public class FileInfo implements Serializable, Comparable<FileInfo>{
         for(Integer i : stored_peers){
             stream.print("- " + i + " ");
         }
-        stream.print("\n");
+        stream.println();
     }
 }

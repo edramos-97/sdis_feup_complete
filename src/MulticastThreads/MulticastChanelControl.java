@@ -1,6 +1,7 @@
 package MulticastThreads;
 
 import Executables.Peer;
+import InitiatorCommunication.DeleteHandle;
 import InitiatorCommunication.DiskReclaimHandle;
 import InitiatorCommunication.GetChunkHandle;
 import InitiatorCommunication.GetChunkRequest;
@@ -71,10 +72,10 @@ public class MulticastChanelControl extends MulticastChanel {
                         break;
                     case DELETE:
                         System.out.println(new String(message.toCharArray()));
-                        Peer.threadPool.submit(() -> {
-                            FileHandler.removeFolder(new File(FileHandler.savePath + message.getFileId()));
-                        });
+                        Peer.threadPool.submit(new DeleteHandle(message));
                         break;
+                    case DELETECONF:
+                        //VolatileDatabase.confirmDelete();
                     case REMOVED:
                         System.out.println("REMOVED RECEIVED");
                         Peer.threadPool.submit(new DiskReclaimHandle(message.getFileId(),Short.valueOf(message.getChunkNo()),Integer.parseInt(message.getSenderId())));

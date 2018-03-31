@@ -6,7 +6,7 @@ import java.security.InvalidParameterException;
 
 public class ProtocolMessage {
 
-    public enum PossibleTypes {PUTCHUNK,STORED,GETCHUNK,CHUNK,DELETE,REMOVED}
+    public enum PossibleTypes {PUTCHUNK,STORED,GETCHUNK,CHUNK,DELETE,DELETECONF,REMOVED,BACKEDUP}
 
     private PossibleTypes msgType;
     private String version;
@@ -39,6 +39,8 @@ public class ProtocolMessage {
             case STORED:
             case REMOVED:
             case GETCHUNK:
+            case DELETECONF:
+            case BACKEDUP:
                 this.hasBody = false; break;
             default:
                 System.out.println("Invalid message type in Message Constructor");
@@ -149,6 +151,7 @@ public class ProtocolMessage {
                 complement = String.format(" %s\r\n\r\n",getChunkNo()).getBytes();
                 break;
             case DELETE:
+            case DELETECONF:
                 complement = "\r\n\r\n".getBytes();
                 break;
         }
