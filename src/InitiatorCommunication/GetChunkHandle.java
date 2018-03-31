@@ -21,9 +21,9 @@ public class GetChunkHandle extends Thread {
 
     @Override
     public void run(){
+        System.out.println("GETCHUNK fileId:\"" + message.getFileId() + "\" chunkNo:\""+message.getChunkNo()+"\"");
         //check if a chunk has been received
         if (VolatileDatabase.getChunkMemory.indexOf(message.getFileId()+message.getChunkNo())>=0){
-            System.out.println("SENDING CHUNK BACK");
             //send message and remove table entry for fileID+chunkNo
             try {
                 /* TODO RESTORE-ENHANCEMENT
@@ -37,6 +37,7 @@ public class GetChunkHandle extends Thread {
                 }
                 */
                 message.setBody(FileHandler.getChunk(message.getFileId(),Short.valueOf(message.getChunkNo())));
+                System.out.println("SENDING CHUNK BACK");
                 message.setMsgType(ProtocolMessage.PossibleTypes.CHUNK);
                 message.setSenderId(Integer.toString(Peer.peerID));
             } catch (Exception e) {

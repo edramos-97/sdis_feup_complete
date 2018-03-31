@@ -71,7 +71,9 @@ public class ProtocolMessageParser {
                 case REMOVED:
                     tempMessage.setChunkNo(headerFields[4]);
                     break;
+                case DELETECONF:
                 case DELETE:
+                case BACKEDUP:
                     break;
                 default:
                     throw new Exception("Invalid message type received!");

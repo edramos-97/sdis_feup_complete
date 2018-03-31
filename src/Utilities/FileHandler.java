@@ -63,7 +63,7 @@ public class FileHandler {
      * Getter for the allocated disk space
      * @return Returns the allocated disk space in bytes
      */
-    private static long getAllocatedSpace() {
+    public static long getAllocatedSpace() {
         return allocatedSpace;
     }
 
@@ -71,7 +71,7 @@ public class FileHandler {
      * Setter for the disk allocation space
      * @param allocatedSpace - Max allocation space in bytes
      */
-    private static void setAllocatedSpace(long allocatedSpace) {
+    public static void setAllocatedSpace(long allocatedSpace) {
         FileHandler.allocatedSpace = allocatedSpace;
     }
 
@@ -320,8 +320,8 @@ public class FileHandler {
             }else{
                 return chunk;
             }*/
-            file.read(chunk);
-            return chunk;
+            int size = file.read(chunk);
+            return Arrays.copyOfRange(chunk,0,size-1);
         }
     }
 
@@ -386,7 +386,11 @@ public class FileHandler {
     }
 
     public static long getAvailableSpace(){
-        return new File(savePath).getFreeSpace();
+        return new File(peerPath).getFreeSpace();
+    }
+
+    public static long getFreeSpace(){
+        return allocatedSpace-getDiskUsage();
     }
 
     /**
@@ -408,7 +412,6 @@ public class FileHandler {
                 if(deleteAmount <= 0)
                     break;
 
-                System.out.println(pair);
                 long sizeOfChunk = pair.info.getSize();
 
                 removedFiles.add(pair.fileID+";"+pair.info.getChunkNo());

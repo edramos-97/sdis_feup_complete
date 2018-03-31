@@ -2,32 +2,29 @@ package InitiatorCommunication;
 
 import Executables.Peer;
 import MulticastThreads.MulticastChanel;
-import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
 import Utilities.VolatileDatabase;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-public class DeleteHandle implements Runnable{
+public class BackedupHandle implements Runnable {
 
     ProtocolMessage message;
 
-    public DeleteHandle(ProtocolMessage message){
+    public BackedupHandle(ProtocolMessage message){
         this.message = message;
     }
+
     @Override
-    public void run() {
-        if(VolatileDatabase.get_database().get(message.getFileId())==null){
+    public void run(){
+        if (!VolatileDatabase.needDelete(message.getFileId(),message.getSenderId())){
             return;
         }
-        FileHandler.removeFolder(new File(FileHandler.savePath + message.getFileId()));
-        VolatileDatabase.get_database().remove(message.getFileId());
 
-        message.setMsgType(ProtocolMessage.PossibleTypes.DELETECONF);
+        message.setMsgType(ProtocolMessage.PossibleTypes.DELETE);
         try {
             message.setSenderId(String.valueOf(Peer.peerID));
         } catch (Exception e) {

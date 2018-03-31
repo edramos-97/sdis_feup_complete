@@ -1,7 +1,12 @@
 package Utilities;
 
 
+import MulticastThreads.MulticastChanel;
+
 import java.io.*;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -245,7 +250,6 @@ public final class VolatileDatabase implements Serializable{
             for (FileInfo info : pair.getValue()) {
                 info.print(stream);
             }
-            stream.println("");
         }
 
         stream.println("\n::::::::::::::: WAITING FOR DELETE CONFIRMATION :::::::::::::::");
@@ -268,6 +272,7 @@ public final class VolatileDatabase implements Serializable{
             FileInputStream fin = new FileInputStream(FileHandler.dbserPath);
             ObjectInputStream ios = new ObjectInputStream(fin);
             readObject(ios);
+            fin.close();
         } catch (IOException e){
             System.out.println("Data base wasn't present, creating an empty one");
             e.printStackTrace();
@@ -279,10 +284,67 @@ public final class VolatileDatabase implements Serializable{
     public static void writeObject(ObjectOutputStream oos) throws IOException{
         oos.writeObject(database);
         oos.writeObject(backed2fileID);
+        oos.writeObject(deletedFiles);
+        oos.writeObject(new Long(FileHandler.getAllocatedSpace()));
     }
 
-    public static void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException{
+    private static void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException{
         database = (ConcurrentHashMap<String,List<FileInfo>>)ois.readObject();
         backed2fileID = (ConcurrentHashMap<String,String>)ois.readObject();
+        deletedFiles =  (ConcurrentHashMap<String, HashSet<Integer>>)ois.readObject();
+        FileHandler.setAllocatedSpace(((Long)ois.readObject()).longValue());
+    }
+
+    public static void confirmDelete(String fileId, String senderId) {
+        HashSet<Integer> peers;
+        if((peers = VolatileDatabase.deletedFiles.get(fileId))!=null) {
+            peers.remove(Integer.valueOf(senderId));
+            if (peers.isEmpty()) {
+                VolatileDatabase.deletedFiles.remove(fileId);
+                System.out.println("DELETE file with id: \""+fileId+"\" fully deleted from backup");
+            }else{
+                System.out.println("HERE EMPTY");
+            }
+        }else{
+            System.out.println("HERE null");
+        }
+    }
+
+    public static boolean needDelete(String fileId, String senderId) {
+        HashSet<Integer> peers;
+        return (peers = VolatileDatabase.deletedFiles.get(fileId)) != null && peers.contains(Integer.valueOf(senderId));
+    }
+
+    public static void networkUpdate(){
+        for (Map.Entry<String, List<FileInfo>> pair : database.entrySet()) {
+            if(backed2fileID.get(pair.getKey())!=null){
+                return;
+            }
+            ProtocolMessage message = new ProtocolMessage(ProtocolMessage.PossibleTypes.BACKEDUP);
+            message.setFileId(pair.getKey());
+            byte[] message_bytes = message.toCharArray();
+
+            System.out.println(new String(message_bytes));
+
+            DatagramPacket packet;
+            try {
+                packet = new DatagramPacket(
+                        message_bytes,
+                        message_bytes.length,
+                        InetAddress.getByName(MulticastChanel.multicast_control_address),
+                        Integer.parseInt(MulticastChanel.multicast_control_port));
+                MulticastChanel.multicast_control_socket.send(packet);
+            } catch (UnknownHostException e) {
+                System.out.println("Error in creating datagram packet");
+                e.printStackTrace();
+            } catch (IOException e) {
+                System.out.println("Error in sending packet to multicast socket");
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void restoreDelete(String fileId){
+        VolatileDatabase.deletedFiles.remove(fileId);
     }
 }

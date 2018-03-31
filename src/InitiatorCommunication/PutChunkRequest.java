@@ -55,8 +55,6 @@ public class PutChunkRequest implements Callable<String>{
             else
                 fileID = this.fileID;
 
-            System.out.println("FIleID2 -> " + fileID);
-
             if(fileID == null){
                 System.out.println("PUTCHUNK filepath points to a directory, stopping protocol...");
                 return "";
@@ -66,6 +64,7 @@ public class PutChunkRequest implements Callable<String>{
 
             if(!VolatileDatabase.backed2fileID.containsKey(fileID))
                 VolatileDatabase.backed2fileID.put(fileID, filePath);
+            VolatileDatabase.restoreDelete(fileID);
 
             message.setChunkNo(String.valueOf(chunkNo));
             message.setReplicationDeg(this.replicationDeg);

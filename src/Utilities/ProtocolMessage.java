@@ -152,6 +152,7 @@ public class ProtocolMessage {
                 break;
             case DELETE:
             case DELETECONF:
+            case BACKEDUP:
                 complement = "\r\n\r\n".getBytes();
                 break;
         }
@@ -159,7 +160,6 @@ public class ProtocolMessage {
         byte[] header = new byte[common.length + complement.length];
         System.arraycopy(common,0,header,0,common.length);
         System.arraycopy(complement,0,header,common.length,complement.length);
-
 
         if (hasBody){
             byte[] result = new byte[header.length + body.length];

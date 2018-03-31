@@ -1,10 +1,7 @@
 package MulticastThreads;
 
 import Executables.Peer;
-import InitiatorCommunication.DeleteHandle;
-import InitiatorCommunication.DiskReclaimHandle;
-import InitiatorCommunication.GetChunkHandle;
-import InitiatorCommunication.GetChunkRequest;
+import InitiatorCommunication.*;
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
 import Utilities.ProtocolMessageParser;
@@ -16,6 +13,8 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.net.UnknownHostException;
+import java.time.Period;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -59,9 +58,6 @@ public class MulticastChanelControl extends MulticastChanel {
                         tcp_socket_address = (packet_received.getAddress()).getHostAddress();
                         */
 
-                        System.out.println("RECEIVED GETCHUNK");
-                        System.out.println("FILEiD: "+ message.getFileId());
-                        System.out.println("ChunkNo: "+ message.getChunkNo());
                         if (!FileHandler.hasChunk(message.getFileId(),Short.valueOf(message.getChunkNo()))){
                             System.out.println("GETCHUNK file is not backed up, ignoring...");
                             continue;
@@ -71,11 +67,17 @@ public class MulticastChanelControl extends MulticastChanel {
                         Peer.threadPool.schedule(new GetChunkHandle(message),delay, TimeUnit.MILLISECONDS);
                         break;
                     case DELETE:
-                        System.out.println(new String(message.toCharArray()));
+                        System.out.println("DELETE fileID: \""+message.getFileId()+"\"");
                         Peer.threadPool.submit(new DeleteHandle(message));
                         break;
                     case DELETECONF:
-                        //VolatileDatabase.confirmDelete();
+                        System.out.println("DELETE confirming fileID:\""+message.getFileId()+"\" from peer:\""+message.getSenderId()+"\"");
+                        VolatileDatabase.confirmDelete(message.getFileId(),message.getSenderId());
+                        break;
+                    case BACKEDUP:
+                        System.out.println("BACKEDUP fileID:\""+message.getFileId()+"\" from peer:\""+message.getSenderId()+"\"");
+                        Peer.threadPool.submit(new BackedupHandle(message));
+                        break;
                     case REMOVED:
                         System.out.println("REMOVED RECEIVED");
                         Peer.threadPool.submit(new DiskReclaimHandle(message.getFileId(),Short.valueOf(message.getChunkNo()),Integer.parseInt(message.getSenderId())));

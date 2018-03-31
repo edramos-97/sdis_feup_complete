@@ -83,18 +83,25 @@ public class Peer {
             System.out.println("This was the state of my internals...");
             System.out.println("RESTORE INITIATED IS EMPTY: "+VolatileDatabase.restoreMemory.isEmpty());
             System.out.println("GETCHUNK WAITING ANSWER IS EMPTY: "+VolatileDatabase.getChunkMemory.isEmpty());
+
+            System.out.println("::::::::::::::: PEER INFO :::::::::::::::");
+            System.out.println("MAX ALLOCATED SPACE AVAILABLE: "+FileHandler.getFreeSpace()/1000.0 +"kB");
+            System.out.println("MAX AVAILABLE STORAGE SPACE: "+FileHandler.getAllocatedSpace()/1000.0+"kB");
+            System.out.println("USED STORAGE SPACE: "+FileHandler.getDiskUsage()/1000.0+"kB\n");
             VolatileDatabase.print(System.out);
 
             try {
                 FileOutputStream fout = new FileOutputStream(FileHandler.dbserPath);
                 ObjectOutputStream oos = new ObjectOutputStream(fout);
                 VolatileDatabase.writeObject(oos);
+                fout.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }));
 
         VolatileDatabase.populateExisting();
+        VolatileDatabase.networkUpdate();
 
         System.out.println("INITIATING PROGRAM");
     }
