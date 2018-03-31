@@ -45,7 +45,7 @@ public class MulticastChanelControl extends MulticastChanel {
         while(true){
             try {
                 multicast_control_socket.receive(packet_received);
-                ProtocolMessage message = ProtocolMessageParser.parseMessage(packet_received.getData());
+                ProtocolMessage message = ProtocolMessageParser.parseMessage(packet_received.getData(),packet_received.getLength());
 
                 if(message == null || message.getSenderId().equals(String.valueOf(Peer.peerID)))
                     continue;

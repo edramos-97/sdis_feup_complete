@@ -41,7 +41,7 @@ public class MulticastChanelRecovery extends MulticastChanel {
             try {
                 multicast_recover_socket.receive(packet_received);
 
-                ProtocolMessage message = ProtocolMessageParser.parseMessage(packet_received.getData());
+                ProtocolMessage message = ProtocolMessageParser.parseMessage(packet_received.getData(),packet_received.getLength());
 
                 if (message == null || Integer.parseInt(message.getSenderId()) == Peer.peerID)continue;
 

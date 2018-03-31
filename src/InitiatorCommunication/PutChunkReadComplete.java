@@ -27,6 +27,7 @@ public class PutChunkReadComplete implements CompletionHandler<Integer, File_IO_
     @Override
     public void completed(Integer result, File_IO_Wrapper attachment) {
         MulticastSocket data_socket = MulticastChanel.multicast_data_socket;
+        attachment.getMessage().body = Arrays.copyOfRange(attachment.getMessage().body,0,result);
         byte[] message_bytes = attachment.getMessage().toCharArray();
 
         DatagramPacket packet;

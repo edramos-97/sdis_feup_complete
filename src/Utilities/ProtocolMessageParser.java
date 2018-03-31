@@ -4,8 +4,8 @@ import java.nio.ByteBuffer;
 
 public class ProtocolMessageParser {
 
-    public static ProtocolMessage parseMessage(byte[] receivedMessage){
-        byte[][] msgFields = splitParts(receivedMessage);
+    public static ProtocolMessage parseMessage(byte[] receivedMessage,int length){
+        byte[][] msgFields = splitParts(receivedMessage,length);
         String[] headerFields = new String(msgFields[0]).split("[ ]+");
         ProtocolMessage.PossibleTypes tempType = verifyType(headerFields[0]);
         ProtocolMessage tempMessage;
@@ -83,13 +83,10 @@ public class ProtocolMessageParser {
         return true;
     }
 
-    private static byte[][] splitParts(byte[] message){
+    private static byte[][] splitParts(byte[] message,int length){
         byte[] key = "\r\n\r\n".getBytes();
         int i = 0;
-        int k = message.length-1;
-        while (message[k] == 0){
-            k--;
-        }
+        int k = length-1;
         for (; i <= message.length - key.length; i++) {
             int j = 0;
             while (j < key.length && message[i + j] == key[j]) {
@@ -108,5 +105,4 @@ public class ProtocolMessageParser {
 
         return result;
     }
-    
 }
