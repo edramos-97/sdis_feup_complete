@@ -3,16 +3,23 @@
 PEER_ID = $1
 echo "Peer ID is: " + PEER_ID
 
-# put here the compile part
+#echo "Changed locations"
+#cd ~/sdis_feup
 
-# compile to out
+# put here the compile part to out
+echo "Compiling to out/"
 
-# all things must refer to ~/Desktop/sdis_feup/out/production/sdis_feup$
-
-echo "Changed locations"
-cd ~/Desktop/sdis_feup
-echo "Opening rmi registry"
-#rmiregistry &
-echo "Sleeping to let rmi registry kick in"
+# opening rmiregistry
+echo "Opening rmiregistry and waiting 1 second"
+cd out/production/sdis_feup
+rmiregistry &
 sleep 1
+
+# going back
+echo "Running peer"
+#echo "java Executables/Peer $1 228.5.6.7 6789 228.5.6.8 6790 228.5.6.9 6791"
 java Executables/Peer $1 228.5.6.7 6789 228.5.6.8 6790 228.5.6.9 6791
+
+
+
+
