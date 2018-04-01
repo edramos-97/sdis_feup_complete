@@ -34,7 +34,7 @@ public class PutChunkRequest implements Callable<String>{
         this.version = version;
     }
 
-    public PutChunkRequest(String filePath, short chunkNo, char replicationDeg, int threadNo, String fileID, String version) throws Exception {
+    PutChunkRequest(String filePath, short chunkNo, char replicationDeg, int threadNo, String fileID, String version) throws Exception {
         if(new File(filePath).isDirectory()){
             throw new Exception("File path specified in PUTCHUNK request is a directory.\nFile Path: "+filePath);
         }
@@ -53,7 +53,7 @@ public class PutChunkRequest implements Callable<String>{
         message.setThreadNo(threadNo);
         try {
             message.setVersion(version);
-            String fileID = "";
+            String fileID;
             if(this.fileID.equals(""))
                 fileID = FileHandler.getFileId(new File(filePath));
             else
@@ -66,7 +66,7 @@ public class PutChunkRequest implements Callable<String>{
 
             message.setFileId(fileID);
 
-            if(!VolatileDatabase.backed2fileID.containsKey(fileID))
+            if(!VolatileDatabase.backed2fileID.containsKey(fileID) && this.fileID.equals(""))
                 VolatileDatabase.backed2fileID.put(fileID, filePath);
             VolatileDatabase.restoreDelete(fileID);
 
@@ -77,7 +77,11 @@ public class PutChunkRequest implements Callable<String>{
 
             Path path = Paths.get(filePath);
             AsynchronousFileChannel file = AsynchronousFileChannel.open(path, StandardOpenOption.READ);
-            file.read(ByteBuffer.wrap(message.body),chunkNo*FileHandler.CHUNK_SIZE,new File_IO_Wrapper(message,file),new PutChunkReadComplete());
+            if(!this.fileID.equals("")){
+                file.read(ByteBuffer.wrap(message.body),0,new File_IO_Wrapper(message,file),new PutChunkReadComplete());
+            }else{
+                file.read(ByteBuffer.wrap(message.body),chunkNo*FileHandler.CHUNK_SIZE,new File_IO_Wrapper(message,file),new PutChunkReadComplete());
+            }
 
         } catch (Exception e) {
             e.printStackTrace();

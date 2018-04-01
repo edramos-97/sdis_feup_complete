@@ -7,6 +7,7 @@ import Utilities.ProtocolMessage;
 import Utilities.VolatileDatabase;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
@@ -21,7 +22,7 @@ public class PutChunkReclaim implements Runnable{
     private char replicationDeg;
     private String fileId;
 
-    public PutChunkReclaim(String fileId, short chunkNo, char replicationDeg) throws Exception {
+    PutChunkReclaim(String fileId, short chunkNo, char replicationDeg) throws Exception {
         this.filePath = FileHandler.getPath(fileId,chunkNo);
 
         if(new File(filePath).isDirectory()){
@@ -37,28 +38,33 @@ public class PutChunkReclaim implements Runnable{
         try {
             if(VolatileDatabase.removedChunk.indexOf(fileId+chunkNo)>=0){
                 VolatileDatabase.removedChunk.remove(fileId+chunkNo);
-                System.out.println("Filepath -> " + filePath);
                 Peer.threadPool.submit(new PutChunkRequest(filePath,chunkNo,replicationDeg,0,fileId,"1.0"));
+                Peer.threadPool.schedule(()->{
+                    ProtocolMessage message;
+                    message = new ProtocolMessage(ProtocolMessage.PossibleTypes.STORED);
+                    message.setFileId(fileId);
+                    try {
+                        message.setChunkNo(String.valueOf(chunkNo));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
-                ProtocolMessage message;
-                message = new ProtocolMessage(ProtocolMessage.PossibleTypes.STORED);
-                message.setFileId(fileId);
-                message.setChunkNo(String.valueOf(chunkNo));
+                    MulticastSocket control_socket = MulticastChanel.multicast_control_socket;
+                    byte[] message_bytes = message.toCharArray();
 
+                    DatagramPacket packet;
 
-                MulticastSocket control_socket = MulticastChanel.multicast_control_socket;
-                byte[] message_bytes = message.toCharArray();
-
-                DatagramPacket packet;
-
-                packet = new DatagramPacket(
-                        message_bytes,
-                        message_bytes.length,
-                        InetAddress.getByName(MulticastChanel.multicast_control_address),
-                        Integer.parseInt(MulticastChanel.multicast_control_port));
-                control_socket.send(packet);
-
-
+                    try {
+                        packet = new DatagramPacket(
+                                message_bytes,
+                                message_bytes.length,
+                                InetAddress.getByName(MulticastChanel.multicast_control_address),
+                                Integer.parseInt(MulticastChanel.multicast_control_port));
+                        control_socket.send(packet);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                },400,TimeUnit.MILLISECONDS);
             }
         } catch (Exception e) {
             e.printStackTrace();

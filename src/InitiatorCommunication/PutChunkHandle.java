@@ -30,12 +30,11 @@ public class PutChunkHandle extends Thread {
             //TODO-Enhancement Backup Checking if already have enough replication degree then its meaningless to store any more
             short current_rep_degree = VolatileDatabase.get_rep_degree(message.getFileId(), Short.valueOf(message.getChunkNo()));
 
-            if (current_rep_degree >= message.getReplicationDeg()){
+            if (current_rep_degree >= message.getReplicationDeg() && !FileHandler.hasChunk(message.getFileId(),Short.valueOf(message.getChunkNo()))){
                 Peer.threadPool.schedule(()-> VolatileDatabase.deleteChunkEntry(message.getFileId(), Short.valueOf(message.getChunkNo())),1000, TimeUnit.MILLISECONDS);
                 return;
             }
         }
-
         message.setMsgType(ProtocolMessage.PossibleTypes.STORED);
         try {
             message.setSenderId(String.valueOf(Peer.peerID));
@@ -52,7 +51,8 @@ public class PutChunkHandle extends Thread {
                     InetAddress.getByName(MulticastChanel.multicast_control_address),
                     Integer.parseInt(MulticastChanel.multicast_control_port));
             MulticastChanel.multicast_control_socket.send(packet);
-            FileHandler.saveChunk(this.message,"backup");
+            if(!FileHandler.hasChunk(message.getFileId(),Short.valueOf(message.getChunkNo())))
+                FileHandler.saveChunk(this.message,"backup");
 
             VolatileDatabase.add_chunk_stored(message.getFileId(), Short.valueOf(message.getChunkNo()), Peer.peerID);
 

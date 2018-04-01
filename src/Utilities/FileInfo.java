@@ -8,11 +8,11 @@ public class FileInfo implements Serializable, Comparable<FileInfo>{
 
     private short requiredRepDeg;
     private short repDeg;
-    public HashSet<Integer> stored_peers = new HashSet<Integer>();
+    public HashSet<Integer> stored_peers = new HashSet<>();
     private short chunkNo;
-    private int size;
+    private int size = 10;
 
-    public FileInfo(short requiredRepDeg, short repDeg, short chunkNo, int size) {
+    FileInfo(short requiredRepDeg, short repDeg, short chunkNo, int size) {
         this.requiredRepDeg = requiredRepDeg;
         this.repDeg = repDeg;
         this.chunkNo = chunkNo;
@@ -21,7 +21,6 @@ public class FileInfo implements Serializable, Comparable<FileInfo>{
 
     public FileInfo(short chunkNo) {
         this.chunkNo = chunkNo;
-
     }
 
     public int getSize(){

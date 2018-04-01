@@ -1,6 +1,7 @@
 package Utilities;
 
 
+import Executables.Peer;
 import MulticastThreads.MulticastChanel;
 
 import java.io.*;
@@ -9,6 +10,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 
 public final class VolatileDatabase implements Serializable{
 
@@ -36,27 +38,27 @@ public final class VolatileDatabase implements Serializable{
     // fileID+ChunkNo
     // used to check if another putchunk has already been sent to not overflow with putchunks
 
-    public static void add_chunk_stored(String fileID, short chunkNumber, int stored_peerID){
+    public static synchronized void add_chunk_stored(String fileID, short chunkNumber, int stored_peerID){
         if(database.containsKey(fileID)){
 
             List<FileInfo> data = database.get(fileID);
 
-            boolean found = false;
+            //boolean found = false;
             for (FileInfo fi : data) {
                 if (fi.getChunkNo() == chunkNumber) {
-                    found = true;
+                    //found = true;
                     fi.incrementRepDeg(stored_peerID);
                     break;
                 }
             }
 
-            if(!found){
+            /*if(!found){
                 FileInfo fi = new FileInfo(chunkNumber);
                 fi.incrementRepDeg(stored_peerID);
                 data.add(fi);
-            }
+            }*/
 
-        }else{
+        }/*else{
             //https://stackoverflow.com/questions/4903611/java-list-sorting-is-there-a-way-to-keep-a-list-permantly-sorted-automatically?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 
             List<FileInfo> entry = create_array();
@@ -67,33 +69,27 @@ public final class VolatileDatabase implements Serializable{
             entry.add(fi);
             database.put(fileID, entry);
 
-        }
+        }*/
     }
 
     public static FileInfo getInfo(String fileID, short chunkNumber){
         if(database.containsKey(fileID)){
-
             List<FileInfo> data = database.get(fileID);
             for (FileInfo fi : data) {
                 if (fi.getChunkNo() == chunkNumber) {
                     return fi;
                 }
             }
-
         }
-
         return null;
     }
 
-    public static ArrayList<FileInfo> getAllFileInfos(String fileID){
+    /*public static ArrayList<FileInfo> getAllFileInfos(String fileID){
         if(database.containsKey(fileID)){
-
-            ArrayList<FileInfo> data = (ArrayList<FileInfo>) database.get(fileID);
-            return data;
+            return (ArrayList<FileInfo>) database.get(fileID);;
         }
-
-        return new ArrayList<FileInfo>();
-    }
+        return new ArrayList<>();
+    }*/
 
     public static ArrayList<OurPair> dump(){
         ArrayList<OurPair> result = new ArrayList<OurPair>(){
@@ -116,9 +112,8 @@ public final class VolatileDatabase implements Serializable{
         return result;
     }
 
-    public static void deleteChunkEntry(String fileID, short chunkNumber){
+    public static synchronized void deleteChunkEntry(String fileID, short chunkNumber){
         if(database.containsKey(fileID)){
-
             List<FileInfo> data = database.get(fileID);
             for (FileInfo fi : data) {
                 if (fi.getChunkNo() == chunkNumber) {
@@ -126,7 +121,6 @@ public final class VolatileDatabase implements Serializable{
                     return;
                 }
             }
-
         }
     }
 
@@ -144,14 +138,19 @@ public final class VolatileDatabase implements Serializable{
 
     public static void chunkDeleted(String fileID, short chunkNumber, int peerID){
         if(database.containsKey(fileID)){
-
             List<FileInfo> data = database.get(fileID);
-            for (FileInfo fi : data) {
-                if (fi.getChunkNo() == chunkNumber) {
-                    fi.decrementReplicationDegree(peerID);
+            if (Peer.peerID == peerID){
+                data.removeIf(fileInfo -> fileInfo.getChunkNo() == chunkNumber);
+                if (data.isEmpty()){
+                    database.remove(fileID);
+                }
+            }else{
+                for (FileInfo fi : data) {
+                    if (fi.getChunkNo() == chunkNumber) {
+                        fi.decrementReplicationDegree(peerID);
+                    }
                 }
             }
-
         }
     }
 
@@ -184,7 +183,6 @@ public final class VolatileDatabase implements Serializable{
                 FileInfo fi = new FileInfo(requiredReplication, (short) 0, chunkNumber, size);
                 data.add(fi);
             }
-
 
         } else {
             //https://stackoverflow.com/questions/4903611/java-list-sorting-is-there-a-way-to-keep-a-list-permantly-sorted-automatically?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa

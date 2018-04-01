@@ -29,9 +29,9 @@ public class FileHandler {
     public static final int CHUNK_SIZE = 64000;
     public static final int MAX_SIZE_MESSAGE = CHUNK_SIZE + 1024;
     private static final String EXTENSION = ".txt";
-    public static String peerPath = System.getProperty("user.home")+File.separator+"Desktop"+File.separator+"sbs_"+ Peer.peerID + File.separator;
+    private static String peerPath = System.getProperty("user.home")+File.separator+"Desktop"+File.separator+"sbs_"+ Peer.peerID + File.separator;
     public static String savePath =  peerPath + "backup" +File.separator;
-    public static String restorePath = peerPath + "restore" +File.separator;
+    private static String restorePath = peerPath + "restore" +File.separator;
     public static String dbserPath =  peerPath + "db.ser";
     private static long allocatedSpace = 1000000000;
 
@@ -155,7 +155,6 @@ public class FileHandler {
         if(paths != null){
             for (File file:paths) {
                 if(file.getName().equals(fileId)) {
-                    System.out.println("GOT HERE");
                     return hasChunk(file,chunkNo);
                 }
             }
@@ -429,16 +428,18 @@ public class FileHandler {
      */
     public static String[] setAllocation(long allocSpace){
         long diskUsage = getDiskUsage();
-        ArrayDeque<String> removedFiles = new ArrayDeque<String>();
+        ArrayDeque<String> removedFiles = new ArrayDeque<>();
         if(diskUsage<allocSpace){
             setAllocatedSpace(allocSpace);
+            System.out.println("SETTING ALOC SPACE:"+allocSpace);
         }else{
             setAllocatedSpace(allocSpace);
             long deleteAmount = diskUsage-allocSpace;
-            System.out.println(deleteAmount);
+            System.out.println("DELETE AMOUNT:"+deleteAmount);
 
             ArrayList<OurPair> DBdump = VolatileDatabase.dump();
             for (OurPair pair: DBdump) {
+                System.out.println("INSIDE DELETE AMOUNT:"+deleteAmount);
                 if(deleteAmount <= 0)
                     break;
 

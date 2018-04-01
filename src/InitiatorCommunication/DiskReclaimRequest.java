@@ -23,12 +23,8 @@ public class DiskReclaimRequest extends Thread{
         if (desiredAllocation<0){
             throw new InvalidParameterException("Disk space allocated must be greater or equal to 0");
         }
-        if(desiredAllocation == 0){
-            this.allocGoal = FileHandler.getDiskUsage();
-        }else{
-            this.allocGoal = desiredAllocation*1000;
-        }
 
+        this.allocGoal = desiredAllocation*1000;
     }
 
     @Override

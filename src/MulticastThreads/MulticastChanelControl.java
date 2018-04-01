@@ -6,6 +6,7 @@ import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
 import Utilities.ProtocolMessageParser;
 import Utilities.VolatileDatabase;
+import com.sun.deploy.security.MozillaJSSNONEwithRSASignature;
 import com.sun.xml.internal.ws.api.model.MEP;
 
 import java.io.File;
@@ -48,6 +49,7 @@ public class MulticastChanelControl extends MulticastChanel {
 
                 switch (message.getMsgType()){
                     case STORED:
+                        System.out.println("RECEIVED STORED CHUNK:"+message.getChunkNo() + "FROM PEER: "+ message.getSenderId());
                         VolatileDatabase.add_chunk_stored(message.getFileId(),Short.valueOf(message.getChunkNo()),Integer.parseInt(message.getSenderId()));
                         break;
                     case GETCHUNK:
