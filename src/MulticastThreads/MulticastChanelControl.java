@@ -10,10 +10,7 @@ import com.sun.xml.internal.ws.api.model.MEP;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.time.Period;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -54,9 +51,6 @@ public class MulticastChanelControl extends MulticastChanel {
                         VolatileDatabase.add_chunk_stored(message.getFileId(),Short.valueOf(message.getChunkNo()),Integer.parseInt(message.getSenderId()));
                         break;
                     case GETCHUNK:
-                        /* TODO RESTORE-ENHANCEMENT
-                        tcp_socket_address = (packet_received.getAddress()).getHostAddress();
-                        */
 
                         if (!FileHandler.hasChunk(message.getFileId(),Short.valueOf(message.getChunkNo()))){
                             System.out.println("GETCHUNK file is not backed up, ignoring...");
@@ -64,7 +58,7 @@ public class MulticastChanelControl extends MulticastChanel {
                         }
                         VolatileDatabase.getChunkMemory.add(message.getFileId()+message.getChunkNo());
                         int delay = new Random().nextInt(400);
-                        Peer.threadPool.schedule(new GetChunkHandle(message),delay, TimeUnit.MILLISECONDS);
+                        Peer.threadPool.schedule(new GetChunkHandle(message, packet_received),delay, TimeUnit.MILLISECONDS);
                         break;
                     case DELETE:
                         System.out.println("DELETE fileID: \""+message.getFileId()+"\"");

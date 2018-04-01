@@ -64,21 +64,22 @@ public class Control implements ControlInterface {
         }
         System.out.println("Started GETCHUNK for fileID:\""+fileId+"\"");
 
+        String version = enhanced?"1.0":"1.1";
 
-        /* TODO RESTORE-ENHANCEMENT
-        if(Peer.VERSION.equals("1.1")){
-            MulticastChanel.tcp_socket_port = 44677;
+        // TODO RESTORE-ENHANCEMENT
+        if(version.equals("1.1")){
+            ServerSocket tcp_ss = null;
             try {
-                MulticastChanel.tcp_ss = new ServerSocket(MulticastChanel.tcp_socket_port);
+                tcp_ss = new ServerSocket(5678);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            Peer.threadPool.submit(new RestoreEnhancement(fileId, file.getName()));
-        }*/
+            Peer.threadPool.submit(new RestoreEnhancement(tcp_ss));
+        }
 
         //initialize getchunk request in data base
         VolatileDatabase.restoreMemory.put(fileId,new Integer[]{-1,-1});
-        String version = enhanced?"1.0":"1.1";
+
         Peer.threadPool.submit(new GetChunkRequest(fileId,(short)0,file.getName(),version));
         return true;
     }
