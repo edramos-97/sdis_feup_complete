@@ -15,9 +15,11 @@ import java.net.UnknownHostException;
 public class DeleteRequest implements Runnable{
 
     File file;
+    String version;
 
-    public DeleteRequest(String path){
+    public DeleteRequest(String path, String version){
         file = new File(path);
+        this.version = version;
     }
 
     @Override
@@ -48,7 +50,8 @@ public class DeleteRequest implements Runnable{
                 e.printStackTrace();
             }
 
-            VolatileDatabase.deleteFile(message.getFileId());
+            if(version.equals("1.1"))
+                VolatileDatabase.deleteFile(message.getFileId());
 
             if(FileHandler.removeFolder(file)){
                 System.out.println("DELETE could not delete local copy of the requested file, terminating request...");

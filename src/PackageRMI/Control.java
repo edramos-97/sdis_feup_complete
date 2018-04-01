@@ -87,7 +87,7 @@ public class Control implements ControlInterface {
     @Override
     public boolean delete(String path, boolean enhanced) throws RemoteException {
         String version = enhanced?"1.0":"1.1";
-        Peer.threadPool.submit(new DeleteRequest(path));
+        Peer.threadPool.submit(new DeleteRequest(path, version));
         return true;
     }
 
