@@ -36,23 +36,16 @@ public class RestoreEnhancement implements Runnable {
                 BufferedReader inFromOtherPeer = new BufferedReader(new InputStreamReader(receiving_socket.getInputStream()));
 
                 char[] read_chars = new char[FileHandler.MAX_SIZE_MESSAGE];
-                inFromOtherPeer.read(read_chars, 0, FileHandler.MAX_SIZE_MESSAGE);
+                int actually_read = inFromOtherPeer.read(read_chars, 0, FileHandler.MAX_SIZE_MESSAGE);
                 System.out.println("READ SOME BYTES YE");
                 System.out.println(read_chars);
-                System.out.println(read_chars.length);
+                System.out.println(actually_read);
                 System.out.println("READ SOME BYTES YEND");
 
-                ArrayList<Byte> read_bytes_w = new ArrayList<>();
+                byte[] read_bytes = new byte[actually_read];
 
-                for(int i = 0; i < read_chars.length; i++){
-                    if(read_chars[i] == ' ')
-                        break;
-                    read_bytes_w.add((byte) read_chars[i]);
-                }
-
-                byte[] read_bytes = new byte[read_bytes_w.size()];
-                for(int i = 0; i < read_bytes_w.size(); i++){
-                    read_bytes[i] = read_bytes_w.get(i);
+                for(int i = 0; i < actually_read; i++) {
+                    read_bytes[i] = (byte) read_chars[i];
                 }
 
                 ProtocolMessage message = ProtocolMessageParser.parseMessage(read_bytes,read_bytes.length);

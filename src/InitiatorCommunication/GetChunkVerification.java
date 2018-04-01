@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class GetChunkVerification implements Runnable {
 
     private static short TIMEOUT = 1000;
-    private static short MAX_TRIES = 2;
+    private static short MAX_TRIES = 5;
     private ProtocolMessage message;
     private int tryNo;
     private String fileName;
