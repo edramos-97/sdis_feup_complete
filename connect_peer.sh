@@ -1,24 +1,35 @@
 #!/usr/bin/env bash
 
-PEER_ID = $1
-echo "Peer ID is: " + PEER_ID
+#PEER_ID = $1
+for var in "$@"
+do
+    echo "Peer ID is: " + "$var"
+done
 
-#echo "Changed locations"
-#cd ~/sdis_feup
+echo "Changed locations"
+cd ~/sdis_feup
+
+echo "Creating out/"
+mkdir out
 
 # put here the compile part to out
 echo "Compiling to out/"
+javac -d ./out src/*/*.java
 
 # opening rmiregistry
 echo "Opening rmiregistry and waiting 1 second"
-cd out/production/sdis_feup
+cd out/
 rmiregistry &
 sleep 1
 
 # going back
-echo "Running peer"
-#echo "java Executables/Peer $1 228.5.6.7 6789 228.5.6.8 6790 228.5.6.9 6791"
-java Executables/Peer $1 228.5.6.7 6789 228.5.6.8 6790 228.5.6.9 6791
+echo "Running peer(s)"
+for var in "$@"
+do
+    java Executables/Peer "$var" 228.5.6.7 6789 228.5.6.8 6790 228.5.6.9 6791
+done
+# echo "java Executables/Peer $1 228.5.6.7 6789 228.5.6.8 6790 228.5.6.9 6791"
+
 
 
 

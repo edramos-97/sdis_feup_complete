@@ -43,6 +43,16 @@ public final class VolatileDatabase implements Serializable{
 
             List<FileInfo> data = database.get(fileID);
 
+            for(Iterator<FileInfo> iteratorFileInfo = data.iterator(); iteratorFileInfo.hasNext();){
+                FileInfo fi = iteratorFileInfo.next();
+                if(fi.getChunkNo() == chunkNumber){
+                    fi.incrementRepDeg(stored_peerID);
+                    Collections.sort(data);
+                    break;
+                }
+            }
+
+            /*
             //boolean found = false;
             for (FileInfo fi : data) {
                 if (fi.getChunkNo() == chunkNumber) {
@@ -51,6 +61,7 @@ public final class VolatileDatabase implements Serializable{
                     break;
                 }
             }
+            */
 
             /*if(!found){
                 FileInfo fi = new FileInfo(chunkNumber);
@@ -145,9 +156,13 @@ public final class VolatileDatabase implements Serializable{
                     database.remove(fileID);
                 }
             }else{
-                for (FileInfo fi : data) {
-                    if (fi.getChunkNo() == chunkNumber) {
+
+                for (Iterator<FileInfo> iteratorFileInfo = data.iterator(); iteratorFileInfo.hasNext();){
+                    FileInfo fi = iteratorFileInfo.next();
+                    if(fi.getChunkNo() == chunkNumber){
                         fi.decrementReplicationDegree(peerID);
+                        Collections.sort(data);
+                        break;
                     }
                 }
             }
@@ -166,15 +181,20 @@ public final class VolatileDatabase implements Serializable{
         };
     }
 
-    public synchronized static void add_chunk_putchunk(String fileID, short chunkNumber, short requiredReplication, int size) {
+    public static synchronized void add_chunk_putchunk(String fileID, short chunkNumber, short requiredReplication, int size) {
+
+
         if (database.containsKey(fileID)) {
             List<FileInfo> data = database.get(fileID);
 
             boolean found = false;
-            for (FileInfo fi : data) {
-                if (fi.getChunkNo() == chunkNumber) {
+
+            for(Iterator<FileInfo> iteratorFileInfo = data.iterator(); iteratorFileInfo.hasNext();){
+                FileInfo fi = iteratorFileInfo.next();
+                if (fi.getChunkNo() == chunkNumber){
                     found = true;
                     fi.setRequiredRepDeg(requiredReplication);
+                    Collections.sort(data);
                     break;
                 }
             }
