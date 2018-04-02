@@ -42,6 +42,7 @@ public final class VolatileDatabase implements Serializable{
 
             List<FileInfo> data = database.get(fileID);
 
+            /*
             for(Iterator<FileInfo> iteratorFileInfo = data.iterator(); iteratorFileInfo.hasNext();){
                 FileInfo fi = iteratorFileInfo.next();
                 if(fi.getChunkNo() == chunkNumber){
@@ -49,9 +50,9 @@ public final class VolatileDatabase implements Serializable{
                     Collections.sort(data);
                     break;
                 }
-            }
+            } */
 
-            /*
+
             //boolean found = false;
             for (FileInfo fi : data) {
                 if (fi.getChunkNo() == chunkNumber) {
@@ -60,7 +61,7 @@ public final class VolatileDatabase implements Serializable{
                     break;
                 }
             }
-            */
+
 
             /*if(!found){
                 FileInfo fi = new FileInfo(chunkNumber);
@@ -156,8 +157,17 @@ public final class VolatileDatabase implements Serializable{
                 }
             }else{
 
+                /*
                 for (Iterator<FileInfo> iteratorFileInfo = data.iterator(); iteratorFileInfo.hasNext();){
                     FileInfo fi = iteratorFileInfo.next();
+                    if(fi.getChunkNo() == chunkNumber){
+                        fi.decrementReplicationDegree(peerID);
+                        Collections.sort(data);
+                        break;
+                    }
+                }*/
+
+                for(FileInfo fi : data){
                     if(fi.getChunkNo() == chunkNumber){
                         fi.decrementReplicationDegree(peerID);
                         Collections.sort(data);
@@ -188,8 +198,18 @@ public final class VolatileDatabase implements Serializable{
 
             boolean found = false;
 
+            /*
             for(Iterator<FileInfo> iteratorFileInfo = data.iterator(); iteratorFileInfo.hasNext();){
                 FileInfo fi = iteratorFileInfo.next();
+                if (fi.getChunkNo() == chunkNumber){
+                    found = true;
+                    fi.setRequiredRepDeg(requiredReplication);
+                    Collections.sort(data);
+                    break;
+                }
+            } */
+
+            for(FileInfo fi: data){
                 if (fi.getChunkNo() == chunkNumber){
                     found = true;
                     fi.setRequiredRepDeg(requiredReplication);
