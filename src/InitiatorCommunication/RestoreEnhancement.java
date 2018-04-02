@@ -13,19 +13,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class RestoreEnhancement implements Runnable {
     // TODO RESTORE-ENHANCEMENT
-    private ServerSocket tcp_ss;
-
     public static ConcurrentHashMap<String, ProtocolMessage> can_save_these = new ConcurrentHashMap<>();
 
-    public RestoreEnhancement(ServerSocket tcp_ss) {
-        this.tcp_ss = tcp_ss;
+    public RestoreEnhancement() {
+
     }
 
     @Override
     public void run() {
         while(true) {
             try {
-
+                ServerSocket tcp_ss = new ServerSocket(5678);
                 System.out.println("Running and reading from socket");
                 //ServerSocket tcp_ss = new ServerSocket()
                 Socket receiving_socket = tcp_ss.accept();
@@ -54,6 +52,7 @@ public class RestoreEnhancement implements Runnable {
                 //FileHandler.saveChunk(message,"restore");
 
                 receiving_socket.close();
+                tcp_ss.close();
 
             } catch (IOException e) {
                 System.out.println("There was an error accepting socket...");
