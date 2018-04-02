@@ -46,7 +46,8 @@ public class GetChunkHandle extends Thread {
 
                     DataOutputStream dos = new DataOutputStream(cs.getOutputStream());
                     dos.write(aux_message.toCharArray());
-                    dos.writeBytes("\n");
+                    //dos.writeBytes("\n");
+                    cs.close();
 
                 }else{
                     message.setBody(FileHandler.getChunk(message.getFileId(),Short.valueOf(message.getChunkNo())));

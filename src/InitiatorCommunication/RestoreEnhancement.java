@@ -1,18 +1,14 @@
 package InitiatorCommunication;
 
-import MulticastThreads.MulticastChanel;
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
 import Utilities.ProtocolMessageParser;
-import Utilities.VolatileDatabase;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class RestoreEnhancement implements Runnable {
@@ -37,16 +33,17 @@ public class RestoreEnhancement implements Runnable {
 
                 char[] read_chars = new char[FileHandler.MAX_SIZE_MESSAGE];
                 int actually_read = inFromOtherPeer.read(read_chars, 0, FileHandler.MAX_SIZE_MESSAGE);
-                System.out.println("READ SOME BYTES YE");
-                System.out.println(read_chars);
-                System.out.println(actually_read);
-                System.out.println("READ SOME BYTES YEND");
+                //System.out.println("READ SOME BYTES YE");
+                //System.out.println(read_chars);
+                //System.out.println(actually_read);
+                //System.out.println("READ SOME BYTES YEND");
 
                 byte[] read_bytes = new byte[actually_read];
 
                 for(int i = 0; i < actually_read; i++) {
                     read_bytes[i] = (byte) read_chars[i];
                 }
+
 
                 ProtocolMessage message = ProtocolMessageParser.parseMessage(read_bytes,read_bytes.length);
 
