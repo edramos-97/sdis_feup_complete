@@ -2,7 +2,6 @@ package InitiatorCommunication;
 
 import Executables.Peer;
 import MulticastThreads.MulticastChanel;
-import Utilities.FileHandler;
 import Utilities.File_IO_Wrapper;
 import Utilities.VolatileDatabase;
 
@@ -11,16 +10,9 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
-
-import static java.nio.file.StandardOpenOption.*;
 
 
 public class PutChunkReadComplete implements CompletionHandler<Integer, File_IO_Wrapper>{
@@ -32,6 +24,9 @@ public class PutChunkReadComplete implements CompletionHandler<Integer, File_IO_
 
         DatagramPacket packet;
         try {
+
+            VolatileDatabase.add_chunk_putchunk(attachment.getMessage().getFileId(), Short.valueOf(attachment.getMessage().getChunkNo()), attachment.getMessage().getReplicationDeg(), -1);
+
             attachment.getFile().close();
             packet = new DatagramPacket(
                     message_bytes,
@@ -40,7 +35,7 @@ public class PutChunkReadComplete implements CompletionHandler<Integer, File_IO_
                     Integer.parseInt(MulticastChanel.multicast_data_port));
             data_socket.send(packet);
 
-            VolatileDatabase.add_chunk_putchunk(attachment.getMessage().getFileId(), Short.valueOf(attachment.getMessage().getChunkNo()), attachment.getMessage().getReplicationDeg(), -1);
+            //VolatileDatabase.add_chunk_putchunk(attachment.getMessage().getFileId(), Short.valueOf(attachment.getMessage().getChunkNo()), attachment.getMessage().getReplicationDeg(), -1);
 
         } catch (UnknownHostException e) {
             System.out.println("error in creating datagram packet");
