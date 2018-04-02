@@ -42,7 +42,7 @@ public class RestoreEnhancement implements Runnable {
                 //System.out.println("READ SOME BYTES YEND");
 
                 byte[] read_bytes = Arrays.copyOfRange(read_chars, 0, actually_read);
-                
+
                 ProtocolMessage message = ProtocolMessageParser.parseMessage(read_bytes,read_bytes.length);
 
                 // Not getting here so not really receiving stuff on tcp connection
