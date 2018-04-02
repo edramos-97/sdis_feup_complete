@@ -8,9 +8,11 @@ public class StateOfPeer implements Serializable, Remote {
 
     private int PeerID;
     private ArrayList<StoredFile> files = new ArrayList<>();
+    private String info;
 
-    public StateOfPeer(int pid){
+    public StateOfPeer(int pid,String info){
         PeerID = pid;
+        this.info = info;
     }
 
     public StateOfPeer(){

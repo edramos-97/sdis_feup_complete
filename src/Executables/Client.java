@@ -2,7 +2,6 @@ package Executables;
 
 import PackageRMI.ControlInterface;
 import Utilities.FileHandler;
-import Utilities.StateOfPeer;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -68,9 +67,7 @@ public class Client {
 
             rmi_stub.say_this("STATE CALLED");
 
-            StateOfPeer sop = (StateOfPeer) rmi_stub.getState();
-            sop.printState();
-
+            System.out.println(rmi_stub.getState());
             return;
         }
 

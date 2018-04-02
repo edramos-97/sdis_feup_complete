@@ -2,13 +2,14 @@ package PackageRMI;
 
 import Executables.Peer;
 import InitiatorCommunication.*;
-import Utilities.*;
+import Utilities.FileHandler;
+import Utilities.VolatileDatabase;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.rmi.RemoteException;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 public class Control implements ControlInterface {
 
@@ -77,22 +78,47 @@ public class Control implements ControlInterface {
     }
 
     @Override
-    public boolean delete(String path, boolean enhanced) throws RemoteException {
+    public boolean delete(String path, boolean enhanced) {
         String version = enhanced?"1.0":"1.1";
         Peer.threadPool.submit(new DeleteRequest(path, version));
         return true;
     }
 
     @Override
-    public boolean reclaim(long desiredAllocation) throws RemoteException {
+    public boolean reclaim(long desiredAllocation) {
         Peer.threadPool.submit(new DiskReclaimRequest(desiredAllocation));
         return false;
     }
 
     @Override
-    public StateOfPeer getState() throws RemoteException {
+    public String getState() {
 
-        StateOfPeer sop = new StateOfPeer(Peer.peerID);
+        ByteArrayOutputStream myStringArray = new ByteArrayOutputStream();
+        PrintStream ps = null;
+        try {
+            ps = new PrintStream(myStringArray, true, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        if (ps == null){
+            return "ERROR IN PRINT STREAM INITIALIZATION";
+        }
+
+        ps.println("This was the state of my internals...");
+        ps.println("RESTORE INITIATED IS EMPTY: "+VolatileDatabase.restoreMemory.isEmpty());
+        ps.println("GETCHUNK WAITING ANSWER IS EMPTY: "+VolatileDatabase.getChunkMemory.isEmpty());
+
+        ps.println("::::::::::::::: PEER INFO :::::::::::::::");
+        ps.println("MAX ALLOCATED SPACE AVAILABLE: "+FileHandler.getFreeSpace()/1000.0 +"kB");
+        ps.println("MAX AVAILABLE STORAGE SPACE: "+FileHandler.getAllocatedSpace()/1000.0+"kB");
+        ps.println("USED STORAGE SPACE: "+FileHandler.getDiskUsage()/1000.0+"kB\n");
+        VolatileDatabase.print(ps);
+
+        ps.close();
+        return new String(myStringArray.toByteArray(), StandardCharsets.UTF_8);
+
+        /*StateOfPeer sop = new StateOfPeer(Peer.peerID);
 
         ConcurrentHashMap<String, List<FileInfo>> database = VolatileDatabase.get_database();
         ConcurrentHashMap<String, String> backed_files = VolatileDatabase.get_backed_up();
@@ -133,6 +159,6 @@ public class Control implements ControlInterface {
             sop.addFile(sf);
         }
 
-        return sop;
+        return sop;*/
     }
 }
