@@ -11,9 +11,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.net.UnknownHostException;
-import java.nio.channels.AsynchronousChannel;
-import java.nio.channels.AsynchronousFileChannel;
 import java.util.concurrent.TimeUnit;
 
 public class PutChunkVerification implements Runnable {
@@ -53,6 +50,7 @@ public class PutChunkVerification implements Runnable {
                             InetAddress.getByName(MulticastChanel.multicast_data_address),
                             Integer.parseInt(MulticastChanel.multicast_data_port));
                     data_socket.send(packet);
+                    VolatileDatabase.add_chunk_putchunk(message.getFileId(), Short.valueOf(message.getChunkNo()), message.getReplicationDeg(), -1);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
