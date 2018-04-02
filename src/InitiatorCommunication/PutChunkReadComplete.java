@@ -25,7 +25,7 @@ public class PutChunkReadComplete implements CompletionHandler<Integer, File_IO_
         DatagramPacket packet;
         try {
 
-            VolatileDatabase.add_chunk_putchunk(attachment.getMessage().getFileId(), Short.valueOf(attachment.getMessage().getChunkNo()), attachment.getMessage().getReplicationDeg(), -1);
+            //VolatileDatabase.add_chunk_putchunk(attachment.getMessage().getFileId(), Short.valueOf(attachment.getMessage().getChunkNo()), attachment.getMessage().getReplicationDeg(), -1);
 
             attachment.getFile().close();
             packet = new DatagramPacket(
@@ -35,7 +35,7 @@ public class PutChunkReadComplete implements CompletionHandler<Integer, File_IO_
                     Integer.parseInt(MulticastChanel.multicast_data_port));
             data_socket.send(packet);
 
-            //VolatileDatabase.add_chunk_putchunk(attachment.getMessage().getFileId(), Short.valueOf(attachment.getMessage().getChunkNo()), attachment.getMessage().getReplicationDeg(), -1);
+            VolatileDatabase.add_chunk_putchunk(attachment.getMessage().getFileId(), Short.valueOf(attachment.getMessage().getChunkNo()), attachment.getMessage().getReplicationDeg(), -1);
 
         } catch (UnknownHostException e) {
             System.out.println("error in creating datagram packet");
