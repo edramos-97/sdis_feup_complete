@@ -10,7 +10,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Predicate;
 
 public final class VolatileDatabase implements Serializable{
 
@@ -290,7 +289,6 @@ public final class VolatileDatabase implements Serializable{
             fin.close();
         } catch (IOException e){
             System.out.println("Data base wasn't present, creating an empty one");
-            e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
