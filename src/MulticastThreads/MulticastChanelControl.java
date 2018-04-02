@@ -1,14 +1,19 @@
 package MulticastThreads;
 
 import Executables.Peer;
-import InitiatorCommunication.*;
+import InitiatorCommunication.BackedupHandle;
+import InitiatorCommunication.DeleteHandle;
+import InitiatorCommunication.DiskReclaimHandle;
+import InitiatorCommunication.GetChunkHandle;
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
 import Utilities.ProtocolMessageParser;
 import Utilities.VolatileDatabase;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -45,11 +50,9 @@ public class MulticastChanelControl extends MulticastChanel {
 
                 switch (message.getMsgType()){
                     case STORED:
-                        System.out.println("RECEIVED STORED CHUNK:"+message.getChunkNo() + "FROM PEER: "+ message.getSenderId());
                         VolatileDatabase.add_chunk_stored(message.getFileId(),Short.valueOf(message.getChunkNo()),Integer.parseInt(message.getSenderId()));
                         break;
                     case GETCHUNK:
-
                         if (!FileHandler.hasChunk(message.getFileId(),Short.valueOf(message.getChunkNo()))){
                             System.out.println("GETCHUNK file is not backed up, ignoring...");
                             continue;

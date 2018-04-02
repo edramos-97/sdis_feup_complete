@@ -334,12 +334,8 @@ public final class VolatileDatabase implements Serializable{
             peers.remove(Integer.valueOf(senderId));
             if (peers.isEmpty()) {
                 VolatileDatabase.deletedFiles.remove(fileId);
-                System.out.println("DELETE file with id: \""+fileId+"\" fully deleted from backup");
-            }else{
-                System.out.println("HERE EMPTY");
+                System.out.println("DELETE file with id: \"" + fileId + "\" fully deleted from backup");
             }
-        }else{
-            System.out.println("HERE null");
         }
     }
 

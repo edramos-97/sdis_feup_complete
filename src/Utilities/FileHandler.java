@@ -4,7 +4,10 @@ import Executables.Peer;
 import InitiatorCommunication.PutChunkHandleComplete;
 
 import javax.xml.bind.DatatypeConverter;
-import java.io.*;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -372,7 +375,6 @@ public class FileHandler {
                 //file.close();
                 return;
             }
-            System.out.println("CHUNKS AMOUNT: "+chunks.length);
             for (File chunk : chunks) {
                 try {
                     byte[] chunkBytes = new byte[FileHandler.CHUNK_SIZE];
@@ -431,15 +433,12 @@ public class FileHandler {
         ArrayDeque<String> removedFiles = new ArrayDeque<>();
         if(diskUsage<allocSpace){
             setAllocatedSpace(allocSpace);
-            System.out.println("SETTING ALOC SPACE:"+allocSpace);
         }else{
             setAllocatedSpace(allocSpace);
             long deleteAmount = diskUsage-allocSpace;
-            System.out.println("DELETE AMOUNT:"+deleteAmount);
 
             ArrayList<OurPair> DBdump = VolatileDatabase.dump();
             for (OurPair pair: DBdump) {
-                System.out.println("INSIDE DELETE AMOUNT:"+deleteAmount);
                 if(deleteAmount <= 0)
                     break;
 
@@ -450,8 +449,6 @@ public class FileHandler {
 
                 deleteAmount -= sizeOfChunk;
             }
-            //TODO get all backed files, sort by desiredRepDeg-repDeg, start deleting until deletions
-            //make for the difference of deleted space and allocated space, possibly output deleted fileChunks
         }
         return removedFiles.toArray(new String[]{});
     }

@@ -1,19 +1,16 @@
 package MulticastThreads;
 
 import Executables.Peer;
-import InitiatorCommunication.PutChunkHandle;
 import InitiatorCommunication.RestoreEnhancement;
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
 import Utilities.ProtocolMessageParser;
 import Utilities.VolatileDatabase;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.time.Period;
 
 public class MulticastChanelRecovery extends MulticastChanel {
 
@@ -48,27 +45,17 @@ public class MulticastChanelRecovery extends MulticastChanel {
 
                 switch (message.getMsgType()){
                     case CHUNK:
-                        System.out.println("RECEIVED A CHUNK HELLO");
                         if(VolatileDatabase.restoreMemory.get(message.getFileId())==null) {
                             VolatileDatabase.getChunkMemory.remove(message.getFileId() + message.getChunkNo());
                         }else{
-                            System.out.println("SAVING MESSAGE");
                             if(message.getVersion().equals("1.1")){
-                                System.out.println("SAVING MESSAGE 1.1");
-                                System.out.println("I SEARCHED --" + message.getFileId()+message.getChunkNo());
                                 if(RestoreEnhancement.can_save_these.containsKey(message.getFileId()+message.getChunkNo())){
                                     message = RestoreEnhancement.can_save_these.remove(message.getFileId()+message.getChunkNo());
-
-                                    System.out.println("SAVED ENH CHUNK SIZE: "+message.getBody().length);
                                     VolatileDatabase.restoreMemory.put(message.getFileId(),new Integer[]{Integer.parseInt(message.getChunkNo()),message.getBody().length});
                                     FileHandler.saveChunk(message,"restore");
                                 }
-                                else{
-                                    System.out.println("SAD WORLD");
-                                }
                                 // launch chunk handle
                             }else{
-                                System.out.println("SAVED CHUNK SIZE: "+message.getBody().length);
                                 VolatileDatabase.restoreMemory.put(message.getFileId(),new Integer[]{Integer.parseInt(message.getChunkNo()),message.getBody().length});
                                 FileHandler.saveChunk(message,"restore");
                             }
