@@ -170,7 +170,7 @@ public final class VolatileDatabase implements Serializable{
                 for(FileInfo fi : data){
                     if(fi.getChunkNo() == chunkNumber){
                         fi.decrementReplicationDegree(peerID);
-                        Collections.sort(data);
+                        //Collections.sort(data);
                         break;
                     }
                 }
@@ -213,7 +213,7 @@ public final class VolatileDatabase implements Serializable{
                 if (fi.getChunkNo() == chunkNumber){
                     found = true;
                     fi.setRequiredRepDeg(requiredReplication);
-                    Collections.sort(data);
+                    //Collections.sort(data);
                     break;
                 }
             }
