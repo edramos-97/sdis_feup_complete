@@ -1,8 +1,6 @@
 package InitiatorCommunication;
 
-import Executables.Peer;
 import Utilities.File_IO_Wrapper;
-import Utilities.ProtocolMessage;
 
 import java.io.IOException;
 import java.nio.channels.CompletionHandler;
@@ -14,7 +12,8 @@ public class PutChunkHandleComplete implements CompletionHandler<Integer, File_I
         try {
             attachment.getFile().close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("PutChunkHandleComplete - Error: " + e.toString());
+            //e.printStackTrace();
         }
     }
 
@@ -24,7 +23,8 @@ public class PutChunkHandleComplete implements CompletionHandler<Integer, File_I
         try {
             attachment.getFile().close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("PutChunkHandleComplete - Error: " + e.toString());
+            //e.printStackTrace();
         }
     }
 }

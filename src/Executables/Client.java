@@ -10,17 +10,12 @@ import java.rmi.registry.Registry;
 
 public class Client {
     public static void main(String[] args) {
-//        java Executables.Client <peer_access_point> <sub_protocol> <operand_1> <operand_2>
-//        <peer_access_point> depends on the implementation
-        //System.out.println("It works");
 
         if(args.length < 2){
             System.out.println("usage: java Executables.Client <peer_access_point> <sub_protocol> <operand_1> <operand_2>");
             return;
         }
 
-        // localhost:peer10 BACKUP teste.txt 3
-        // TODO: change address:name -> to -> //host:port/name in args[0]
         String[] access_and_name = args[0].split("/+");
         String[] host_and_port = access_and_name[1].split(":");
 
@@ -52,7 +47,7 @@ public class Client {
 
         } catch (Exception e) {
             System.err.println("Executables.Client exception: " + e.toString());
-            e.printStackTrace();
+            //e.printStackTrace();
         }
 
 

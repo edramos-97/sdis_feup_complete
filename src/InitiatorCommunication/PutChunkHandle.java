@@ -9,10 +9,7 @@ import Utilities.VolatileDatabase;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.net.MulticastSocket;
 import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 public class PutChunkHandle extends Thread {
@@ -57,11 +54,11 @@ public class PutChunkHandle extends Thread {
             VolatileDatabase.add_chunk_stored(message.getFileId(), Short.valueOf(message.getChunkNo()), Peer.peerID);
 
         } catch (UnknownHostException e) {
-            System.out.println("Error in creating datagram packet");
-            e.printStackTrace();
+            System.out.println("PutChunkHandle - Error in creating datagram packet");
+            //e.printStackTrace();
         } catch (IOException e) {
-            System.out.println("Error in sending packet to multicast socket");
-            e.printStackTrace();
+            System.out.println("PutChunkHandle - Error in sending packet to multicast socket");
+            //e.printStackTrace();
         }
 
 

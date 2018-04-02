@@ -34,7 +34,6 @@ public class Peer {
         if(args.length < 7){
             System.out.println("one of two usages:");
             System.out.println("usage -> java Executables.Peer PeerID  <MC_addr> <MC_port> <MDB_addr> <MDB_port> <MDR_addr> <MDR_port>");
-            //System.out.println("usage_2 -> java Executables.Peer PeerID  <MC_addr> <MC_port> <MDB_addr> <MDB_port> <MDR_addr> <MDR_port> <sub_protocol> <opnd_1> <opnd_2>");
             System.out.println("exiting...");
             return;
         }
@@ -51,7 +50,7 @@ public class Peer {
             mcr = new MulticastChanelRecovery(args[1],args[2],args[3],args[4],args[5],args[6], peerID);
 
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             System.out.println("Error creating main threads!");
             System.out.println("exiting...");
             return;
@@ -71,8 +70,8 @@ public class Peer {
             String name = "peer"+peerID;
             registry.rebind(name, control_rmi_stub);
         } catch (RemoteException e) {
-            e.printStackTrace();
-            System.out.println("Error in RMI setup.");
+            //e.printStackTrace();
+            System.out.println("Error in RMI setup. Already running?");
         }
 
         FileHandler.startPeerFileSystem();
@@ -89,10 +88,10 @@ public class Peer {
             VolatileDatabase.print(System.out);
 
             try {
-                FileOutputStream fout = new FileOutputStream(FileHandler.dbserPath);
-                ObjectOutputStream oos = new ObjectOutputStream(fout);
+                FileOutputStream file_out = new FileOutputStream(FileHandler.dbserPath);
+                ObjectOutputStream oos = new ObjectOutputStream(file_out);
                 VolatileDatabase.writeObject(oos);
-                fout.close();
+                file_out.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

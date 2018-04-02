@@ -36,7 +36,6 @@ public class MulticastChanelControl extends MulticastChanel {
     public void run() {
         // listen on control
 
-
         byte[] raw_message = new byte[FileHandler.MAX_SIZE_MESSAGE];
         DatagramPacket packet_received = new DatagramPacket(raw_message, FileHandler.MAX_SIZE_MESSAGE);
 
@@ -82,7 +81,7 @@ public class MulticastChanelControl extends MulticastChanel {
                         break;
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
                 System.out.println("MCC+" + peerID +": There was an error reading from the socket!");
             }
         }

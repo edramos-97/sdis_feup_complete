@@ -2,7 +2,6 @@ package InitiatorCommunication;
 
 import Executables.Peer;
 import MulticastThreads.MulticastChanel;
-import MulticastThreads.MulticastChanelControl;
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
 import Utilities.VolatileDatabase;
@@ -10,7 +9,6 @@ import Utilities.VolatileDatabase;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
@@ -26,19 +24,11 @@ public class GetChunkVerification implements Runnable {
         this.tryNo = i;
         this.message = message;
         this.fileName = fileName;
-
-        //TODO create tcp socket
-
     }
 
     @Override
     public void run() {
-        //if (message.getVersion().equals("1.1")){
-            //TODO call tcp socket accept to wait for connection
-            //TODO possibly use socket.setSoTimeout
-            //TODO do some stuff to start data connection and get data
-            //TODO save data
-        //}else{
+
             Integer[] info  = VolatileDatabase.restoreMemory.get(message.getFileId());
             //check if current chunk was received
 
@@ -56,13 +46,12 @@ public class GetChunkVerification implements Runnable {
                     return;
                 }
             }
-        //}
         tryNo++;
         if (tryNo >= MAX_TRIES){
             VolatileDatabase.restoreMemory.remove(message.getFileId());
             System.out.println("GETCHUNK for fileID:\""+message.getFileId()+"\" chunkNo:"+message.getChunkNo()+" finished unsuccessfully\nDidn't receive a CHUNK message after "+MAX_TRIES+" tries");
         }else{
-            System.out.println("GETCHUNK for fileID:\"" + message.getFileId() + "\" chunkNo:" + message.getChunkNo() + " failed to get an answer on try No:" + (tryNo-1) + ", retrying...");
+            //System.out.println("GETCHUNK for fileID:\"" + message.getFileId() + "\" chunkNo:" + message.getChunkNo() + " failed to get an answer on try No:" + (tryNo-1) + ", retrying...");
 
             //resend message
             byte[] message_bytes = message.toCharArray();
@@ -75,11 +64,11 @@ public class GetChunkVerification implements Runnable {
                         Integer.parseInt(MulticastChanel.multicast_control_port));
                 MulticastChanel.multicast_control_socket.send(packet);
             } catch (UnknownHostException e) {
-                System.out.println("Error in creating datagram packet");
-                e.printStackTrace();
+                //e.printStackTrace();
+                System.out.println("GetChunkVerification - Error in creating datagram packet.");
             } catch (IOException e) {
-                System.out.println("Error in sending packet to multicast socket");
-                e.printStackTrace();
+                System.out.println("GetChunkVerification - Error in sending packet to multicast socket.");
+                //e.printStackTrace();
             }
 
             //check if got chunk again

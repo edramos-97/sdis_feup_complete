@@ -30,7 +30,6 @@ public class MulticastChanelRecovery extends MulticastChanel {
     public void run() {
         // listen on recover
 
-
         byte[] raw_message = new byte[FileHandler.MAX_SIZE_MESSAGE];
         DatagramPacket packet_received = new DatagramPacket(raw_message, FileHandler.MAX_SIZE_MESSAGE);
 
@@ -68,7 +67,7 @@ public class MulticastChanelRecovery extends MulticastChanel {
                 }
 
             } catch (IOException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
                 System.out.println("MCR+" + peerID +": There was an error reading from the socket!");
             }
         }

@@ -52,19 +52,21 @@ public class PutChunkVerification implements Runnable {
                     data_socket.send(packet);
                     VolatileDatabase.add_chunk_putchunk(message.getFileId(), Short.valueOf(message.getChunkNo()), message.getReplicationDeg(), -1);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    System.out.println("PutChunkVerification - Error: " + e.toString());
+                    //e.printStackTrace();
                 }
             }else{
-                //TODO Possibly stop if too many fails
                 int nextChunkNo = Integer.parseInt(message.getChunkNo())+Peer.MAX_CONCURRENCY;
                 if (nextChunkNo < message.getThreadNo()){
                     try {
                         Peer.threadPool.submit(new PutChunkRequest(message.getFile(),(short)nextChunkNo, Short.toString(message.getReplicationDeg()).charAt(0),message.getThreadNo(),message.getVersion()));
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        System.out.println("PutChunkVerification - Error: " + e.toString());
+                        //e.printStackTrace();
                     }
                 }
                 System.out.println("PUTCHUNK completed for fileId:\""+message.getFileId()+"\" Chunk:\""+message.getChunkNo()+"\"");
+
                 //VolatileDatabase.deleteChunkEntry(message.getFileId(), Short.valueOf(message.getChunkNo()));
                 return;
             }

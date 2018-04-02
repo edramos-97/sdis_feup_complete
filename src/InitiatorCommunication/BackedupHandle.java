@@ -43,10 +43,10 @@ public class BackedupHandle implements Runnable {
                     Integer.parseInt(MulticastChanel.multicast_control_port));
             MulticastChanel.multicast_control_socket.send(packet);
         } catch (UnknownHostException e) {
-            System.out.println("Error in creating datagram packet");
+            System.out.println("BackedupHandle - Error in creating datagram packet");
             e.printStackTrace();
         } catch (IOException e) {
-            System.out.println("Error in sending packet to multicast socket");
+            System.out.println("BackedupHandle - Error in sending packet to multicast socket");
             e.printStackTrace();
         }
     }

@@ -1,7 +1,5 @@
 package Utilities;
 
-import java.nio.ByteBuffer;
-
 public class ProtocolMessageParser {
 
     public static ProtocolMessage parseMessage(byte[] receivedMessage,int length){

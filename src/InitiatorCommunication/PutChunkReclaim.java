@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 public class PutChunkReclaim implements Runnable{
@@ -46,7 +45,8 @@ public class PutChunkReclaim implements Runnable{
                     try {
                         message.setChunkNo(String.valueOf(chunkNo));
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        System.out.println("PutChunkReclaim - Error setting ChunkNumber.");
+                        //e.printStackTrace();
                     }
 
                     MulticastSocket control_socket = MulticastChanel.multicast_control_socket;
@@ -62,12 +62,14 @@ public class PutChunkReclaim implements Runnable{
                                 Integer.parseInt(MulticastChanel.multicast_control_port));
                         control_socket.send(packet);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        System.out.println("PutChunkReclaim - Error: " + e.toString());
+                        //e.printStackTrace();
                     }
                 },400,TimeUnit.MILLISECONDS);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("PutChunkReclaim - Error: " + e.toString());
+            //e.printStackTrace();
         }
     }
 }

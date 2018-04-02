@@ -13,7 +13,7 @@ import java.net.*;
 public class GetChunkHandle extends Thread {
 
     ProtocolMessage message;
-    DatagramPacket packet_received;
+    private DatagramPacket packet_received;
 
     public GetChunkHandle(ProtocolMessage message, DatagramPacket pr){
         this.message = message;
@@ -30,7 +30,7 @@ public class GetChunkHandle extends Thread {
 
                 // TODO RESTORE-ENHANCEMENT
                 if(message.getVersion().equals("1.1")){
-                    System.out.println("GETCHUNKHANDLE MESSAGE IS 1.1");
+                    //System.out.println("GetChunkHandle - MESSAGE IS 1.1");
                     //ServerSocket tcp_ss = new ServerSocket(5678);
                     //String address = InetAddress.getLocalHost().getHostAddress();
 
@@ -72,15 +72,15 @@ public class GetChunkHandle extends Thread {
                         Integer.parseInt(MulticastChanel.multicast_recover_port));
                 data_socket.send(packet);
             } catch (UnknownHostException e) {
-                System.out.println("error in creating datagram packet");
-                e.printStackTrace();
+                System.out.println("GetChunkHandle - Error in creating datagram packet.");
+                //e.printStackTrace();
             } catch (IOException e) {
-                System.out.println("error in sending packet to multicast socket");
-                e.printStackTrace();
+                System.out.println("GetChunkHandle - Error in sending packet to multicast socket.");
+                //e.printStackTrace();
             }
             VolatileDatabase.getChunkMemory.remove(message.getFileId()+message.getChunkNo());
         }else{
-            System.out.println("CHUNK ALREADY RECEIVED");
+            System.out.println("Chunk Already Received.");
         }
     }
 }

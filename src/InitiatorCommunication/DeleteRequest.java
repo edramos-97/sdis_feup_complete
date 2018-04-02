@@ -2,7 +2,6 @@ package InitiatorCommunication;
 
 import MulticastThreads.MulticastChanel;
 import Utilities.FileHandler;
-import Utilities.FileInfo;
 import Utilities.ProtocolMessage;
 import Utilities.VolatileDatabase;
 
@@ -14,8 +13,8 @@ import java.net.UnknownHostException;
 
 public class DeleteRequest implements Runnable{
 
-    File file;
-    String version;
+    private File file;
+    private String version;
 
     public DeleteRequest(String path, String version){
         file = new File(path);
@@ -43,11 +42,11 @@ public class DeleteRequest implements Runnable{
                         Integer.parseInt(MulticastChanel.multicast_control_port));
                 MulticastChanel.multicast_control_socket.send(packet);
             } catch (UnknownHostException e) {
-                System.out.println("Error in creating datagram packet");
-                e.printStackTrace();
+                System.out.println("Error in creating datagram packet.");
+                //e.printStackTrace();
             } catch (IOException e) {
-                System.out.println("Error in sending packet to multicast socket");
-                e.printStackTrace();
+                System.out.println("Error in sending packet to multicast socket.");
+                //e.printStackTrace();
             }
 
             if(version.equals("1.1"))

@@ -7,12 +7,10 @@ import Utilities.ProtocolMessage;
 import Utilities.ProtocolMessageParser;
 import Utilities.VolatileDatabase;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.nio.charset.StandardCharsets;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -33,8 +31,6 @@ public class MulticastChanelData extends MulticastChanel {
     @Override
     public void run() {
         // listen on data
-        //System.out.println("STARTING DATA CHANEL");
-
 
         byte[] raw_message = new byte[FileHandler.MAX_SIZE_MESSAGE];
         DatagramPacket packet_received = new DatagramPacket(raw_message, FileHandler.MAX_SIZE_MESSAGE);
@@ -80,7 +76,7 @@ public class MulticastChanelData extends MulticastChanel {
                         break;
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
                 System.out.println("MCD+" + peerID +": There was an error reading from the socket!");
             }
         }

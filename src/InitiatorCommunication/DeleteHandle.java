@@ -31,7 +31,8 @@ public class DeleteHandle implements Runnable{
         try {
             message.setSenderId(String.valueOf(Peer.peerID));
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("DeleteHandle - Failed setting SenderID");
+            //e.printStackTrace();
             return;
         }
 
@@ -46,11 +47,11 @@ public class DeleteHandle implements Runnable{
                     Integer.parseInt(MulticastChanel.multicast_control_port));
             MulticastChanel.multicast_control_socket.send(packet);
         } catch (UnknownHostException e) {
-            System.out.println("Error in creating datagram packet");
-            e.printStackTrace();
+            System.out.println("DeleteHandle - Error in creating datagram packet.");
+            //e.printStackTrace();
         } catch (IOException e) {
-            System.out.println("Error in sending packet to multicast socket");
-            e.printStackTrace();
+            System.out.println("DeleteHandle - Error in sending packet to multicast socket.");
+            //e.printStackTrace();
         }
     }
 }

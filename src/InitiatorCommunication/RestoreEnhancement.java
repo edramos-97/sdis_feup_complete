@@ -25,26 +25,19 @@ public class RestoreEnhancement implements Runnable {
             try {
                 ServerSocket tcp_ss = new ServerSocket(5678);
                 System.out.println("Running and reading from socket");
-                //ServerSocket tcp_ss = new ServerSocket()
-                Socket receiving_socket = tcp_ss.accept();
 
-                //BufferedReader inFromOtherPeer = new BufferedReader(new InputStreamReader(receiving_socket.getInputStream()));
+                Socket receiving_socket = tcp_ss.accept();
 
                 DataInputStream in = new DataInputStream(receiving_socket.getInputStream());
 
                 byte[] read_chars = new byte[FileHandler.MAX_SIZE_MESSAGE];
                 int actually_read = in.read(read_chars, 0, FileHandler.MAX_SIZE_MESSAGE);
-                //System.out.println("READ SOME BYTES YE");
-                //System.out.println(read_chars);
-                //System.out.println(actually_read);
-                //System.out.println("READ SOME BYTES YEND");
 
                 byte[] read_bytes = Arrays.copyOfRange(read_chars, 0, actually_read);
 
                 ProtocolMessage message = ProtocolMessageParser.parseMessage(read_bytes,read_bytes.length);
 
-                // Not getting here so not really receiving stuff on tcp connection
-                System.out.println("I RECEIVED --" + message.getFileId()+message.getChunkNo());
+                //System.out.println("I RECEIVED --" + message.getFileId()+message.getChunkNo());
 
                 can_save_these.put(message.getFileId()+message.getChunkNo(), message);
 
@@ -55,8 +48,8 @@ public class RestoreEnhancement implements Runnable {
                 tcp_ss.close();
 
             } catch (IOException e) {
-                System.out.println("There was an error accepting socket...");
-                e.printStackTrace();
+                System.out.println("RestoreEnhancement - There was an error accepting socket.");
+                //e.printStackTrace();
                 break;
             }
         }

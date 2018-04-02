@@ -2,9 +2,7 @@ package InitiatorCommunication;
 
 import Executables.Peer;
 import MulticastThreads.MulticastChanel;
-import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
-import Utilities.VolatileDatabase;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -12,14 +10,13 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 public class GetChunkRequest implements Callable<String>{
     private String fileId;
     private short chunkNo;
     private String fileName;
-    String version;
+    private String version;
 
     public GetChunkRequest(String fileId, short chunkNo,String fileName,String version){
         this.fileId=fileId;
@@ -56,10 +53,10 @@ public class GetChunkRequest implements Callable<String>{
                     Integer.parseInt(MulticastChanel.multicast_control_port));
             data_socket.send(packet);
         } catch (UnknownHostException e) {
-            System.out.println("error in creating datagram packet");
+            System.out.println("GetChunkRequest - Error in creating datagram packet");
             e.printStackTrace();
         } catch (IOException e) {
-            System.out.println("error in sending packet to multicast socket");
+            System.out.println("GetChunkRequest - Error in sending packet to multicast socket");
             e.printStackTrace();
         }
 

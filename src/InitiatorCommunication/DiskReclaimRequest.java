@@ -3,11 +3,9 @@ package InitiatorCommunication;
 import Executables.Peer;
 import MulticastThreads.MulticastChanel;
 import Utilities.FileHandler;
-import Utilities.FileInfo;
 import Utilities.ProtocolMessage;
 import Utilities.VolatileDatabase;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -21,7 +19,7 @@ public class DiskReclaimRequest extends Thread{
 
     public DiskReclaimRequest(long desiredAllocation){
         if (desiredAllocation<0){
-            throw new InvalidParameterException("Disk space allocated must be greater or equal to 0");
+            throw new InvalidParameterException("DiskReclaimRequest - Disk space allocated must be greater or equal to 0.");
         }
 
         this.allocGoal = desiredAllocation*1000;
@@ -35,7 +33,7 @@ public class DiskReclaimRequest extends Thread{
     @Override
     public void run() {
         if(FileHandler.getAvailableSpace()<this.allocGoal){
-            System.out.println("RECLAIM not enough space available on SavePath location");
+            System.out.println("DiskReclaimRequest - RECLAIM not enough space available on SavePath location.");
             return;
         }
 
@@ -50,10 +48,7 @@ public class DiskReclaimRequest extends Thread{
                 message.setChunkNo(temp[1]);
 
                 VolatileDatabase.chunkDeleted(temp[0],Short.valueOf(temp[1]), Peer.peerID);
-                /*
-                FileInfo info = VolatileDatabase.getInfo(temp[0],Short.valueOf(temp[1]));
-                if(info != null)
-                    info.decrementReplicationDegree(Peer.peerID);*/
+
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -72,11 +67,11 @@ public class DiskReclaimRequest extends Thread{
                         Integer.parseInt(MulticastChanel.multicast_control_port));
                 data_socket.send(packet);
             } catch (UnknownHostException e) {
-                System.out.println("error in creating datagram packet...");
-                e.printStackTrace();
+                System.out.println("DiskReclaimRequest - Error in creating datagram packet.");
+                //e.printStackTrace();
             } catch (IOException e) {
-                System.out.println("error in sending packet to multicast socket");
-                e.printStackTrace();
+                System.out.println("DiskReclaimRequest - Error in sending packet to multicast socket.");
+                //e.printStackTrace();
             }
         }
         System.out.println("Allocation successfully set to "+this.allocGoal);

@@ -64,9 +64,7 @@ public class Control implements ControlInterface {
 
         String version = enhanced?"1.0":"1.1";
 
-        // TODO RESTORE-ENHANCEMENT
         if(version.equals("1.1")){
-
             Peer.threadPool.submit(new RestoreEnhancement());
         }
 

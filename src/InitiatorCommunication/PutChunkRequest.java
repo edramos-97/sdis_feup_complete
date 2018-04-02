@@ -1,6 +1,5 @@
 package InitiatorCommunication;
 
-import Executables.Peer;
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
 import Utilities.File_IO_Wrapper;
@@ -84,7 +83,8 @@ public class PutChunkRequest implements Callable<String>{
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("PutChunkRequest - Error:" + e.toString());
+            //e.printStackTrace();
             return "PutChunk for fileID:\""+filePath+"\" chunkNo:"+chunkNo+" finished unsuccessfully\n"+e.getMessage();
         }
         return "";

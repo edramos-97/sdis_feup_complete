@@ -25,8 +25,6 @@ public class PutChunkReadComplete implements CompletionHandler<Integer, File_IO_
         DatagramPacket packet;
         try {
 
-            //VolatileDatabase.add_chunk_putchunk(attachment.getMessage().getFileId(), Short.valueOf(attachment.getMessage().getChunkNo()), attachment.getMessage().getReplicationDeg(), -1);
-
             attachment.getFile().close();
             packet = new DatagramPacket(
                     message_bytes,
@@ -38,11 +36,11 @@ public class PutChunkReadComplete implements CompletionHandler<Integer, File_IO_
             VolatileDatabase.add_chunk_putchunk(attachment.getMessage().getFileId(), Short.valueOf(attachment.getMessage().getChunkNo()), attachment.getMessage().getReplicationDeg(), -1);
 
         } catch (UnknownHostException e) {
-            System.out.println("error in creating datagram packet");
-            e.printStackTrace();
+            System.out.println("PutChunkReadComplete - Error in creating datagram packet.");
+            //e.printStackTrace();
         } catch (IOException e) {
-            System.out.println("error in sending packet to multicast socket");
-            e.printStackTrace();
+            System.out.println("PutChunkReadComplete - Error in sending packet to multicast socket.");
+            //e.printStackTrace();
         }
 
         Peer.threadPool.schedule(new PutChunkVerification(1,attachment),1000, TimeUnit.MILLISECONDS);
@@ -54,7 +52,8 @@ public class PutChunkReadComplete implements CompletionHandler<Integer, File_IO_
         try {
             attachment.getFile().close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("PutChunkReadComplete - Error: " + e.toString());
+            //e.printStackTrace();
         }
     }
 }
