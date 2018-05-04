@@ -1,16 +1,12 @@
 package InitiatorCommunication;
 
 import Executables.Peer;
-import MulticastThreads.MulticastChanel;
+import Utilities.Dispatcher;
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
 import Utilities.VolatileDatabase;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
 import java.util.concurrent.TimeUnit;
 
 public class PutChunkReclaim implements Runnable{
@@ -48,23 +44,7 @@ public class PutChunkReclaim implements Runnable{
                         System.out.println("PutChunkReclaim - Error setting ChunkNumber.");
                         //e.printStackTrace();
                     }
-
-                    MulticastSocket control_socket = MulticastChanel.multicast_control_socket;
-                    byte[] message_bytes = message.toCharArray();
-
-                    DatagramPacket packet;
-
-                    try {
-                        packet = new DatagramPacket(
-                                message_bytes,
-                                message_bytes.length,
-                                InetAddress.getByName(MulticastChanel.multicast_control_address),
-                                Integer.parseInt(MulticastChanel.multicast_control_port));
-                        control_socket.send(packet);
-                    } catch (IOException e) {
-                        System.out.println("PutChunkReclaim - Error: " + e.toString());
-                        //e.printStackTrace();
-                    }
+                    Dispatcher.sendControl(message.toCharArray());
                 },400,TimeUnit.MILLISECONDS);
             }
         } catch (Exception e) {

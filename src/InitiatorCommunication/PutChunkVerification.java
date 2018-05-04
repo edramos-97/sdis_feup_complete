@@ -1,16 +1,12 @@
 package InitiatorCommunication;
 
 import Executables.Peer;
-import MulticastThreads.MulticastChanel;
+import Utilities.Dispatcher;
 import Utilities.File_IO_Wrapper;
 import Utilities.ProtocolMessage;
 import Utilities.VolatileDatabase;
 
 import java.io.Closeable;
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
 import java.util.concurrent.TimeUnit;
 
 public class PutChunkVerification implements Runnable {
@@ -40,6 +36,8 @@ public class PutChunkVerification implements Runnable {
                 System.out.println("PutChunk for fileID:\""+message.getFileId()+"\" chunkNo:"+message.getChunkNo()+" failed try number "+tryNo+". Retrying...");
 
                 Dispatcher.sendData(message.toCharArray());
+
+                VolatileDatabase.add_chunk_putchunk(message.getFileId(), Short.valueOf(message.getChunkNo()), message.getReplicationDeg(), -1);
             }else{
                 int nextChunkNo = Integer.parseInt(message.getChunkNo())+Peer.MAX_CONCURRENCY;
                 if (nextChunkNo < message.getThreadNo()){

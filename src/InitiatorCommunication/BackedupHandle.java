@@ -1,14 +1,9 @@
 package InitiatorCommunication;
 
 import Executables.Peer;
-import MulticastThreads.MulticastChanel;
+import Utilities.Dispatcher;
 import Utilities.ProtocolMessage;
 import Utilities.VolatileDatabase;
-
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 public class BackedupHandle implements Runnable {
 
@@ -32,22 +27,6 @@ public class BackedupHandle implements Runnable {
             return;
         }
 
-        byte[] message_bytes = message.toCharArray();
-
-        DatagramPacket packet;
-        try {
-            packet = new DatagramPacket(
-                    message_bytes,
-                    message_bytes.length,
-                    InetAddress.getByName(MulticastChanel.multicast_control_address),
-                    Integer.parseInt(MulticastChanel.multicast_control_port));
-            MulticastChanel.multicast_control_socket.send(packet);
-        } catch (UnknownHostException e) {
-            System.out.println("BackedupHandle - Error in creating datagram packet");
-            e.printStackTrace();
-        } catch (IOException e) {
-            System.out.println("BackedupHandle - Error in sending packet to multicast socket");
-            e.printStackTrace();
-        }
+        Dispatcher.sendControl(message.toCharArray());
     }
 }

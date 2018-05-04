@@ -1,15 +1,11 @@
 package InitiatorCommunication;
 
 import Executables.Peer;
-import MulticastThreads.MulticastChanel;
+import Utilities.Dispatcher;
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
 import Utilities.VolatileDatabase;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
 public class GetChunkVerification implements Runnable {
@@ -54,22 +50,7 @@ public class GetChunkVerification implements Runnable {
             //System.out.println("GETCHUNK for fileID:\"" + message.getFileId() + "\" chunkNo:" + message.getChunkNo() + " failed to get an answer on try No:" + (tryNo-1) + ", retrying...");
 
             //resend message
-            byte[] message_bytes = message.toCharArray();
-            DatagramPacket packet;
-            try {
-                packet = new DatagramPacket(
-                        message_bytes,
-                        message_bytes.length,
-                        InetAddress.getByName(MulticastChanel.multicast_control_address),
-                        Integer.parseInt(MulticastChanel.multicast_control_port));
-                MulticastChanel.multicast_control_socket.send(packet);
-            } catch (UnknownHostException e) {
-                //e.printStackTrace();
-                System.out.println("GetChunkVerification - Error in creating datagram packet.");
-            } catch (IOException e) {
-                System.out.println("GetChunkVerification - Error in sending packet to multicast socket.");
-                //e.printStackTrace();
-            }
+            Dispatcher.sendControl(message.toCharArray());
 
             //check if got chunk again
             Peer.threadPool.schedule(this,450, TimeUnit.MILLISECONDS);

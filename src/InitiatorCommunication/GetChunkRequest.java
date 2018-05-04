@@ -1,14 +1,9 @@
 package InitiatorCommunication;
 
 import Executables.Peer;
-import MulticastThreads.MulticastChanel;
+import Utilities.Dispatcher;
 import Utilities.ProtocolMessage;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
-import java.net.UnknownHostException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 

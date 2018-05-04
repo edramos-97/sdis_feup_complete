@@ -1,13 +1,16 @@
 package Utilities;
 
-import java.net.MulticastSocket;
-
 import MulticastThreads.MulticastChanel;
-import MulticastThreads.MulticastChanelRecovery;
 
-class Dispatcher {
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
+import java.net.UnknownHostException;
+
+public class Dispatcher {
     
-    public static void send(byte[] message_bytes, String address, String port, MulticastSocket data_socket) {
+    private static void send(byte[] message_bytes, String address, String port, MulticastSocket data_socket) {
         DatagramPacket packet;
         try {
             packet = new DatagramPacket(
@@ -17,9 +20,9 @@ class Dispatcher {
                     Integer.parseInt(port));
             data_socket.send(packet);
         } catch (UnknownHostException e) {
-            System.out.println("Error");
+            System.out.println("Error in hostname");
         } catch (IOException e) {
-            System.out.println("Error");
+            System.out.println("Error in IOException");
         }
     }
 

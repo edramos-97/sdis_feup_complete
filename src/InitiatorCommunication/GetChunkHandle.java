@@ -1,14 +1,14 @@
 package InitiatorCommunication;
 
 import Executables.Peer;
-import MulticastThreads.MulticastChanel;
+import Utilities.Dispatcher;
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
 import Utilities.VolatileDatabase;
 
 import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.Socket;
 
 public class GetChunkHandle extends Thread {
 
