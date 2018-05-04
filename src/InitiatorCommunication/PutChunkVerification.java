@@ -39,22 +39,7 @@ public class PutChunkVerification implements Runnable {
                 // Resending message to everyone, hoping someone new accepts the chunk.
                 System.out.println("PutChunk for fileID:\""+message.getFileId()+"\" chunkNo:"+message.getChunkNo()+" failed try number "+tryNo+". Retrying...");
 
-                MulticastSocket data_socket = MulticastChanel.multicast_data_socket;
-                byte[] message_bytes = message.toCharArray();
-
-                DatagramPacket packet;
-                try {
-                    packet = new DatagramPacket(
-                            message_bytes,
-                            message_bytes.length,
-                            InetAddress.getByName(MulticastChanel.multicast_data_address),
-                            Integer.parseInt(MulticastChanel.multicast_data_port));
-                    data_socket.send(packet);
-                    VolatileDatabase.add_chunk_putchunk(message.getFileId(), Short.valueOf(message.getChunkNo()), message.getReplicationDeg(), -1);
-                } catch (IOException e) {
-                    System.out.println("PutChunkVerification - Error: " + e.toString());
-                    //e.printStackTrace();
-                }
+                Dispatcher.sendData(message.toCharArray());
             }else{
                 int nextChunkNo = Integer.parseInt(message.getChunkNo())+Peer.MAX_CONCURRENCY;
                 if (nextChunkNo < message.getThreadNo()){

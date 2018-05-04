@@ -60,24 +60,8 @@ public class GetChunkHandle extends Thread {
                 e.printStackTrace();
             }
 
-            MulticastSocket data_socket = MulticastChanel.multicast_recover_socket;
-            byte[] message_bytes = message.toCharArray();
-
-            DatagramPacket packet;
-            try {
-                packet = new DatagramPacket(
-                        message_bytes,
-                        message_bytes.length,
-                        InetAddress.getByName(MulticastChanel.multicast_recover_address),
-                        Integer.parseInt(MulticastChanel.multicast_recover_port));
-                data_socket.send(packet);
-            } catch (UnknownHostException e) {
-                System.out.println("GetChunkHandle - Error in creating datagram packet.");
-                //e.printStackTrace();
-            } catch (IOException e) {
-                System.out.println("GetChunkHandle - Error in sending packet to multicast socket.");
-                //e.printStackTrace();
-            }
+            Dispatcher.sendRecover(message.toCharArray());
+            
             VolatileDatabase.getChunkMemory.remove(message.getFileId()+message.getChunkNo());
         }else{
             System.out.println("Chunk Already Received.");

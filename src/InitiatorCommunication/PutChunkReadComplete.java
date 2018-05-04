@@ -18,30 +18,9 @@ import java.util.concurrent.TimeUnit;
 public class PutChunkReadComplete implements CompletionHandler<Integer, File_IO_Wrapper>{
     @Override
     public void completed(Integer result, File_IO_Wrapper attachment) {
-        MulticastSocket data_socket = MulticastChanel.multicast_data_socket;
         attachment.getMessage().body = Arrays.copyOfRange(attachment.getMessage().body,0,result);
-        byte[] message_bytes = attachment.getMessage().toCharArray();
 
-        DatagramPacket packet;
-        try {
-
-            attachment.getFile().close();
-            packet = new DatagramPacket(
-                    message_bytes,
-                    message_bytes.length,
-                    InetAddress.getByName(MulticastChanel.multicast_data_address),
-                    Integer.parseInt(MulticastChanel.multicast_data_port));
-            data_socket.send(packet);
-
-            VolatileDatabase.add_chunk_putchunk(attachment.getMessage().getFileId(), Short.valueOf(attachment.getMessage().getChunkNo()), attachment.getMessage().getReplicationDeg(), -1);
-
-        } catch (UnknownHostException e) {
-            System.out.println("PutChunkReadComplete - Error in creating datagram packet.");
-            //e.printStackTrace();
-        } catch (IOException e) {
-            System.out.println("PutChunkReadComplete - Error in sending packet to multicast socket.");
-            //e.printStackTrace();
-        }
+        Dispatcher.sendData(attachment.getMessage().toCharArray());
 
         Peer.threadPool.schedule(new PutChunkVerification(1,attachment),1000, TimeUnit.MILLISECONDS);
     }
