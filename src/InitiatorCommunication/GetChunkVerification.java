@@ -24,30 +24,29 @@ public class GetChunkVerification implements Runnable {
 
     @Override
     public void run() {
+        Integer[] info  = VolatileDatabase.restoreMemory.get(message.getFileId());
+        //check if current chunk was received
 
-            Integer[] info  = VolatileDatabase.restoreMemory.get(message.getFileId());
-            //check if current chunk was received
-
-            if(info != null && info[0]==Integer.parseInt(message.getChunkNo())) {
-                if (info[1] != -1 && info[1] < FileHandler.CHUNK_SIZE) {
-                    //last chunk of file
-                    System.out.println("GETCHUNK for fileID:\"" + message.getFileId() + "\" finished successfully");
-                    VolatileDatabase.restoreMemory.remove(message.getFileId());
-                    FileHandler.restoreFile(message.getFileId(),fileName);
-                    return;
-                } else {
-                    //get next chunk from file
-                    System.out.println("GETCHUNK for fileID:\"" + message.getFileId() + "\" chunkNo:" + message.getChunkNo() + "\" successful");
-                    Peer.threadPool.submit(new GetChunkRequest(message.getFileId(), (short) (Short.valueOf(message.getChunkNo()) + 1),fileName,message.getVersion()));
-                    return;
-                }
+        if(info != null && info[0]==Integer.parseInt(message.getChunkNo())) {
+            if (info[1] != -1 && info[1] < FileHandler.CHUNK_SIZE) {
+                //last chunk of file
+                System.out.println("GETCHUNK for fileID:\"" + message.getFileId() + "\" finished successfully");
+                VolatileDatabase.restoreMemory.remove(message.getFileId());
+                FileHandler.restoreFile(message.getFileId(),fileName);
+                return;
+            } else {
+                //get next chunk from file
+                System.out.println("GETCHUNK for fileID:\"" + message.getFileId() + "\" chunkNo:" + message.getChunkNo() + "\" successful");
+                Peer.threadPool.submit(new GetChunkRequest(message.getFileId(), (short) (Short.valueOf(message.getChunkNo()) + 1),fileName,message.getVersion()));
+                return;
             }
+        }
         tryNo++;
         if (tryNo >= MAX_TRIES){
             VolatileDatabase.restoreMemory.remove(message.getFileId());
             System.out.println("GETCHUNK for fileID:\""+message.getFileId()+"\" chunkNo:"+message.getChunkNo()+" finished unsuccessfully\nDidn't receive a CHUNK message after "+MAX_TRIES+" tries");
         }else{
-            //System.out.println("GETCHUNK for fileID:\"" + message.getFileId() + "\" chunkNo:" + message.getChunkNo() + " failed to get an answer on try No:" + (tryNo-1) + ", retrying...");
+            System.out.println("GETCHUNK for fileID:\"" + message.getFileId() + "\" chunkNo:" + message.getChunkNo() + " failed to get an answer on try No:" + tryNo + ", retrying...");
 
             //resend message
             Dispatcher.sendControl(message.toCharArray());

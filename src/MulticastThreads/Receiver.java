@@ -4,7 +4,11 @@ import Executables.Peer;
 import InitiatorCommunication.*;
 import Utilities.*;
 
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.Socket;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -83,11 +87,26 @@ public class Receiver extends Thread {
                     VolatileDatabase.getChunkMemory.remove(message.getFileId() + message.getChunkNo());
                 }else{
                     if(message.getVersion().equals("1.1")){
-                        if(RestoreEnhancement.can_save_these.containsKey(message.getFileId()+message.getChunkNo())){
+                        /*if(RestoreEnhancement.can_save_these.containsKey(message.getFileId()+message.getChunkNo())){
                             message = RestoreEnhancement.can_save_these.remove(message.getFileId()+message.getChunkNo());
-                            VolatileDatabase.restoreMemory.put(message.getFileId(),new Integer[]{Integer.parseInt(message.getChunkNo()),message.getBody().length});
-                            FileHandler.saveChunk(message,"restore");
+                        }*/
+                        String body = new String(message.getBody());
+                        String[] socketInfo = body.split(":",2);
+                        System.out.println("Sent address is:" + socketInfo[0]);
+                        System.out.println("Sent port is:" + socketInfo[1]);
+                        try {
+                            Socket dataSocket = new Socket(socketInfo[0],Integer.valueOf(socketInfo[1]));
+                            DataInputStream dataInput = new DataInputStream(dataSocket.getInputStream());
+                            message.setBody(new byte[64000]);
+                            int readBytes = dataInput.read(message.body);
+                            System.out.println("read bytes:"+readBytes);
+                            message.setBody(Arrays.copyOfRange(message.body,0,readBytes));
+                        } catch (IOException e) {
+                            //e.printStackTrace();
+                            System.out.println("Couldn't create socket for chunk reception.");
                         }
+                        VolatileDatabase.restoreMemory.put(message.getFileId(),new Integer[]{Integer.parseInt(message.getChunkNo()),message.getBody().length});
+                        FileHandler.saveChunk(message,"restore");
                     }else{
                         VolatileDatabase.restoreMemory.put(message.getFileId(),new Integer[]{Integer.parseInt(message.getChunkNo()),message.getBody().length});
                         FileHandler.saveChunk(message,"restore");
