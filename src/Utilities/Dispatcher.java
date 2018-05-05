@@ -2,6 +2,7 @@ package Utilities;
 
 import Executables.Peer;
 import MulticastThreads.MulticastChanel;
+import jdk.nashorn.internal.runtime.JSONListAdapter;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKeyFactory;
@@ -81,9 +82,8 @@ public class Dispatcher extends Thread{
             e.printStackTrace();
         }
         return null;
-
-
     }
+
 
     public static byte[] authenticate(byte[] data, int size) {
         byte[] chmac = null;

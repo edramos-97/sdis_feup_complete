@@ -10,6 +10,9 @@ import java.io.File;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Control implements ControlInterface {
 
@@ -22,6 +25,12 @@ public class Control implements ControlInterface {
 
     @Override
     public boolean putChunk(String filePath, char replicationDeg, boolean enhanced) {
+
+        File file = Paths.get(filePath).toFile();
+
+        String fileName = file.getName();
+        long date = file.lastModified();
+
         int threadNo;
 
         try {

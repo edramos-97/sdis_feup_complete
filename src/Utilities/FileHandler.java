@@ -456,4 +456,9 @@ public class FileHandler {
     public static String getPath(String fileId, short chunkNo) {
         return savePath+fileId+File.separator+chunkNo+EXTENSION;
     }
+
+    public static Boolean addLog(String fileID, int ChunkNo) {
+
+        return true;
+    }
 }
