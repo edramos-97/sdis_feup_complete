@@ -1,12 +1,21 @@
 package Utilities;
 
+import Executables.Peer;
 import MulticastThreads.MulticastChanel;
 
+import javax.crypto.Mac;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class Dispatcher extends Thread{
@@ -31,7 +40,7 @@ public class Dispatcher extends Thread{
 
     public static void sendData(byte[] message_bytes) {
         try {
-            dispatcherQueue.put(new DispatcherMessage(message_bytes, MulticastChanel.multicast_data_address, MulticastChanel.multicast_data_port, MulticastChanel.multicast_data_socket));
+            dispatcherQueue.put(new DispatcherMessage(sign(message_bytes), MulticastChanel.multicast_data_address, MulticastChanel.multicast_data_port, MulticastChanel.multicast_data_socket));
         } catch (InterruptedException e) {
             System.out.println("Error in adding Message to queue");
         }
@@ -40,7 +49,7 @@ public class Dispatcher extends Thread{
 
     public static void sendRecover(byte[] message_bytes) {
         try {
-            dispatcherQueue.put(new DispatcherMessage(message_bytes, MulticastChanel.multicast_recover_address, MulticastChanel.multicast_recover_port, MulticastChanel.multicast_recover_socket));
+            dispatcherQueue.put(new DispatcherMessage(sign(message_bytes), MulticastChanel.multicast_recover_address, MulticastChanel.multicast_recover_port, MulticastChanel.multicast_recover_socket));
         } catch (InterruptedException e) {
             System.out.println("Error in adding Message to queue");
         }
@@ -49,19 +58,53 @@ public class Dispatcher extends Thread{
 
     public static void sendControl(byte[] message_bytes) {
         try {
-            dispatcherQueue.put(new DispatcherMessage(message_bytes, MulticastChanel.multicast_control_address, MulticastChanel.multicast_control_port, MulticastChanel.multicast_control_socket));
+            dispatcherQueue.put(new DispatcherMessage(sign(message_bytes), MulticastChanel.multicast_control_address, MulticastChanel.multicast_control_port, MulticastChanel.multicast_control_socket));
         } catch (InterruptedException e) {
             System.out.println("Error in adding Message to queue");
         }
         //send(message_bytes, MulticastChanel.multicast_control_address, MulticastChanel.multicast_control_port, MulticastChanel.multicast_control_socket);
     }
 
-    public static byte[] encrypt(byte[] data) {
-        return data;
+    private static byte[] sign(byte[] data) {
+        try {
+            SecretKeySpec hks = new SecretKeySpec(Peer.peerKeyStore.getKey("clientRSA", "123456".toCharArray()).getEncoded(), "HmacSHA256");
+            Mac m = Mac.getInstance("HmacSHA256");
+            m.init(hks);
+            byte[] hmac = m.doFinal(data);
+
+            byte[] os = new byte[data.length + 32];
+            System.arraycopy(data, 0, os, 0, data.length);
+            System.arraycopy(hmac, 0, os, data.length, 32);
+
+            return os;
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+
+
     }
 
-    public static byte[] decrypt(byte[] data) {
-        return data;
+    public static byte[] authenticate(byte[] data, int size) {
+        byte[] chmac = null;
+        byte[] message = Arrays.copyOfRange(data, 0, size - 32);
+        byte[] hmac = Arrays.copyOfRange(data, size - 32, size);
+        try {
+            SecretKeySpec hks = new SecretKeySpec(Peer.peerKeyStore.getKey("clientRSA", "123456".toCharArray()).getEncoded(), "HmacSHA256");
+            Mac m = Mac.getInstance("HmacSHA256");
+            m.init(hks);
+            chmac = m.doFinal(message);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        if (MessageDigest.isEqual(hmac, chmac)) {
+            System.out.println("Foi autenticado");
+            return message;
+        } else {
+            System.out.println("Autenticacão falhou");
+            return null;
+        }
     }
 
     @Override

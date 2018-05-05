@@ -2,10 +2,7 @@ package MulticastThreads;
 
 import Executables.Peer;
 import InitiatorCommunication.*;
-import Utilities.FileHandler;
-import Utilities.ProtocolMessage;
-import Utilities.ProtocolMessageParser;
-import Utilities.VolatileDatabase;
+import Utilities.*;
 
 import java.net.DatagramPacket;
 import java.util.Random;
@@ -23,7 +20,7 @@ public class Receiver extends Thread {
     public void run() {
         //System.out.println("Before:"+new String(Arrays.copyOfRange(packet.getData(),0,100)));
 
-        ProtocolMessage message = ProtocolMessageParser.parseMessage(packet.getData(),packet.getLength());
+        ProtocolMessage message = ProtocolMessageParser.parseMessage(Dispatcher.authenticate(packet.getData(), packet.getLength()),packet.getLength() - 32); //32 is hmac size
 
         //System.out.println("After:"+new String(Arrays.copyOfRange(packet.getData(),0,500)));
 
