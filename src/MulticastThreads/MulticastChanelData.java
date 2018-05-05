@@ -33,48 +33,14 @@ public class MulticastChanelData extends MulticastChanel {
         // listen on data
 
         byte[] raw_message = new byte[FileHandler.MAX_SIZE_MESSAGE];
-        DatagramPacket packet_received = new DatagramPacket(raw_message, FileHandler.MAX_SIZE_MESSAGE);
+        DatagramPacket packet_received;
 
         while(true){
+            packet_received = new DatagramPacket(raw_message, FileHandler.MAX_SIZE_MESSAGE);
             try {
                 multicast_data_socket.receive(packet_received);
 
-                ProtocolMessage message = ProtocolMessageParser.parseMessage(packet_received.getData(),packet_received.getLength());
-
-                if(message == null || message.getSenderId().equals(String.valueOf(Peer.peerID)))
-                    continue;
-
-                switch (message.getMsgType()){
-                    case PUTCHUNK:
-
-                       VolatileDatabase.removedChunk.remove(message.getFileId()+Short.valueOf(message.getChunkNo()));
-
-                       if(VolatileDatabase.backed2fileID.containsKey(message.getFileId())){
-                           System.out.println("PUTCHUNK not saving file I backed up");
-                           break;
-                       }
-
-                        if(!FileHandler.canSave()){
-                            System.out.println("Back up space is full! Not saving putChunk");
-                            break;
-                        }
-
-                        // Checking if chunk is already saved by this peer.
-                        /*
-                        if(VolatileDatabase.check_has_chunk(message.getFileId(), Short.valueOf(message.getChunkNo()))){
-                            break;
-                        }*/
-
-                        int size_message = message.body.length;
-                        VolatileDatabase.add_chunk_putchunk(message.getFileId(),Short.valueOf(message.getChunkNo()),message.getReplicationDeg(), size_message);
-
-                        int delay = new Random().nextInt(400);
-                        Peer.threadPool.schedule(new PutChunkHandle(message),delay, TimeUnit.MILLISECONDS);
-                        break;
-                    default:
-                        System.out.println("Unknown message type received on data channel");
-                        break;
-                }
+                Peer.threadPool.submit(new Receiver(packet_received));
             } catch (IOException e) {
                 //e.printStackTrace();
                 System.out.println("MCD+" + peerID +": There was an error reading from the socket!");

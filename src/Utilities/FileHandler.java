@@ -61,7 +61,7 @@ public class FileHandler {
         //write stuff to this socket
 
         //INITIATOR SIDE
-        //read adress from chunk message body
+        //read adress from chunk data body
         //Socket mysoket2 = new Socket(adress,1040);
         //read stuff from socket
     }
@@ -113,8 +113,8 @@ public class FileHandler {
     }
 
     /**
-     * Function used to save a file chunk after a putChunk message is received
-     * @param message - received putChunk message
+     * Function used to save a file chunk after a putChunk data is received
+     * @param message - received putChunk data
      */
     public static void saveChunk(ProtocolMessage message,String type){
         Path dirPath;

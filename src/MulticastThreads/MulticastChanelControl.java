@@ -37,49 +37,16 @@ public class MulticastChanelControl extends MulticastChanel {
         // listen on control
 
         byte[] raw_message = new byte[FileHandler.MAX_SIZE_MESSAGE];
-        DatagramPacket packet_received = new DatagramPacket(raw_message, FileHandler.MAX_SIZE_MESSAGE);
+        DatagramPacket packet_received;
 
         while(true){
+            packet_received = new DatagramPacket(raw_message, FileHandler.MAX_SIZE_MESSAGE);
             try {
                 multicast_control_socket.receive(packet_received);
-                ProtocolMessage message = ProtocolMessageParser.parseMessage(packet_received.getData(),packet_received.getLength());
-                if(message == null || message.getSenderId().equals(String.valueOf(Peer.peerID)))
-                    continue;
 
-                switch (message.getMsgType()){
-                    case STORED:
-                        VolatileDatabase.add_chunk_stored(message.getFileId(),Short.valueOf(message.getChunkNo()),Integer.parseInt(message.getSenderId()));
-                        break;
-                    case GETCHUNK:
-                        if (!FileHandler.hasChunk(message.getFileId(),Short.valueOf(message.getChunkNo()))){
-                            System.out.println("GETCHUNK file is not backed up, ignoring...");
-                            continue;
-                        }
-                        VolatileDatabase.getChunkMemory.add(message.getFileId()+message.getChunkNo());
-                        int delay = new Random().nextInt(400);
-                        Peer.threadPool.schedule(new GetChunkHandle(message, packet_received),delay, TimeUnit.MILLISECONDS);
-                        break;
-                    case DELETE:
-                        System.out.println("DELETE fileID: \""+message.getFileId()+"\"");
-                        Peer.threadPool.submit(new DeleteHandle(message));
-                        break;
-                    case DELETECONF:
-                        System.out.println("DELETE confirming fileID:\""+message.getFileId()+"\" from peer:\""+message.getSenderId()+"\"");
-                        VolatileDatabase.confirmDelete(message.getFileId(),message.getSenderId());
-                        break;
-                    case BACKEDUP:
-                        System.out.println("BACKEDUP fileID:\""+message.getFileId()+"\" from peer:\""+message.getSenderId()+"\"");
-                        Peer.threadPool.submit(new BackedupHandle(message));
-                        break;
-                    case REMOVED:
-                        System.out.println("REMOVED RECEIVED");
-                        Peer.threadPool.submit(new DiskReclaimHandle(message.getFileId(),Short.valueOf(message.getChunkNo()),Integer.parseInt(message.getSenderId())));
-                        break;
-                    default:
-                        System.out.println("Unknown message type received on data channel");
-                        break;
-                }
-            } catch (IOException e) {
+                Peer.threadPool.submit(new Receiver(packet_received));
+
+            } catch (Exception e) {
                 //e.printStackTrace();
                 System.out.println("MCC+" + peerID +": There was an error reading from the socket!");
             }

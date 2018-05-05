@@ -43,7 +43,7 @@ public class ProtocolMessage {
             case BACKEDUP:
                 this.hasBody = false; break;
             default:
-                System.out.println("Invalid message type in Message Constructor");
+                System.out.println("Invalid data type in Message Constructor");
         }
     }
 
@@ -53,7 +53,7 @@ public class ProtocolMessage {
 
     public void setVersion(String version) throws Exception {
         if (!version.matches("[0-9]\\.[0-9]")){
-            throw new Exception("Invalid message field received: version="+version);
+            throw new Exception("Invalid data field received: version="+version);
         }
         this.version = version;
     }
@@ -64,7 +64,7 @@ public class ProtocolMessage {
 
     public void setSenderId(String senderId) throws Exception {
         if(!senderId.matches("[0-9]+")){
-            throw new Exception("Invalid message field received: senderId="+senderId);
+            throw new Exception("Invalid data field received: senderId="+senderId);
         }
         this.senderId = senderId;
     }
@@ -75,7 +75,7 @@ public class ProtocolMessage {
 
     public void setFileId(String fileId) throws InvalidParameterException{
         if (!fileId.matches("[0-9a-fA-F]{64}")){
-            throw new InvalidParameterException("Invalid message field received: fileId=\""+fileId+"\". Format must be [0-9a-fA-F]{64}");
+            throw new InvalidParameterException("Invalid data field received: fileId=\""+fileId+"\". Format must be [0-9a-fA-F]{64}");
         }
         this.fileId = fileId;
     }
@@ -86,7 +86,7 @@ public class ProtocolMessage {
 
     public void setChunkNo(String chunkNo) throws Exception {
         if(!chunkNo.matches("[0-9]{1,6}")){
-            throw new Exception("Invalid message field received: chunkNo="+chunkNo);
+            throw new Exception("Invalid data field received: chunkNo="+chunkNo);
         }
         ChunkNo = chunkNo;
     }
@@ -97,7 +97,7 @@ public class ProtocolMessage {
 
     public void setReplicationDeg(char replicationDeg) throws Exception {
         if(!Character.isDigit(replicationDeg)||replicationDeg=='0'){
-            throw new Exception("Invalid message field received: replicationDegree="+replicationDeg);
+            throw new Exception("Invalid data field received: replicationDegree="+replicationDeg);
         }
         ReplicationDeg = replicationDeg;
     }

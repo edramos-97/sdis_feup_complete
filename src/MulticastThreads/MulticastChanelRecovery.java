@@ -35,37 +35,11 @@ public class MulticastChanelRecovery extends MulticastChanel {
 
 
         while(true){
+            packet_received = new DatagramPacket(raw_message, FileHandler.MAX_SIZE_MESSAGE);
             try {
                 multicast_recover_socket.receive(packet_received);
 
-                ProtocolMessage message = ProtocolMessageParser.parseMessage(packet_received.getData(),packet_received.getLength());
-
-                if (message == null || Integer.parseInt(message.getSenderId()) == Peer.peerID)continue;
-
-                switch (message.getMsgType()){
-                    case CHUNK:
-                        if(VolatileDatabase.restoreMemory.get(message.getFileId())==null) {
-                            VolatileDatabase.getChunkMemory.remove(message.getFileId() + message.getChunkNo());
-                        }else{
-                            if(message.getVersion().equals("1.1")){
-                                if(RestoreEnhancement.can_save_these.containsKey(message.getFileId()+message.getChunkNo())){
-                                    message = RestoreEnhancement.can_save_these.remove(message.getFileId()+message.getChunkNo());
-                                    VolatileDatabase.restoreMemory.put(message.getFileId(),new Integer[]{Integer.parseInt(message.getChunkNo()),message.getBody().length});
-                                    FileHandler.saveChunk(message,"restore");
-                                }
-                                // launch chunk handle
-                            }else{
-                                VolatileDatabase.restoreMemory.put(message.getFileId(),new Integer[]{Integer.parseInt(message.getChunkNo()),message.getBody().length});
-                                FileHandler.saveChunk(message,"restore");
-                            }
-                        }
-                        break;
-                    default:
-                        System.out.println(new String(message.toCharArray()));
-                        System.out.println("mcr - wrong type of message");
-                        break;
-                }
-
+                Peer.threadPool.submit(new Receiver(packet_received));
             } catch (IOException e) {
                 //e.printStackTrace();
                 System.out.println("MCR+" + peerID +": There was an error reading from the socket!");

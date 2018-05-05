@@ -12,7 +12,9 @@ public class ProtocolMessageParser {
         }else {
             tempMessage = new ProtocolMessage(tempType);
         }
-        setFields(tempMessage,headerFields);
+        if(!setFields(tempMessage,headerFields)){
+            return null;
+        }
 
         try{
             if (tempMessage.hasBody){
@@ -20,12 +22,13 @@ public class ProtocolMessageParser {
             }
         }catch (Exception e){
             System.out.println(e.getMessage());
+            return null;
         }
         return tempMessage;
     }
 
     /**
-     * Function to verify if the received message type is a valid one
+     * Function to verify if the received data type is a valid one
      * @param value - Received data as a String
      * @return Returns a PossibleType value or null
      */
@@ -39,10 +42,10 @@ public class ProtocolMessageParser {
     }
 
     /**
-     * Function to set message fields from a string array
+     * Function to set data fields from a string array
      * @param tempMessage - Message to be set
-     * @param headerFields - String array with information about a message
-     * @return False if an invalid message field is received, true otherwise
+     * @param headerFields - String array with information about a data
+     * @return False if an invalid data field is received, true otherwise
      */
     private static boolean setFields(ProtocolMessage tempMessage,String[] headerFields) {
         try {
@@ -57,10 +60,10 @@ public class ProtocolMessageParser {
                         tempMessage.setReplicationDeg(headerFields[5].charAt(0));
                     }else if(temp<=0){
                         System.out.println("Assuming replication degree 1");
-                        throw new Exception("Invalid message field received: replicationDegree="+temp);
+                        throw new Exception("Invalid data field received: replicationDegree="+temp);
                     }else if (temp>9){
                         System.out.println("Assuming replication degree 9");
-                        throw new Exception("Invalid message field received: replicationDegree="+temp);
+                        throw new Exception("Invalid data field received: replicationDegree="+temp);
                     }
                     break;
                 case GETCHUNK:
@@ -74,7 +77,7 @@ public class ProtocolMessageParser {
                 case BACKEDUP:
                     break;
                 default:
-                    throw new Exception("Invalid message type received!");
+                    throw new Exception("Invalid data type received!");
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());

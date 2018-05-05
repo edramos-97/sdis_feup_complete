@@ -5,6 +5,7 @@ import MulticastThreads.MulticastChanelData;
 import MulticastThreads.MulticastChanelRecovery;
 import PackageRMI.Control;
 import PackageRMI.ControlInterface;
+import Utilities.Dispatcher;
 import Utilities.FileHandler;
 import Utilities.VolatileDatabase;
 
@@ -29,6 +30,7 @@ public class Peer {
         ((ScheduledThreadPoolExecutor)executor).schedule(r, delay, TimeUnit.MILLISECONDS);
     };
     public static ScheduledThreadPoolExecutor threadPool = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors(),rejectedExecutionHandler);
+    public static LinkedBlockingQueue<Dispatcher.DispatcherMessage> dispatcherQueue = new LinkedBlockingQueue<>(100);
 
     public static void main(String[] args) {
         if(args.length < 7){
@@ -75,6 +77,7 @@ public class Peer {
         }
 
         FileHandler.startPeerFileSystem();
+        new Dispatcher().run();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("This was the state of my internals...");

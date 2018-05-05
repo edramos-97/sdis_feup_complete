@@ -1,5 +1,6 @@
 package Utilities;
 
+import Executables.Peer;
 import MulticastThreads.MulticastChanel;
 
 import java.io.IOException;
@@ -8,7 +9,7 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 
-public class Dispatcher {
+public class Dispatcher implements Runnable{
     
     private static void send(byte[] message_bytes, String address, String port, MulticastSocket data_socket) {
         DatagramPacket packet;
@@ -39,11 +40,36 @@ public class Dispatcher {
     }
 
     public static byte[] encrypt(byte[] data) {
-        
         return data;
     }
 
     public static byte[] decrypt(byte[] data) {
         return data;
+    }
+
+    @Override
+    public void run() {
+        try {
+            while (true) {
+                DispatcherMessage message = Peer.dispatcherQueue.take();
+                send(message.data, message.address,message.port,message.socket);
+            }
+        } catch (InterruptedException e){
+            System.out.println("Dispatcher was interrupted...");
+        }
+    }
+
+    public class DispatcherMessage {
+        byte[] data;
+        String address;
+        String port;
+        MulticastSocket socket;
+
+        public DispatcherMessage(byte[] data, String address, String port, MulticastSocket socket) {
+            this.data = data;
+            this.address = address;
+            this.port = port;
+            this.socket = socket;
+        }
     }
 }
