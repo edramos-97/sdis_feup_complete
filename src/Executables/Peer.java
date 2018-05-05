@@ -6,19 +6,19 @@ import MulticastThreads.MulticastChanelRecovery;
 import PackageRMI.Control;
 import PackageRMI.ControlInterface;
 import Utilities.Dispatcher;
-import Utilities.DispatcherMessage;
 import Utilities.FileHandler;
 import Utilities.VolatileDatabase;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.security.KeyStore;
 import java.util.Random;
-import java.util.concurrent.*;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class Peer {
 
@@ -31,6 +31,7 @@ public class Peer {
         ((ScheduledThreadPoolExecutor)executor).schedule(r, delay, TimeUnit.MILLISECONDS);
     };
     public static ScheduledThreadPoolExecutor threadPool = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors(),rejectedExecutionHandler);
+    public static KeyStore peerKeyStore;
 
 
     public static void main(String[] args) {
@@ -73,12 +74,24 @@ public class Peer {
             String name = "peer"+peerID;
             registry.rebind(name, control_rmi_stub);
         } catch (RemoteException e) {
-            //e.printStackTrace();
             System.out.println("Error in RMI setup. Already running?");
+            //e.printStackTrace();
         }
 
         FileHandler.startPeerFileSystem();
-        new Dispatcher().run();
+        new Dispatcher().start();
+
+        VolatileDatabase.populateExisting();
+        VolatileDatabase.networkUpdate();
+
+        try{
+            InputStream readStream = new FileInputStream("client.keys");
+            peerKeyStore = KeyStore.getInstance("JKS");
+            peerKeyStore.load(readStream,"123456".toCharArray());
+            //peerKeyStore.getKey("clientRSA","123456".toCharArray());
+        } catch (Exception e){
+            System.out.println("Couldn't retrieve key storage");
+        }
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("This was the state of my internals...");
@@ -100,9 +113,6 @@ public class Peer {
                 e.printStackTrace();
             }
         }));
-
-        VolatileDatabase.populateExisting();
-        VolatileDatabase.networkUpdate();
 
         System.out.println("INITIATING PROGRAM");
     }

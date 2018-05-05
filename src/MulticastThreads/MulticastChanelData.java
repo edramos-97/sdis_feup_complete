@@ -1,18 +1,12 @@
 package MulticastThreads;
 
 import Executables.Peer;
-import InitiatorCommunication.PutChunkHandle;
 import Utilities.FileHandler;
-import Utilities.ProtocolMessage;
-import Utilities.ProtocolMessageParser;
-import Utilities.VolatileDatabase;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 public class MulticastChanelData extends MulticastChanel {
 
@@ -32,11 +26,12 @@ public class MulticastChanelData extends MulticastChanel {
     public void run() {
         // listen on data
 
-        byte[] raw_message = new byte[FileHandler.MAX_SIZE_MESSAGE];
         DatagramPacket packet_received;
 
         while(true){
+            byte[] raw_message = new byte[FileHandler.MAX_SIZE_MESSAGE];
             packet_received = new DatagramPacket(raw_message, FileHandler.MAX_SIZE_MESSAGE);
+
             try {
                 multicast_data_socket.receive(packet_received);
 

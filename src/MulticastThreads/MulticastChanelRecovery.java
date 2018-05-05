@@ -1,11 +1,7 @@
 package MulticastThreads;
 
 import Executables.Peer;
-import InitiatorCommunication.RestoreEnhancement;
 import Utilities.FileHandler;
-import Utilities.ProtocolMessage;
-import Utilities.ProtocolMessageParser;
-import Utilities.VolatileDatabase;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -30,11 +26,11 @@ public class MulticastChanelRecovery extends MulticastChanel {
     public void run() {
         // listen on recover
 
-        byte[] raw_message = new byte[FileHandler.MAX_SIZE_MESSAGE];
-        DatagramPacket packet_received = new DatagramPacket(raw_message, FileHandler.MAX_SIZE_MESSAGE);
+        DatagramPacket packet_received;
 
 
         while(true){
+            byte[] raw_message = new byte[FileHandler.MAX_SIZE_MESSAGE];
             packet_received = new DatagramPacket(raw_message, FileHandler.MAX_SIZE_MESSAGE);
             try {
                 multicast_recover_socket.receive(packet_received);

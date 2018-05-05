@@ -1,21 +1,12 @@
 package MulticastThreads;
 
 import Executables.Peer;
-import InitiatorCommunication.BackedupHandle;
-import InitiatorCommunication.DeleteHandle;
-import InitiatorCommunication.DiskReclaimHandle;
-import InitiatorCommunication.GetChunkHandle;
 import Utilities.FileHandler;
-import Utilities.ProtocolMessage;
-import Utilities.ProtocolMessageParser;
-import Utilities.VolatileDatabase;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 public class MulticastChanelControl extends MulticastChanel {
 
@@ -36,10 +27,10 @@ public class MulticastChanelControl extends MulticastChanel {
     public void run() {
         // listen on control
 
-        byte[] raw_message = new byte[FileHandler.MAX_SIZE_MESSAGE];
         DatagramPacket packet_received;
 
         while(true){
+            byte[] raw_message = new byte[FileHandler.MAX_SIZE_MESSAGE];
             packet_received = new DatagramPacket(raw_message, FileHandler.MAX_SIZE_MESSAGE);
             try {
                 multicast_control_socket.receive(packet_received);

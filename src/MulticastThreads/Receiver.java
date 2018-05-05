@@ -2,7 +2,10 @@ package MulticastThreads;
 
 import Executables.Peer;
 import InitiatorCommunication.*;
-import Utilities.*;
+import Utilities.FileHandler;
+import Utilities.ProtocolMessage;
+import Utilities.ProtocolMessageParser;
+import Utilities.VolatileDatabase;
 
 import java.net.DatagramPacket;
 import java.util.Random;
@@ -18,9 +21,18 @@ public class Receiver extends Thread {
 
     @Override
     public void run() {
+        //System.out.println("Before:"+new String(Arrays.copyOfRange(packet.getData(),0,100)));
+
         ProtocolMessage message = ProtocolMessageParser.parseMessage(packet.getData(),packet.getLength());
 
-        if(message == null || message.getSenderId().equals(String.valueOf(Peer.peerID))){
+        //System.out.println("After:"+new String(Arrays.copyOfRange(packet.getData(),0,500)));
+
+
+        if(message == null ){
+            System.out.println("null message");
+            return;
+        }
+        if(message.getSenderId().equals(String.valueOf(Peer.peerID))){
             return;
         }
 
@@ -54,6 +66,7 @@ public class Receiver extends Thread {
                 Peer.threadPool.submit(new DiskReclaimHandle(message.getFileId(), Short.valueOf(message.getChunkNo()), Integer.parseInt(message.getSenderId())));
                 break;
             case PUTCHUNK:
+                System.out.println("chunkNo: "+message.getChunkNo());
                 VolatileDatabase.removedChunk.remove(message.getFileId()+Short.valueOf(message.getChunkNo()));
 
                 if(VolatileDatabase.backed2fileID.containsKey(message.getFileId())){

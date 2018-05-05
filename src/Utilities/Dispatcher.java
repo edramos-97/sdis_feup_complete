@@ -1,6 +1,5 @@
 package Utilities;
 
-import Executables.Peer;
 import MulticastThreads.MulticastChanel;
 
 import java.io.IOException;
@@ -10,7 +9,7 @@ import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class Dispatcher implements Runnable{
+public class Dispatcher extends Thread{
 
     private final static LinkedBlockingQueue<DispatcherMessage> dispatcherQueue = new LinkedBlockingQueue<>(100);
     
@@ -31,7 +30,6 @@ public class Dispatcher implements Runnable{
     }
 
     public static void sendData(byte[] message_bytes) {
-        System.out.println("here");
         try {
             dispatcherQueue.put(new DispatcherMessage(message_bytes, MulticastChanel.multicast_data_address, MulticastChanel.multicast_data_port, MulticastChanel.multicast_data_socket));
         } catch (InterruptedException e) {
@@ -41,7 +39,6 @@ public class Dispatcher implements Runnable{
     }
 
     public static void sendRecover(byte[] message_bytes) {
-        System.out.println("here");
         try {
             dispatcherQueue.put(new DispatcherMessage(message_bytes, MulticastChanel.multicast_recover_address, MulticastChanel.multicast_recover_port, MulticastChanel.multicast_recover_socket));
         } catch (InterruptedException e) {
@@ -73,6 +70,7 @@ public class Dispatcher implements Runnable{
             while (true) {
                 DispatcherMessage message = dispatcherQueue.take();
                 send(message.data, message.address,message.port,message.socket);
+                //System.out.println("Sent:"+new String(Arrays.copyOfRange(message.data,0,100)));
             }
         } catch (InterruptedException e){
             System.out.println("Dispatcher was interrupted...");
