@@ -20,7 +20,7 @@ public class PutChunkReadComplete implements CompletionHandler<Integer, File_IO_
 
         VolatileDatabase.add_chunk_putchunk(attachment.getMessage().getFileId(), Short.valueOf(attachment.getMessage().getChunkNo()), attachment.getMessage().getReplicationDeg(), -1);
 
-        Peer.threadPool.schedule(new PutChunkVerification(1,attachment),1000, TimeUnit.MILLISECONDS);
+        Peer.threadPool.schedule(new PutChunkVerification(1,attachment),3000, TimeUnit.MILLISECONDS);
     }
 
     @Override

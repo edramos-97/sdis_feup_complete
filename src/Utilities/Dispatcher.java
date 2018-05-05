@@ -8,8 +8,11 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class Dispatcher implements Runnable{
+
+    private final static LinkedBlockingQueue<DispatcherMessage> dispatcherQueue = new LinkedBlockingQueue<>(100);
     
     private static void send(byte[] message_bytes, String address, String port, MulticastSocket data_socket) {
         DatagramPacket packet;
@@ -28,15 +31,32 @@ public class Dispatcher implements Runnable{
     }
 
     public static void sendData(byte[] message_bytes) {
-        send(message_bytes, MulticastChanel.multicast_data_address, MulticastChanel.multicast_data_port, MulticastChanel.multicast_data_socket);
+        System.out.println("here");
+        try {
+            dispatcherQueue.put(new DispatcherMessage(message_bytes, MulticastChanel.multicast_data_address, MulticastChanel.multicast_data_port, MulticastChanel.multicast_data_socket));
+        } catch (InterruptedException e) {
+            System.out.println("Error in adding Message to queue");
+        }
+        //send(message_bytes, MulticastChanel.multicast_data_address, MulticastChanel.multicast_data_port, MulticastChanel.multicast_data_socket);
     }
 
     public static void sendRecover(byte[] message_bytes) {
-        send(message_bytes, MulticastChanel.multicast_recover_address, MulticastChanel.multicast_recover_port, MulticastChanel.multicast_recover_socket);
+        System.out.println("here");
+        try {
+            dispatcherQueue.put(new DispatcherMessage(message_bytes, MulticastChanel.multicast_recover_address, MulticastChanel.multicast_recover_port, MulticastChanel.multicast_recover_socket));
+        } catch (InterruptedException e) {
+            System.out.println("Error in adding Message to queue");
+        }
+        //send(message_bytes, MulticastChanel.multicast_recover_address, MulticastChanel.multicast_recover_port, MulticastChanel.multicast_recover_socket);
     }
 
     public static void sendControl(byte[] message_bytes) {
-        send(message_bytes, MulticastChanel.multicast_control_address, MulticastChanel.multicast_control_port, MulticastChanel.multicast_control_socket);
+        try {
+            dispatcherQueue.put(new DispatcherMessage(message_bytes, MulticastChanel.multicast_control_address, MulticastChanel.multicast_control_port, MulticastChanel.multicast_control_socket));
+        } catch (InterruptedException e) {
+            System.out.println("Error in adding Message to queue");
+        }
+        //send(message_bytes, MulticastChanel.multicast_control_address, MulticastChanel.multicast_control_port, MulticastChanel.multicast_control_socket);
     }
 
     public static byte[] encrypt(byte[] data) {
@@ -51,7 +71,7 @@ public class Dispatcher implements Runnable{
     public void run() {
         try {
             while (true) {
-                DispatcherMessage message = Peer.dispatcherQueue.take();
+                DispatcherMessage message = dispatcherQueue.take();
                 send(message.data, message.address,message.port,message.socket);
             }
         } catch (InterruptedException e){
@@ -59,17 +79,5 @@ public class Dispatcher implements Runnable{
         }
     }
 
-    public class DispatcherMessage {
-        byte[] data;
-        String address;
-        String port;
-        MulticastSocket socket;
 
-        public DispatcherMessage(byte[] data, String address, String port, MulticastSocket socket) {
-            this.data = data;
-            this.address = address;
-            this.port = port;
-            this.socket = socket;
-        }
-    }
 }
