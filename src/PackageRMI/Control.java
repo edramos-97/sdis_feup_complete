@@ -1,7 +1,10 @@
 package PackageRMI;
 
 import Executables.Peer;
-import InitiatorCommunication.*;
+import InitiatorCommunication.DeleteRequest;
+import InitiatorCommunication.DiskReclaimRequest;
+import InitiatorCommunication.GetChunkRequest;
+import InitiatorCommunication.PutChunkRequest;
 import Utilities.FileHandler;
 import Utilities.VolatileDatabase;
 
@@ -73,9 +76,9 @@ public class Control implements ControlInterface {
 
         String version = enhanced?"1.0":"1.1";
 
-        if(version.equals("1.1")){
+        /*if(version.equals("1.1")){
             Peer.threadPool.submit(new RestoreEnhancement());
-        }
+        }*/
 
         //initialize getchunk request in data base
         VolatileDatabase.restoreMemory.put(fileId,new Integer[]{-1,-1});
