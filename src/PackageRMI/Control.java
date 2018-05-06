@@ -1,10 +1,7 @@
 package PackageRMI;
 
 import Executables.Peer;
-import InitiatorCommunication.DeleteRequest;
-import InitiatorCommunication.DiskReclaimRequest;
-import InitiatorCommunication.GetChunkRequest;
-import InitiatorCommunication.PutChunkRequest;
+import InitiatorCommunication.*;
 import StateRecovery.RecoveryInitiator;
 import Utilities.FileHandler;
 import Utilities.VolatileDatabase;
@@ -180,5 +177,10 @@ public class Control implements ControlInterface {
     public void dumpLog() throws RemoteException {
 
         //RecoveryInitiator.dump();
+    }
+
+    @Override
+    public void recover() throws RemoteException {
+        Peer.threadPool.submit(new RecoverAskMaxRequest());
     }
 }

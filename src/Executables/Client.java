@@ -72,6 +72,11 @@ public class Client {
             return;
         }
 
+        if(sub_protocol.equals("RECOVER")) {
+            rmi_stub.say_this("Recover peer state");
+            rmi_stub.recover();
+        }
+
         if(arguments.length < 3){
             System.out.println("Missing some arguments");
             return;
