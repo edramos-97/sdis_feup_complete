@@ -5,11 +5,13 @@ import MulticastThreads.MulticastChanelData;
 import MulticastThreads.MulticastChanelRecovery;
 import PackageRMI.Control;
 import PackageRMI.ControlInterface;
+import StateRecovery.RecoveryInitiator;
 import Utilities.Dispatcher;
 import Utilities.FileHandler;
 import Utilities.VolatileDatabase;
 
 import java.io.*;
+import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -80,6 +82,7 @@ public class Peer {
 
         FileHandler.startPeerFileSystem();
         new Dispatcher().start();
+        new RecoveryInitiator().start();
 
         VolatileDatabase.populateExisting();
         VolatileDatabase.networkUpdate();

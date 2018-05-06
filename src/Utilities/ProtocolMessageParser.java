@@ -53,6 +53,7 @@ public class ProtocolMessageParser {
             tempMessage.setSenderId(headerFields[2]);
             tempMessage.setFileId(headerFields[3]);
             switch (tempMessage.getMsgType()) {
+                case PUTLOGCHUNK:
                 case PUTCHUNK:
                     tempMessage.setChunkNo(headerFields[4]);
                     int temp = Integer.parseInt(headerFields[5]);

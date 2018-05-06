@@ -38,6 +38,7 @@ public class Receiver extends Thread {
         }
 
         int delay = new Random().nextInt(400);
+        //System.out.println(message.getMsgType());
         switch (message.getMsgType()) {
             case STORED:
                 VolatileDatabase.add_chunk_stored(message.getFileId(), Short.valueOf(message.getChunkNo()), Integer.parseInt(message.getSenderId()));
@@ -66,6 +67,7 @@ public class Receiver extends Thread {
                 System.out.println("REMOVED RECEIVED");
                 Peer.threadPool.submit(new DiskReclaimHandle(message.getFileId(), Short.valueOf(message.getChunkNo()), Integer.parseInt(message.getSenderId())));
                 break;
+            case PUTLOGCHUNK:
             case PUTCHUNK:
                 VolatileDatabase.removedChunk.remove(message.getFileId()+Short.valueOf(message.getChunkNo()));
 

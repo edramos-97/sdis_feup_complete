@@ -178,6 +178,7 @@ public class Control implements ControlInterface {
 
     @Override
     public void dumpLog() throws RemoteException {
-        RecoveryInitiator.dump();
+
+        //RecoveryInitiator.dump();
     }
 }

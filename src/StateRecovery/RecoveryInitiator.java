@@ -1,9 +1,22 @@
 package StateRecovery;
 
+import Executables.Peer;
+import Utilities.Dispatcher;
+import Utilities.FileHandler;
+import Utilities.ProtocolMessage;
+
+import javax.xml.bind.DatatypeConverter;
+import java.io.*;
+import java.net.UnknownHostException;
+import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 public class RecoveryInitiator extends Thread {
 
@@ -15,15 +28,42 @@ public class RecoveryInitiator extends Thread {
     // chunkNo == -3  -> deleted stored file
     private static ConcurrentHashMap<String, List<Integer>> recoveryData = new ConcurrentHashMap<>();
     private static ConcurrentHashMap<String, List<Integer>> volatileData = new ConcurrentHashMap<>();
+    private String fileID;
+    private int chunkNumber = 0;
 
-    public static void dump(){
+    public RecoveryInitiator() {
+        try {
+            String localhostname = java.net.InetAddress.getLocalHost().getHostName() + Peer.peerID;
+            MessageDigest digest;
+            digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(localhostname.getBytes());
+            fileID = DatatypeConverter.printHexBinary(hash).toLowerCase();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+        File f = Paths.get(FileHandler.savePath + fileID).toFile();
+        if(f.listFiles() != null) {
+            this.chunkNumber = f.listFiles().length;
+        } else {
+            this.chunkNumber = 0;
+        }
+        //System.out.println(chunkNumber);
+
+
+    }
+
+    public static void dump(PrintStream os){
         //TODO - broadcast volatile data if not empty
+        /*if(volatileData.isEmpty()) {
+            return;
+        }*/
         volatileData.forEach((k,v)->{
-            System.out.print("fileId:"+k+" | Chunks:[");
+            os.print(k+"|");
             for (Integer i: v) {
-                System.out.print(i + ",");
+                os.print(i + ",");
             }
-            System.out.println("]");
+            os.println();
         });
         volatileData.clear();
     }
@@ -90,5 +130,44 @@ public class RecoveryInitiator extends Thread {
             volatileData.put(fileId, temp);
         }
 
+    }
+
+    @Override
+    public void run() {
+        ByteArrayOutputStream myStringArray = new ByteArrayOutputStream();
+        PrintStream ps = null;
+        try {
+            ps = new PrintStream(myStringArray, true, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        dump(ps);
+        byte[] messageBody = myStringArray.toByteArray();
+        for (int i = 0; i*64000 < myStringArray.size(); i++) {
+            ProtocolMessage message = new ProtocolMessage(ProtocolMessage.PossibleTypes.PUTLOGCHUNK);
+            System.out.println("here");
+            int size = 0;
+            if(myStringArray.size() > 64000*(i + 1)) {
+                size = 64000;
+            } else {
+                size = myStringArray.size()%64000;
+            }
+            message.setBody(Arrays.copyOfRange(messageBody, i*64000, size));
+            try {
+                message.setChunkNo(chunkNumber + "");
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+            message.setFileId(fileID);
+            try {
+                message.setReplicationDeg('1');
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Dispatcher.sendData(message.toCharArray());
+            FileHandler.saveChunk(message, "backup");
+            chunkNumber++;
+        }
+        Peer.threadPool.schedule(this, 1000, TimeUnit.MILLISECONDS);
     }
 }

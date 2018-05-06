@@ -29,6 +29,11 @@ public class PutChunkHandle extends Thread {
                 return;
             }
         }
+        if(!FileHandler.hasChunk(message.getFileId(),Short.valueOf(message.getChunkNo())))
+            FileHandler.saveChunk(this.message,"backup");
+        if(message.getMsgType() == ProtocolMessage.PossibleTypes.PUTCHUNK){
+            RecoveryInitiator.addStored(message.getFileId(), Integer.valueOf(message.getChunkNo()));
+        }
         message.setMsgType(ProtocolMessage.PossibleTypes.STORED);
         try {
             message.setSenderId(String.valueOf(Peer.peerID));
@@ -36,11 +41,10 @@ public class PutChunkHandle extends Thread {
             e.printStackTrace();
         }
 
-        if(!FileHandler.hasChunk(message.getFileId(),Short.valueOf(message.getChunkNo())))
-            FileHandler.saveChunk(this.message,"backup");
+
 
         VolatileDatabase.add_chunk_stored(message.getFileId(), Short.valueOf(message.getChunkNo()), Peer.peerID);
         Dispatcher.sendControl(message.toCharArray());
-        RecoveryInitiator.addStored(message.getFileId(), Integer.valueOf(message.getChunkNo()));
+
     }
 }
