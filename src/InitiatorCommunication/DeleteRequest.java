@@ -1,5 +1,6 @@
 package InitiatorCommunication;
 
+import StateRecovery.RecoveryInitiator;
 import Utilities.Dispatcher;
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
@@ -27,6 +28,8 @@ public class DeleteRequest implements Runnable{
             message.setFileId(FileHandler.getFileId(file));
 
             Dispatcher.sendControl(message.toCharArray());
+
+            RecoveryInitiator.addDeleteBackup(file.getName(), file.lastModified());
 
             if(version.equals("1.1"))
                 VolatileDatabase.deleteFile(message.getFileId());

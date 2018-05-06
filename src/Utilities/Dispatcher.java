@@ -99,7 +99,7 @@ public class Dispatcher extends Thread{
         }
 
         if (MessageDigest.isEqual(hmac, chmac)) {
-            System.out.println("Foi autenticado");
+            //System.out.println("Foi autenticado");
             return message;
         } else {
             System.out.println("Autenticacão falhou");

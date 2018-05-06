@@ -1,6 +1,7 @@
 package InitiatorCommunication;
 
 import Executables.Peer;
+import StateRecovery.RecoveryInitiator;
 import Utilities.Dispatcher;
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
@@ -51,6 +52,7 @@ public class DiskReclaimRequest extends Thread{
 
             //SEND MESSAGE
             Dispatcher.sendControl(message.toCharArray());
+            RecoveryInitiator.addRemoved(temp[0], Integer.parseInt(temp[1]));
         }
         System.out.println("Allocation successfully set to "+this.allocGoal);
     }

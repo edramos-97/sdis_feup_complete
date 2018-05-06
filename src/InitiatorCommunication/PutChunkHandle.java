@@ -1,6 +1,7 @@
 package InitiatorCommunication;
 
 import Executables.Peer;
+import StateRecovery.RecoveryInitiator;
 import Utilities.Dispatcher;
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
@@ -40,5 +41,6 @@ public class PutChunkHandle extends Thread {
 
         VolatileDatabase.add_chunk_stored(message.getFileId(), Short.valueOf(message.getChunkNo()), Peer.peerID);
         Dispatcher.sendControl(message.toCharArray());
+        RecoveryInitiator.addStored(message.getFileId(), Integer.valueOf(message.getChunkNo()));
     }
 }

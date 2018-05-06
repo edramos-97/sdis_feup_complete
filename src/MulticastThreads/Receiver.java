@@ -67,7 +67,6 @@ public class Receiver extends Thread {
                 Peer.threadPool.submit(new DiskReclaimHandle(message.getFileId(), Short.valueOf(message.getChunkNo()), Integer.parseInt(message.getSenderId())));
                 break;
             case PUTCHUNK:
-                System.out.println("chunkNo: "+message.getChunkNo());
                 VolatileDatabase.removedChunk.remove(message.getFileId()+Short.valueOf(message.getChunkNo()));
 
                 if(VolatileDatabase.backed2fileID.containsKey(message.getFileId())){

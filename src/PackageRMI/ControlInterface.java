@@ -17,5 +17,5 @@ public interface ControlInterface extends Remote {
 
     String getState() throws RemoteException;
 
-
+    void dumpLog() throws RemoteException;
 }

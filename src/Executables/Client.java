@@ -66,6 +66,12 @@ public class Client {
             return;
         }
 
+        if(sub_protocol.equals("LOG")) {
+            rmi_stub.say_this("LOG CALLED");
+            rmi_stub.dumpLog();
+            return;
+        }
+
         if(arguments.length < 3){
             System.out.println("Missing some arguments");
             return;

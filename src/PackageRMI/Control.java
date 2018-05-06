@@ -5,6 +5,7 @@ import InitiatorCommunication.DeleteRequest;
 import InitiatorCommunication.DiskReclaimRequest;
 import InitiatorCommunication.GetChunkRequest;
 import InitiatorCommunication.PutChunkRequest;
+import StateRecovery.RecoveryInitiator;
 import Utilities.FileHandler;
 import Utilities.VolatileDatabase;
 
@@ -16,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.rmi.RemoteException;
 
 public class Control implements ControlInterface {
 
@@ -33,6 +35,8 @@ public class Control implements ControlInterface {
 
         String fileName = file.getName();
         long date = file.lastModified();
+
+        RecoveryInitiator.addBackup(fileName, date);
 
         int threadNo;
 
@@ -170,5 +174,10 @@ public class Control implements ControlInterface {
         }
 
         return sop;*/
+    }
+
+    @Override
+    public void dumpLog() throws RemoteException {
+        RecoveryInitiator.dump();
     }
 }

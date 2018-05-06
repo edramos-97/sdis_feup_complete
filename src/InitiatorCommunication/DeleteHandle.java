@@ -1,6 +1,7 @@
 package InitiatorCommunication;
 
 import Executables.Peer;
+import StateRecovery.RecoveryInitiator;
 import Utilities.Dispatcher;
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
@@ -23,15 +24,20 @@ public class DeleteHandle implements Runnable{
         FileHandler.removeFolder(new File(FileHandler.savePath + message.getFileId()));
         VolatileDatabase.get_database().remove(message.getFileId());
 
-        message.setMsgType(ProtocolMessage.PossibleTypes.DELETECONF);
-        try {
-            message.setSenderId(String.valueOf(Peer.peerID));
-        } catch (Exception e) {
-            System.out.println("DeleteHandle - Failed setting SenderID");
-            //e.printStackTrace();
-            return;
+        if (message.getVersion().equals("1.1")) {
+            message.setMsgType(ProtocolMessage.PossibleTypes.DELETECONF);
+            try {
+                message.setSenderId(String.valueOf(Peer.peerID));
+            } catch (Exception e) {
+                System.out.println("DeleteHandle - Failed setting SenderID");
+                //e.printStackTrace();
+                return;
+            }
+            Dispatcher.sendControl(message.toCharArray());
         }
 
-        Dispatcher.sendControl(message.toCharArray());
+
+
+        RecoveryInitiator.addDeleteStored(message.getFileId());
     }
 }
