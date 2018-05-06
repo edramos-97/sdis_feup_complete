@@ -101,6 +101,7 @@ public class Receiver extends Thread {
                             int readBytes = dataInput.read(message.body);
                             System.out.println("read bytes:"+readBytes);
                             message.setBody(Arrays.copyOfRange(message.body,0,readBytes));
+                            dataSocket.close();
                         } catch (IOException e) {
                             //e.printStackTrace();
                             System.out.println("Couldn't create socket for chunk reception.");
