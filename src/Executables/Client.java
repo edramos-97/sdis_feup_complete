@@ -138,6 +138,13 @@ public class Client {
         }
 
         String replication_degree = arguments[3];
+        boolean chiphered = false;
+        if(arguments.length > 4){
+            String chipheredStr = arguments[4];
+            if(chipheredStr.equals("true")){
+                chiphered = true;
+            }
+        }
         if(sub_protocol.equals("BACKUP")){
             // Send message to backup a given file
 

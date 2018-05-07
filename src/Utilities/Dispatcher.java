@@ -2,11 +2,8 @@ package Utilities;
 
 import Executables.Peer;
 import MulticastThreads.MulticastChanel;
-import jdk.nashorn.internal.runtime.JSONListAdapter;
 
 import javax.crypto.Mac;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -14,8 +11,6 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -83,7 +78,6 @@ public class Dispatcher extends Thread{
         }
         return null;
     }
-
 
     public static byte[] authenticate(byte[] data, int size) {
         byte[] chmac = null;
