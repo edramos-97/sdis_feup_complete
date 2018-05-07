@@ -31,7 +31,7 @@ public class FileHandler {
 
     public static final int CHUNK_SIZE = 64000;
     public static final int MAX_SIZE_MESSAGE = CHUNK_SIZE + 1024;
-    private static final String EXTENSION = ".txt";
+    public static final String EXTENSION = ".txt";
     private static String peerPath = System.getProperty("user.home")+File.separator+"Desktop"+File.separator+"sbs_"+ Peer.peerID + File.separator;
     public static String savePath =  peerPath + "backup" +File.separator;
     public static String restorePath = peerPath + "restore" +File.separator;

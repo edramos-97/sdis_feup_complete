@@ -6,11 +6,12 @@ import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
 
 import javax.xml.bind.DatatypeConverter;
-import java.io.*;
-import java.net.UnknownHostException;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,9 +45,9 @@ public class RecoveryInitiator extends Thread {
         }
         File f = Paths.get(FileHandler.savePath + fileID).toFile();
         if(f.listFiles() != null) {
-            this.chunkNumber = f.listFiles().length;
+            chunkNumber = f.listFiles().length;
         } else {
-            this.chunkNumber = 0;
+            chunkNumber = 0;
         }
         //System.out.println(chunkNumber);
 
@@ -131,6 +132,21 @@ public class RecoveryInitiator extends Thread {
             volatileData.put(fileId, temp);
         }
 
+    }
+
+    public static void restoreState(){
+        /*recoveryData.forEach((k,v)->{
+
+        });*/
+        recoveryData.forEach((k,v)->{
+            System.out.print(k+"|");
+            for (Integer i: v) {
+                System.out.print(i + ",");
+            }
+            System.out.println();
+        });
+        recoveryData.clear();
+        RecoveryInitiator.chunkNumber++;
     }
 
     @Override

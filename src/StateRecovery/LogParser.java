@@ -1,11 +1,12 @@
-package Utilities;
+package StateRecovery;
 
-import StateRecovery.RecoveryInitiator;
+import Executables.Peer;
+import Utilities.FileHandler;
 
-import java.io.*;
-import java.nio.file.Paths;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,23 +20,10 @@ public class LogParser implements Runnable {
 
     @Override
     public void run() {
-        /*
-        File f = Paths.get(path).toFile();
-        if(f == null) {
-            System.out.println("Log files do not exist");
-            return;
-        }
-        if(f.isDirectory()){
-            System.out.println("Log file is a directory");
-            return;
-        }*/
         BufferedReader br;
         try {
             FileReader f = new FileReader(path);
             br = new BufferedReader(f);
-            if(br == null) {
-                throw new FileNotFoundException();
-            }
         } catch (FileNotFoundException e) {
             System.out.println("Log file not found, unable to recover data");
             return;
@@ -49,6 +37,7 @@ public class LogParser implements Runnable {
             e.printStackTrace();
             System.out.println("Error in parsing logs");
         }
+        Peer.threadPool.submit(RecoveryInitiator::restoreState);
     }
 
     private void parseLine(String line) {
@@ -78,10 +67,8 @@ public class LogParser implements Runnable {
         }
     }
 
-
-
     private void removeStored(String fileId, int chunkNumber) {
-        int chunkNo = chunkNumber - 1000000;
+        Integer chunkNo = chunkNumber - 1000000;
         if(RecoveryInitiator.recoveryData.containsKey(fileId)) {
             if(RecoveryInitiator.recoveryData.get(fileId).contains(chunkNo)) {
                 RecoveryInitiator.recoveryData.get(fileId).remove(chunkNo);

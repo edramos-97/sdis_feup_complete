@@ -1,8 +1,12 @@
 package InitiatorCommunication;
 
 import Executables.Peer;
+import StateRecovery.LogParser;
 import StateRecovery.RecoveryInitiator;
-import Utilities.*;
+import Utilities.Dispatcher;
+import Utilities.FileHandler;
+import Utilities.ProtocolMessage;
+import Utilities.VolatileDatabase;
 
 import java.util.concurrent.TimeUnit;
 
@@ -26,28 +30,28 @@ public class GetChunkVerification implements Runnable {
         //check if current chunk was received
 
         if(info != null && info[0]==Integer.parseInt(message.getChunkNo())) {
-            if(fileName.equals("peer"+Peer.peerID+"recoveryLog")){
-                System.out.println(Integer.parseInt(message.getChunkNo()));
-                System.out.println(RecoveryInitiator.chunkNumber);
-                if(Integer.parseInt(message.getChunkNo()) == RecoveryInitiator.chunkNumber){
+            if (fileName.equals("peer" + Peer.peerID + "recoveryLog")) {
+                if (Integer.parseInt(message.getChunkNo()) == RecoveryInitiator.chunkNumber) {
                     System.out.println("LOG RESTORE finished successfully");
                     VolatileDatabase.restoreMemory.remove(message.getFileId());
-                    FileHandler.restoreFile(message.getFileId(),fileName);
+                    FileHandler.restoreFile(message.getFileId(), fileName + FileHandler.EXTENSION);
                     Peer.threadPool.schedule(new LogParser(fileName), 2000, TimeUnit.MILLISECONDS);
-                }else{
-                    System.out.println("LOG RESTORE received chunkNo:"+message.getChunkNo()+"finished successfully");
-                    Peer.threadPool.submit(new GetChunkRequest(message.getFileId(), (short) (Short.valueOf(message.getChunkNo()) + 1),fileName,message.getVersion()));
+                } else {
+                    System.out.println("LOG RESTORE received chunkNo:" + message.getChunkNo() + "finished successfully");
+                    Peer.threadPool.submit(new GetChunkRequest(message.getFileId(), (short) (Short.valueOf(message.getChunkNo()) + 1), fileName, message.getVersion()));
                 }
             }else {
                 if (info[1] != -1 && info[1] < FileHandler.CHUNK_SIZE) {
                     //last chunk of file
                     System.out.println("GETCHUNK for fileID:\"" + message.getFileId() + "\" finished successfully");
                     VolatileDatabase.restoreMemory.remove(message.getFileId());
-                    FileHandler.restoreFile(message.getFileId(), fileName);
+                    if(!fileName.equals("single"))
+                        FileHandler.restoreFile(message.getFileId(), fileName);
                 } else {
                     //get next chunk from file
                     System.out.println("GETCHUNK for fileID:\"" + message.getFileId() + "\" chunkNo:" + message.getChunkNo() + "\" successful");
-                    Peer.threadPool.submit(new GetChunkRequest(message.getFileId(), (short) (Short.valueOf(message.getChunkNo()) + 1), fileName, message.getVersion()));
+                    if (!fileName.equals("single"))
+                        Peer.threadPool.submit(new GetChunkRequest(message.getFileId(), (short) (Short.valueOf(message.getChunkNo()) + 1), fileName, message.getVersion()));
                 }
             }
             return;
