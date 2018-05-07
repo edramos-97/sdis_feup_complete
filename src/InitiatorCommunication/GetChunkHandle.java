@@ -30,7 +30,6 @@ public class GetChunkHandle extends Thread {
         if (VolatileDatabase.getChunkMemory.indexOf(message.getFileId()+message.getChunkNo())>=0) {
             //send message and remove table entry for fileID+chunkNo
             try {
-                // TODO RESTORE-ENHANCEMENT
                 if (message.getVersion().equals("1.1")) {
                     //System.out.println("GetChunkHandle - MESSAGE IS 1.1");
                     //ServerSocket tcp_ss = new ServerSocket(5678);

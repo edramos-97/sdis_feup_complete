@@ -1,6 +1,7 @@
 package InitiatorCommunication;
 
 import Executables.Peer;
+import StateRecovery.RecoveryInitiator;
 import Utilities.Dispatcher;
 import Utilities.ProtocolMessage;
 
@@ -10,26 +11,15 @@ import java.util.concurrent.TimeUnit;
 
 public class RecoverAskMaxRequest implements Runnable {
 
-    private String fileIdentifier;
-
     public RecoverAskMaxRequest() {
-        try {
-            String localhostname = java.net.InetAddress.getLocalHost().getHostName() + Peer.peerID;
-            MessageDigest digest;
-            digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(localhostname.getBytes());
-            fileIdentifier = DatatypeConverter.printHexBinary(hash).toLowerCase();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
+
     }
 
     @Override
     public void run() {
         ProtocolMessage message = new ProtocolMessage(ProtocolMessage.PossibleTypes.RECOVERASKMAX);
 
-        message.setFileId(fileIdentifier);
+        message.setFileId(RecoveryInitiator.fileID);
 
         Dispatcher.sendControl(message.toCharArray());
 

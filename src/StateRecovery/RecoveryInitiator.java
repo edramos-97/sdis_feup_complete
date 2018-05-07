@@ -28,8 +28,8 @@ public class RecoveryInitiator extends Thread {
     // chunkNo == -3  -> deleted stored file
     private static ConcurrentHashMap<String, List<Integer>> recoveryData = new ConcurrentHashMap<>();
     private static ConcurrentHashMap<String, List<Integer>> volatileData = new ConcurrentHashMap<>();
-    private String fileID;
-    private int chunkNumber = 0;
+    public static String fileID;
+    public static int chunkNumber = 0;
 
     public RecoveryInitiator() {
         try {

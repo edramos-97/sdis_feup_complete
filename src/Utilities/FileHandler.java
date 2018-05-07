@@ -461,4 +461,19 @@ public class FileHandler {
 
         return true;
     }
+
+    public static int getMaxChunkNo(String fileId) {
+        File f = Paths.get(savePath + fileId).toFile();
+        if(f == null) {
+            return 0;
+        }
+        int max = 0;
+        for(File file : f.listFiles()) {
+            int number = Integer.parseInt(file.getName().split("\\.", 2)[0]) + 1;
+            if(number > max) {
+                max = number;
+            }
+        }
+        return max;
+    }
 }

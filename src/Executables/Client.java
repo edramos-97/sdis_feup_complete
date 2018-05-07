@@ -75,6 +75,7 @@ public class Client {
         if(sub_protocol.equals("RECOVER")) {
             rmi_stub.say_this("Recover peer state");
             rmi_stub.recover();
+            return;
         }
 
         if(arguments.length < 3){

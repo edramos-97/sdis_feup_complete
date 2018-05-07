@@ -35,7 +35,6 @@ public class Peer {
     public static ScheduledThreadPoolExecutor threadPool = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors(),rejectedExecutionHandler);
     public static KeyStore peerKeyStore;
 
-
     public static void main(String[] args) {
         if(args.length < 7){
             System.out.println("one of two usages:");

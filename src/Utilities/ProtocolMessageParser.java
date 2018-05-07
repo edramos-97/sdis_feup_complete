@@ -70,10 +70,12 @@ public class ProtocolMessageParser {
                 case GETCHUNK:
                 case STORED:
                 case CHUNK:
+                case RECOVERMAX:
                 case REMOVED:
                     tempMessage.setChunkNo(headerFields[4]);
                     break;
                 case DELETECONF:
+                case RECOVERASKMAX:
                 case DELETE:
                 case BACKEDUP:
                     break;

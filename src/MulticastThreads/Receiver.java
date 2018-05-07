@@ -2,6 +2,7 @@ package MulticastThreads;
 
 import Executables.Peer;
 import InitiatorCommunication.*;
+import StateRecovery.RecoveryInitiator;
 import Utilities.*;
 
 import java.io.DataInputStream;
@@ -67,6 +68,22 @@ public class Receiver extends Thread {
                 System.out.println("REMOVED RECEIVED");
                 Peer.threadPool.submit(new DiskReclaimHandle(message.getFileId(), Short.valueOf(message.getChunkNo()), Integer.parseInt(message.getSenderId())));
                 break;
+            case RECOVERASKMAX:
+                String fileId = message.getFileId();
+                try {
+                    message.setChunkNo("" + FileHandler.getMaxChunkNo(fileId));
+                    message.setSenderId(Peer.peerID + "");
+                    message.setMsgType(ProtocolMessage.PossibleTypes.RECOVERMAX);
+                    Dispatcher.sendControl(message.toCharArray());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            case RECOVERMAX:
+                int messageNumber = Integer.parseInt(message.getChunkNo());
+                if(messageNumber > RecoveryInitiator.chunkNumber) {
+                    RecoveryInitiator.chunkNumber = messageNumber;
+                }
             case PUTLOGCHUNK:
             case PUTCHUNK:
                 VolatileDatabase.removedChunk.remove(message.getFileId()+Short.valueOf(message.getChunkNo()));
