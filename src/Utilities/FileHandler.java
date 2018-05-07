@@ -375,6 +375,11 @@ public class FileHandler {
                 //file.close();
                 return;
             }
+            long[] chunkSize = new long[chunks.length];
+            for (int i = 0; i < chunks.length; i++) {
+                chunkSize[i] = chunks[i].length();
+                System.out.println(chunkSize[i]);
+            }
             for (File chunk : chunks) {
                 try {
                     byte[] chunkBytes = new byte[FileHandler.CHUNK_SIZE];
