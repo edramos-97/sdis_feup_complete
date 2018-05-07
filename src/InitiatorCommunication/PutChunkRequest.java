@@ -1,8 +1,8 @@
 package InitiatorCommunication;
 
 import Utilities.FileHandler;
-import Utilities.ProtocolMessage;
 import Utilities.File_IO_Wrapper;
+import Utilities.ProtocolMessage;
 import Utilities.VolatileDatabase;
 
 import java.io.File;
@@ -21,6 +21,7 @@ public class PutChunkRequest implements Callable<String>{
     private int threadNo;
     private String fileID = "";
     private String version;
+    private boolean chiphered;
 
     public PutChunkRequest(String filePath, short chunkNo, char replicationDeg, int threadNo, String version) throws Exception {
         if(new File(filePath).isDirectory()){
@@ -31,6 +32,7 @@ public class PutChunkRequest implements Callable<String>{
         this.replicationDeg = replicationDeg;
         this.threadNo = threadNo;
         this.version = version;
+        this.chiphered = false;
     }
 
     PutChunkRequest(String filePath, short chunkNo, char replicationDeg, int threadNo, String fileID, String version) throws Exception {
@@ -43,6 +45,7 @@ public class PutChunkRequest implements Callable<String>{
         this.threadNo = threadNo;
         this.fileID = fileID;
         this.version = version;
+        this.chiphered = false;
     }
 
     @Override
