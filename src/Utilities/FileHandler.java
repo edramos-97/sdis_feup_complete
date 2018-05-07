@@ -377,7 +377,11 @@ public class FileHandler {
             }
             long[] chunkSize = new long[chunks.length];
             for (int i = 0; i < chunks.length; i++) {
-                chunkSize[i] = chunks[i].length();
+                if(i == 0) {
+                    chunkSize[i] = chunks[i].length();
+                } else {
+                    chunkSize[i] = chunkSize[i-1] + chunks[i].length();
+                }
                 System.out.println(chunkSize[i]);
             }
             for (File chunk : chunks) {
@@ -388,7 +392,11 @@ public class FileHandler {
                             new CompletionHandler<Integer, Integer>() {
                                 @Override
                                 public void completed(Integer result, Integer attachment) {
-                                    file.write(ByteBuffer.wrap(Arrays.copyOfRange(chunkBytes, 0, result)), attachment * FileHandler.CHUNK_SIZE);
+                                    if(attachment == 0) {
+                                        file.write(ByteBuffer.wrap(Arrays.copyOfRange(chunkBytes, 0, result)), 0);
+                                    } else {
+                                        file.write(ByteBuffer.wrap(Arrays.copyOfRange(chunkBytes, 0, result)), chunkSize[attachment-1]);
+                                    }
                                     try {
                                         openFile.close();
                                         if (attachment == chunks.length - 1) {

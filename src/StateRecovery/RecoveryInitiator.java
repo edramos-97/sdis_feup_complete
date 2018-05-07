@@ -145,7 +145,6 @@ public class RecoveryInitiator extends Thread {
         byte[] messageBody = myStringArray.toByteArray();
         for (int i = 0; i*64000 < myStringArray.size(); i++) {
             ProtocolMessage message = new ProtocolMessage(ProtocolMessage.PossibleTypes.PUTLOGCHUNK);
-            System.out.println("here");
             int size = 0;
             if(myStringArray.size() > 64000*(i + 1)) {
                 size = 64000;

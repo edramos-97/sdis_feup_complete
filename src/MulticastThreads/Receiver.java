@@ -80,10 +80,12 @@ public class Receiver extends Thread {
                 }
                 break;
             case RECOVERMAX:
-                int messageNumber = Integer.parseInt(message.getChunkNo());
+                int messageNumber = Integer.parseInt(message.getChunkNo()) - 1;
+                System.out.println(messageNumber);
                 if(messageNumber > RecoveryInitiator.chunkNumber) {
                     RecoveryInitiator.chunkNumber = messageNumber;
                 }
+                break;
             case PUTLOGCHUNK:
             case PUTCHUNK:
                 VolatileDatabase.removedChunk.remove(message.getFileId()+Short.valueOf(message.getChunkNo()));

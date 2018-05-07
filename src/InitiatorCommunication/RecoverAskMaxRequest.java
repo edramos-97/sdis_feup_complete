@@ -17,6 +17,8 @@ public class RecoverAskMaxRequest implements Runnable {
 
     @Override
     public void run() {
+        RecoveryInitiator.chunkNumber = 0;
+
         ProtocolMessage message = new ProtocolMessage(ProtocolMessage.PossibleTypes.RECOVERASKMAX);
 
         message.setFileId(RecoveryInitiator.fileID);
