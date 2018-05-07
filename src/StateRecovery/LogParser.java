@@ -15,7 +15,7 @@ public class LogParser implements Runnable {
     private String path;
 
     public LogParser(String filename) {
-        path = FileHandler.restorePath + filename;
+        path = FileHandler.restorePath + filename+ FileHandler.EXTENSION;
     }
 
     @Override

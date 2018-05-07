@@ -22,6 +22,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -375,6 +376,15 @@ public class FileHandler {
                 //file.close();
                 return;
             }
+            Arrays.sort(chunks, (o1, o2) -> {
+                if(Integer.parseInt(o1.getName().split("\\.")[0]) == Integer.parseInt(o2.getName().split("\\.")[0])) {
+                    return 0;
+                } else if (Integer.parseInt(o1.getName().split("\\.")[0]) > Integer.parseInt(o2.getName().split("\\.")[0])){
+                    return 1;
+                } else {
+                    return -1;
+                }
+            });
             long[] chunkSize = new long[chunks.length];
             for (int i = 0; i < chunks.length; i++) {
                 if(i == 0) {
@@ -382,7 +392,7 @@ public class FileHandler {
                 } else {
                     chunkSize[i] = chunkSize[i-1] + chunks[i].length();
                 }
-                System.out.println(chunkSize[i]);
+                System.out.println(chunks[i].getName() + ": " + chunkSize[i]);
             }
             for (File chunk : chunks) {
                 try {
@@ -392,9 +402,11 @@ public class FileHandler {
                             new CompletionHandler<Integer, Integer>() {
                                 @Override
                                 public void completed(Integer result, Integer attachment) {
+                                    System.out.println("Attatchment:"+attachment);
                                     if(attachment == 0) {
                                         file.write(ByteBuffer.wrap(Arrays.copyOfRange(chunkBytes, 0, result)), 0);
                                     } else {
+                                        System.out.println("position:"+chunkSize[attachment-1]);
                                         file.write(ByteBuffer.wrap(Arrays.copyOfRange(chunkBytes, 0, result)), chunkSize[attachment-1]);
                                     }
                                     try {

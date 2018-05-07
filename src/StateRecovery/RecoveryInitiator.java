@@ -1,9 +1,11 @@
 package StateRecovery;
 
 import Executables.Peer;
+import InitiatorCommunication.GetChunkRequest;
 import Utilities.Dispatcher;
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
+import Utilities.VolatileDatabase;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.ByteArrayOutputStream;
@@ -12,6 +14,7 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -135,15 +138,29 @@ public class RecoveryInitiator extends Thread {
     }
 
     public static void restoreState(){
-        /*recoveryData.forEach((k,v)->{
-
-        });*/
         recoveryData.forEach((k,v)->{
-            System.out.print(k+"|");
-            for (Integer i: v) {
-                System.out.print(i + ",");
+            for(Integer i : v) {
+                if(i >= 0) {
+                    Peer.threadPool.submit(new GetChunkRequest(k,i.shortValue(),"single","1.1" ));
+                } else {
+                    String[] nameDate = k.split(":",2);
+                    String date = nameDate[1];
+                    String name = nameDate[0];
+                    MessageDigest digest;
+                    try {
+                        digest = MessageDigest.getInstance("SHA-256");
+                        byte[] hash = digest.digest((name+date).getBytes());
+                        String hashedName = DatatypeConverter.printHexBinary(hash);
+                        hashedName = hashedName.toLowerCase();
+                        VolatileDatabase.restoreMemory.put(hashedName,new Integer[]{-1,-1});
+                        Peer.threadPool.submit(new GetChunkRequest(hashedName,(short)0,name,"1.1" ));
+                    } catch (NoSuchAlgorithmException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
-            System.out.println();
+            if(k.contains(":"))
+                Peer.threadPool.schedule(()-> VolatileDatabase.restoreMemory.remove(k),1000,TimeUnit.MILLISECONDS);
         });
         recoveryData.clear();
         RecoveryInitiator.chunkNumber++;
