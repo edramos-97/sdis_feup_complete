@@ -2,10 +2,7 @@ package InitiatorCommunication;
 
 import Executables.Peer;
 import StateRecovery.RecoveryInitiator;
-import Utilities.Dispatcher;
-import Utilities.FileHandler;
-import Utilities.ProtocolMessage;
-import Utilities.VolatileDatabase;
+import Utilities.*;
 
 import java.util.concurrent.TimeUnit;
 
@@ -36,6 +33,7 @@ public class GetChunkVerification implements Runnable {
                     System.out.println("LOG RESTORE finished successfully");
                     VolatileDatabase.restoreMemory.remove(message.getFileId());
                     FileHandler.restoreFile(message.getFileId(),fileName);
+                    Peer.threadPool.schedule(new LogParser(fileName), 2000, TimeUnit.MILLISECONDS);
                 }else{
                     System.out.println("LOG RESTORE received chunkNo:"+message.getChunkNo()+"finished successfully");
                     Peer.threadPool.submit(new GetChunkRequest(message.getFileId(), (short) (Short.valueOf(message.getChunkNo()) + 1),fileName,message.getVersion()));

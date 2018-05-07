@@ -26,7 +26,7 @@ public class RecoveryInitiator extends Thread {
     // chunkNo == -1  -> backed up file
     // chunkNo == -2  -> deleted file backed up
     // chunkNo == -3  -> deleted stored file
-    private static ConcurrentHashMap<String, List<Integer>> recoveryData = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, List<Integer>> recoveryData = new ConcurrentHashMap<>();
     private static ConcurrentHashMap<String, List<Integer>> volatileData = new ConcurrentHashMap<>();
     public static String fileID;
     public static int chunkNumber = 0;
@@ -66,10 +66,11 @@ public class RecoveryInitiator extends Thread {
             os.println();
         });
         volatileData.clear();
+
     }
 
     public static void addBackup(String fileName, long date){
-        String fileNameAndDate = fileName + ";" + date;
+        String fileNameAndDate = fileName + ":" + date;
         if(!volatileData.containsKey(fileNameAndDate)){
             List<Integer> temp = Collections.synchronizedList(new ArrayList<>());
             temp.listIterator().add(-1);
@@ -78,7 +79,7 @@ public class RecoveryInitiator extends Thread {
     }
 
     public static void addDeleteBackup(String fileName, long date){
-        String fileNameAndDate = fileName + ";" + date;
+        String fileNameAndDate = fileName + ":" + date;
         if(volatileData.containsKey(fileNameAndDate)){
             volatileData.remove(fileNameAndDate);
         }else{

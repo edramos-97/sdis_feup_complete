@@ -34,7 +34,7 @@ public class FileHandler {
     private static final String EXTENSION = ".txt";
     private static String peerPath = System.getProperty("user.home")+File.separator+"Desktop"+File.separator+"sbs_"+ Peer.peerID + File.separator;
     public static String savePath =  peerPath + "backup" +File.separator;
-    private static String restorePath = peerPath + "restore" +File.separator;
+    public static String restorePath = peerPath + "restore" +File.separator;
     public static String dbserPath =  peerPath + "db.ser";
     private static long allocatedSpace = 1000000000;
 
