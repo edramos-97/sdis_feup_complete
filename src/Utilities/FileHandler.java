@@ -4,10 +4,7 @@ import Executables.Peer;
 import InitiatorCommunication.PutChunkHandleComplete;
 
 import javax.xml.bind.DatatypeConverter;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
@@ -36,6 +33,18 @@ public class FileHandler {
     private static long allocatedSpace = 1000000000;
 
     public static void main(String[] args) {
+        String header;
+        try {
+            BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream("Frogs_MFCCs.csv")));
+            header = in.readLine();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+        String[] colNames = header.split(",");
+        System.out.println(Arrays.toString(colNames));
+
+
         /*Path filePath = Paths.get(savePath+"/NewFolder/1.txt");
         Path dirPath = Paths.get(savePath+"/NewFolder/");
         try {

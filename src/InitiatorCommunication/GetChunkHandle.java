@@ -55,7 +55,9 @@ public class GetChunkHandle extends Thread {
                 try {
                     Socket dataSocket = s.accept();
                     DataOutputStream  dataStream = new DataOutputStream(dataSocket.getOutputStream());
+                    System.out.println("Chunk No:"+message.getChunkNo());
                     byte[] data = FileHandler.getChunk(message.getFileId(),Short.valueOf(message.getChunkNo()));
+                    System.out.println("chunk Size:"+data.length);
                     dataStream.write(data);
                     dataSocket.close();
                 } catch (Exception e) {
