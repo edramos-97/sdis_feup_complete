@@ -6,7 +6,7 @@ import java.security.InvalidParameterException;
 
 public class ProtocolMessage {
 
-    public enum PossibleTypes {PUTCHUNK,PUTLOGCHUNK,STORED,GETCHUNK,CHUNK,DELETE,DELETECONF,REMOVED,BACKEDUP,RECOVERASKMAX,RECOVERMAX}
+    public enum PossibleTypes {PUTCHUNK,PUTLOGCHUNK,STORED,GETCHUNK,CHUNK,DELETE,DELETECONF,REMOVED,BACKEDUP,RECOVERASKMAX,RECOVERMAX, CHUNKLOG, GETLOGS}
 
     private PossibleTypes msgType;
     private String version;
@@ -35,6 +35,7 @@ public class ProtocolMessage {
             case PUTLOGCHUNK:
             case PUTCHUNK:
             case CHUNK:
+            case CHUNKLOG:
                 this.hasBody = true; break;
             case DELETE:
             case STORED:
@@ -44,6 +45,7 @@ public class ProtocolMessage {
             case RECOVERASKMAX:
             case RECOVERMAX:
             case BACKEDUP:
+            case GETLOGS:
                 this.hasBody = false; break;
             default:
                 System.out.println("Invalid data type in Message Constructor");
@@ -153,12 +155,14 @@ public class ProtocolMessage {
             case GETCHUNK:
             case REMOVED:
             case RECOVERMAX:
+            case CHUNKLOG:
                 complement = String.format(" %s\r\n\r\n",getChunkNo()).getBytes();
                 break;
             case DELETE:
             case DELETECONF:
             case BACKEDUP:
             case RECOVERASKMAX:
+            case GETLOGS:
                 complement = "\r\n\r\n".getBytes();
                 break;
         }
