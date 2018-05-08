@@ -59,7 +59,9 @@ public class GetChunkHandle extends Thread {
                     byte[] data = FileHandler.getChunk(message.getFileId(),Short.valueOf(message.getChunkNo()));
                     System.out.println("chunk Size:"+data.length);
                     dataStream.write(data);
+                    dataStream.close();
                     dataSocket.close();
+                    s.close();
                 } catch (Exception e) {
                     //e.printStackTrace();
                     System.out.println("No connection established to send chunk data");

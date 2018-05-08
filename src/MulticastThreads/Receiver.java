@@ -6,6 +6,7 @@ import StateRecovery.RecoveryInitiator;
 import Utilities.*;
 
 import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.Socket;
@@ -140,14 +141,30 @@ public class Receiver extends Thread {
                         System.out.println("Sent port is:" + socketInfo[1]);
                         try {
                             Socket dataSocket = new Socket(socketInfo[0],Integer.valueOf(socketInfo[1]));
+                            dataSocket.setSoTimeout(1000);
                             DataInputStream dataInput = new DataInputStream(dataSocket.getInputStream());
                             message.setBody(new byte[64000]);
                             int readBytes = 0;
-                            int readBytesAux = 0;
-                            while((readBytesAux = dataInput.read(message.body,readBytes,FileHandler.CHUNK_SIZE))!=-1){
+                            int readBytesAux;
+                            /*while (true){
+                                try{
+                                    dataInput.readFully(message.body);
+                                }catch (EOFException e){
+                                    System.out.println("we are golden, sort of");
+                                    break;
+                                }
+                            }*/
+                            System.out.println("Available1:"+dataInput.available());
+                            do {
+                                readBytesAux = dataInput.read(message.body,readBytes,FileHandler.CHUNK_SIZE);
+                                System.out.println("readBytesAux:"+readBytesAux);
                                 System.out.println("read bytes:"+readBytes);
                                 readBytes = readBytesAux + readBytes;
-                            }
+                                //dataSocket.close();
+                                System.out.println("Available:"+dataInput.available());
+                            }while(dataInput.available()>0);
+
+                            System.out.println("readBytes after while:"+readBytes);
                             message.setBody(Arrays.copyOfRange(message.body, 0, readBytes));
                             dataSocket.close();
                         } catch (IOException e) {
