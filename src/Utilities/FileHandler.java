@@ -8,9 +8,6 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.channels.CompletionHandler;
@@ -22,7 +19,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -39,7 +35,7 @@ public class FileHandler {
     public static String dbserPath =  peerPath + "db.ser";
     private static long allocatedSpace = 1000000000;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         /*Path filePath = Paths.get(savePath+"/NewFolder/1.txt");
         Path dirPath = Paths.get(savePath+"/NewFolder/");
         try {
@@ -56,9 +52,9 @@ public class FileHandler {
         }*/
 
         //GETCHUNK RECEIVED
-        ServerSocket myPeer = new ServerSocket(1040);
+        /*ServerSocket myPeer = new ServerSocket(1040);
         String myAddress =  InetAddress.getLocalHost().getHostAddress();
-        Socket mysocket = myPeer.accept();
+        Socket mysocket = myPeer.accept();*/
         //write stuff to this socket
 
         //INITIATOR SIDE

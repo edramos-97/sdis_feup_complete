@@ -29,7 +29,7 @@ public class GetChunkVerification implements Runnable {
         Integer[] info  = VolatileDatabase.restoreMemory.get(message.getFileId());
         //check if current chunk was received
 
-        if(info != null && info[0]==Integer.parseInt(message.getChunkNo())) {
+        if(info != null && (info[0]==Integer.parseInt(message.getChunkNo())||fileName.equals("single"))) {
             if (fileName.equals("peer" + Peer.peerID + "recoveryLog")) {
                 if (Integer.parseInt(message.getChunkNo()) == RecoveryInitiator.chunkNumber) {
                     System.out.println("LOG RESTORE finished successfully");

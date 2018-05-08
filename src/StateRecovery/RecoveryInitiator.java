@@ -139,28 +139,61 @@ public class RecoveryInitiator extends Thread {
 
     public static void restoreState(){
         recoveryData.forEach((k,v)->{
+            if(!k.contains(":"))
+                VolatileDatabase.restoreMemory.put(k,new Integer[]{-1,-1});
             for(Integer i : v) {
                 if(i >= 0) {
                     Peer.threadPool.submit(new GetChunkRequest(k,i.shortValue(),"single","1.1" ));
                 } else {
                     String[] nameDate = k.split(":",2);
-                    String date = nameDate[1];
-                    String name = nameDate[0];
                     MessageDigest digest;
                     try {
                         digest = MessageDigest.getInstance("SHA-256");
-                        byte[] hash = digest.digest((name+date).getBytes());
+                        byte[] hash = digest.digest((nameDate[0]+nameDate[1]).getBytes());
                         String hashedName = DatatypeConverter.printHexBinary(hash);
                         hashedName = hashedName.toLowerCase();
                         VolatileDatabase.restoreMemory.put(hashedName,new Integer[]{-1,-1});
-                        Peer.threadPool.submit(new GetChunkRequest(hashedName,(short)0,name,"1.1" ));
+                        Peer.threadPool.submit(new GetChunkRequest(hashedName,(short)0,nameDate[0],"1.1" ));
                     } catch (NoSuchAlgorithmException e) {
                         e.printStackTrace();
                     }
                 }
             }
-            if(k.contains(":"))
-                Peer.threadPool.schedule(()-> VolatileDatabase.restoreMemory.remove(k),1000,TimeUnit.MILLISECONDS);
+        });
+        //remove data from retore memory and change date on created files
+        try {
+            sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        while(Peer.threadPool.getQueue().size()>1){
+            try {
+                sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println("::::::::::::::::::::::::::::::::::::::::");
+        recoveryData.forEach((k,v)->{
+            File f;
+            if (k.contains(":")){
+                String[] nameDate = k.split(":");
+                f = Paths.get(FileHandler.restorePath+nameDate[0]).toFile();
+                if(f.setLastModified(Long.valueOf(nameDate[1]))){
+                    System.out.println("date successfully modified");
+                }else{
+                    System.out.println("date modification failed");
+                }
+            }else {
+                f = Paths.get(FileHandler.restorePath + k).toFile();
+                if (f.renameTo(new File(FileHandler.savePath + k))){
+                    System.out.println("renaming successful");
+                }else{
+                    System.out.println("renaming failed");
+                }
+                VolatileDatabase.restoreMemory.remove(k);
+            }
+
         });
         recoveryData.clear();
         RecoveryInitiator.chunkNumber++;
