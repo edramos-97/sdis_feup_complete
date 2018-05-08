@@ -72,12 +72,14 @@ public class ProtocolMessageParser {
                 case CHUNK:
                 case RECOVERMAX:
                 case REMOVED:
+                case CHUNKLOG:
                     tempMessage.setChunkNo(headerFields[4]);
                     break;
                 case DELETECONF:
                 case RECOVERASKMAX:
                 case DELETE:
                 case BACKEDUP:
+                case GETLOGS:
                     break;
                 default:
                     throw new Exception("Invalid data type received!");

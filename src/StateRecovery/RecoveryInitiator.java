@@ -197,6 +197,10 @@ public class RecoveryInitiator extends Thread {
         });
         recoveryData.clear();
         RecoveryInitiator.chunkNumber++;
+        ProtocolMessage m = new ProtocolMessage(ProtocolMessage.PossibleTypes.GETLOGS);
+        m.setFileId("0000000000000000000000000000000000000000000000000000000000000000");
+        Dispatcher.sendControl(m.toCharArray());
+
     }
 
     @Override

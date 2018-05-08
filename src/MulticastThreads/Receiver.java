@@ -86,6 +86,30 @@ public class Receiver extends Thread {
                     RecoveryInitiator.chunkNumber = messageNumber;
                 }
                 break;
+            case GETLOGS:
+                Peer.threadPool.submit(new GetLogsHandle());
+                break;
+            case CHUNKLOG:
+                VolatileDatabase.restoreMemory.put(message.getFileId(),new Integer[]{Integer.parseInt(message.getChunkNo()),message.getBody().length});
+                FileHandler.saveChunk(message,"backup");
+                /*
+                try {
+                    String body = new String(message.getBody());
+                    String[] socketInfo = body.split(":",2);
+
+                    Socket dataSocket = new Socket(socketInfo[0],Integer.valueOf(socketInfo[1]));
+                    DataInputStream dataInput = new DataInputStream(dataSocket.getInputStream());
+                    message.setBody(new byte[64000]);
+                    int readBytes = dataInput.read(message.body);
+                    System.out.println("read bytes:"+readBytes);
+                    message.setBody(Arrays.copyOfRange(message.body,0,readBytes));
+                    FileHandler.saveChunk(message,"backup");
+                    dataSocket.close();
+                } catch (IOException e) {
+                    //e.printStackTrace();
+                    System.out.println("Couldn't create socket for chunk reception.");
+                }*/
+                break;
             case PUTLOGCHUNK:
             case PUTCHUNK:
                 VolatileDatabase.removedChunk.remove(message.getFileId()+Short.valueOf(message.getChunkNo()));
