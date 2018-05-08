@@ -142,9 +142,13 @@ public class Receiver extends Thread {
                             Socket dataSocket = new Socket(socketInfo[0],Integer.valueOf(socketInfo[1]));
                             DataInputStream dataInput = new DataInputStream(dataSocket.getInputStream());
                             message.setBody(new byte[64000]);
-                            dataInput.readFully(message.body);
-                            //System.out.println("read bytes:"+readBytes);
-                            message.setBody(message.body);
+                            int readBytes = 0;
+                            int readBytesAux = 0;
+                            while((readBytesAux = dataInput.read(message.body,readBytes,FileHandler.CHUNK_SIZE))!=-1){
+                                System.out.println("read bytes:"+readBytes);
+                                readBytes = readBytesAux + readBytes;
+                            }
+                            message.setBody(Arrays.copyOfRange(message.body, 0, readBytes));
                             dataSocket.close();
                         } catch (IOException e) {
                             //e.printStackTrace();
