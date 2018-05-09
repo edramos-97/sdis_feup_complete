@@ -111,11 +111,11 @@ public class FileHandler {
      * Checks if it is possible to save a chunk without exceeding the allocated disk space
      * @return Returns true if there is enough space to save a chunk, false otherwise
      */
-    public static boolean canSave(){
+    public static boolean canSave(int messageSize){
         /*System.out.println("hey can I save this file   " + Peer.peerID);
         System.out.println("ALLOC " + getAllocatedSpace());
         System.out.println("DSK " + getDiskUsage());*/
-        return getAllocatedSpace()>getDiskUsage()+CHUNK_SIZE;
+        return getAllocatedSpace()>getDiskUsage()+messageSize;
     }
 
     /**
@@ -397,7 +397,7 @@ public class FileHandler {
                 } else {
                     chunkSize[i] = chunkSize[i-1] + chunks[i].length();
                 }
-                System.out.println(chunks[i].getName() + ": " + chunkSize[i]);
+                //System.out.println(chunks[i].getName() + ": " + chunkSize[i]);
             }
             for (File chunk : chunks) {
                 try {
@@ -407,11 +407,11 @@ public class FileHandler {
                             new CompletionHandler<Integer, Integer>() {
                                 @Override
                                 public void completed(Integer result, Integer attachment) {
-                                    System.out.println("Attatchment:"+attachment);
+                                    //System.out.println("Attatchment:"+attachment);
                                     if(attachment == 0) {
                                         file.write(ByteBuffer.wrap(Arrays.copyOfRange(chunkBytes, 0, result)), 0);
                                     } else {
-                                        System.out.println("position:"+chunkSize[attachment-1]);
+                                        //System.out.println("position:"+chunkSize[attachment-1]);
                                         file.write(ByteBuffer.wrap(Arrays.copyOfRange(chunkBytes, 0, result)), chunkSize[attachment-1]);
                                     }
                                     try {

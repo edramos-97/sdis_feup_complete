@@ -67,7 +67,7 @@ public class GetChunkVerification implements Runnable {
             Dispatcher.sendControl(message.toCharArray());
 
             //check if got chunk again
-            Peer.threadPool.schedule(this,450, TimeUnit.MILLISECONDS);
+            Peer.threadPool.schedule(this,1500, TimeUnit.MILLISECONDS);
         }
     }
 }

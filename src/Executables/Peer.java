@@ -11,7 +11,6 @@ import Utilities.FileHandler;
 import Utilities.VolatileDatabase;
 
 import java.io.*;
-import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -80,7 +79,7 @@ public class Peer {
         }
 
 	try{
-            InputStream readStream = new FileInputStream("../client.keys");
+            InputStream readStream = new FileInputStream("client.keys");
             peerKeyStore = KeyStore.getInstance("JKS");
             peerKeyStore.load(readStream,"123456".toCharArray());
             //peerKeyStore.getKey("clientRSA","123456".toCharArray());

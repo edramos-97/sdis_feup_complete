@@ -6,7 +6,6 @@ import StateRecovery.RecoveryInitiator;
 import Utilities.*;
 
 import java.io.DataInputStream;
-import java.io.EOFException;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.Socket;
@@ -66,7 +65,7 @@ public class Receiver extends Thread {
                 Peer.threadPool.submit(new BackedupHandle(message));
                 break;
             case REMOVED:
-                System.out.println("REMOVED RECEIVED");
+                System.out.println("REMOVED fileID:\"" + message.getFileId() + "\" chunkNo:\""+message.getChunkNo()+"\" from peer:\"" + message.getSenderId() + "\"");
                 Peer.threadPool.submit(new DiskReclaimHandle(message.getFileId(), Short.valueOf(message.getChunkNo()), Integer.parseInt(message.getSenderId())));
                 break;
             case RECOVERASKMAX:
@@ -91,6 +90,10 @@ public class Receiver extends Thread {
                 Peer.threadPool.submit(new GetLogsHandle());
                 break;
             case CHUNKLOG:
+                if(!FileHandler.canSave(message.getBody().length)) {
+                    System.out.println("Back up space is full! Not saving putChunk");
+                    break;
+                }
                 VolatileDatabase.restoreMemory.put(message.getFileId(),new Integer[]{Integer.parseInt(message.getChunkNo()),message.getBody().length});
                 FileHandler.saveChunk(message,"backup");
                 /*
@@ -119,7 +122,7 @@ public class Receiver extends Thread {
                     System.out.println("PUTCHUNK not saving file I backed up");
                     break;
                 }
-                if(!FileHandler.canSave()) {
+                if(!FileHandler.canSave(message.body.length)) {
                     System.out.println("Back up space is full! Not saving putChunk");
                     break;
                 }
@@ -132,55 +135,29 @@ public class Receiver extends Thread {
                     VolatileDatabase.getChunkMemory.remove(message.getFileId() + message.getChunkNo());
                 }else{
                     if(message.getVersion().equals("1.1")){
-                        /*if(RestoreEnhancement.can_save_these.containsKey(message.getFileId()+message.getChunkNo())){
-                            message = RestoreEnhancement.can_save_these.remove(message.getFileId()+message.getChunkNo());
-                        }*/
                         String body = new String(message.getBody());
                         String[] socketInfo = body.split(":",2);
                         System.out.println("Sent address is:" + socketInfo[0]);
                         System.out.println("Sent port is:" + socketInfo[1]);
-			int readBytes = 0;
+			            int readBytes = 0;
                         int readBytesAux = 0;
                         try {
                             Socket dataSocket = new Socket(socketInfo[0],Integer.valueOf(socketInfo[1]));
                             dataSocket.setSoTimeout(1000);
                             DataInputStream dataInput = new DataInputStream(dataSocket.getInputStream());
                             message.setBody(new byte[64000]);
-			    byte[] temp = new byte[64000];
+                            byte[] temp = new byte[64000];
                             while (true){
-                                /*try{
-                                    dataInput.readFully(message.body);
-                                }catch (EOFException e){
-                                    System.out.println("we are golden, sort of");
-				    System.out.println("body ="+new String(message.body));
-                                    break;
-                                }*/
-				//System.out.println("available ="+dataInput.available());
-				readBytesAux = dataInput.read(temp);
-				System.arraycopy(temp,0,message.body,readBytes,readBytesAux);
-				//System.out.println("readBytesAux:"+readBytesAux);
-                                //System.out.println("read bytes:"+readBytes);
-				readBytes = readBytesAux + readBytes;
-				if(readBytes == 64000)
-				break;
-                            }
-                            
-                            /*do {
-                                readBytesAux = dataInput.read(message.body,readBytes,FileHandler.CHUNK_SIZE);
-                                System.out.println("readBytesAux:"+readBytesAux);
-                                System.out.println("read bytes:"+readBytes);
+                                readBytesAux = dataInput.read(temp);
+                                System.arraycopy(temp,0,message.body,readBytes,readBytesAux);
                                 readBytes = readBytesAux + readBytes;
-                                //dataSocket.close();
-                                System.out.println("Available:"+dataInput.available());
-                            }while(dataInput.available()>0);*/
-
-                            //System.out.println("readBytes after while:"+readBytes);
-                            //message.setBody(Arrays.copyOfRange(message.body, 0, readBytes));
-                            //dataSocket.close();
+                                if(readBytes == 64000)
+                                break;
+                            }
                         } catch (IOException e) {
                             e.printStackTrace();
-			    message.setBody(Arrays.copyOfRange(message.body,0,readBytes));
-			    System.out.println("body="+new String(message.body));
+                            message.setBody(Arrays.copyOfRange(message.body,0,readBytes));
+                            //System.out.println("body="+new String(message.body));
                             System.out.println("Couldn't create socket for chunk reception.");
                         }
                         VolatileDatabase.restoreMemory.put(message.getFileId(),new Integer[]{Integer.parseInt(message.getChunkNo()),message.getBody().length});
