@@ -36,7 +36,7 @@ public class GetChunkHandle extends Thread {
                     //String address = InetAddress.getLocalHost().getHostAddress();
                     //Socket cs = new Socket(packet_received.getAddress(), 5678);
                     s = new ServerSocket(0);
-                    s.setSoTimeout(450);
+                    s.setSoTimeout(100);
                     System.out.println("Sent address is:" + InetAddress.getLocalHost().getHostAddress());
                     System.out.println("Sent port is:" + s.getLocalPort());
                     message.setBody((InetAddress.getLocalHost().getHostAddress() + ":" + s.getLocalPort()).getBytes());
@@ -59,11 +59,10 @@ public class GetChunkHandle extends Thread {
                     byte[] data = FileHandler.getChunk(message.getFileId(),Short.valueOf(message.getChunkNo()));
                     System.out.println("chunk Size:"+data.length);
                     dataStream.write(data);
-                    dataStream.close();
-                    dataSocket.close();
-                    s.close();
+dataStream.flush();
+System.out.println("written:"+dataStream.size());
                 } catch (Exception e) {
-                    //e.printStackTrace();
+                    e.printStackTrace();
                     System.out.println("No connection established to send chunk data");
                 }
             }

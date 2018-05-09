@@ -139,36 +139,48 @@ public class Receiver extends Thread {
                         String[] socketInfo = body.split(":",2);
                         System.out.println("Sent address is:" + socketInfo[0]);
                         System.out.println("Sent port is:" + socketInfo[1]);
+			int readBytes = 0;
+                        int readBytesAux = 0;
                         try {
                             Socket dataSocket = new Socket(socketInfo[0],Integer.valueOf(socketInfo[1]));
                             dataSocket.setSoTimeout(1000);
                             DataInputStream dataInput = new DataInputStream(dataSocket.getInputStream());
                             message.setBody(new byte[64000]);
-                            int readBytes = 0;
-                            int readBytesAux;
-                            /*while (true){
-                                try{
+			    byte[] temp = new byte[64000];
+                            while (true){
+                                /*try{
                                     dataInput.readFully(message.body);
                                 }catch (EOFException e){
                                     System.out.println("we are golden, sort of");
+				    System.out.println("body ="+new String(message.body));
                                     break;
-                                }
-                            }*/
-                            System.out.println("Available1:"+dataInput.available());
-                            do {
+                                }*/
+				//System.out.println("available ="+dataInput.available());
+				readBytesAux = dataInput.read(temp);
+				System.arraycopy(temp,0,message.body,readBytes,readBytesAux);
+				//System.out.println("readBytesAux:"+readBytesAux);
+                                //System.out.println("read bytes:"+readBytes);
+				readBytes = readBytesAux + readBytes;
+				if(readBytes == 64000)
+				break;
+                            }
+                            
+                            /*do {
                                 readBytesAux = dataInput.read(message.body,readBytes,FileHandler.CHUNK_SIZE);
                                 System.out.println("readBytesAux:"+readBytesAux);
                                 System.out.println("read bytes:"+readBytes);
                                 readBytes = readBytesAux + readBytes;
                                 //dataSocket.close();
                                 System.out.println("Available:"+dataInput.available());
-                            }while(dataInput.available()>0);
+                            }while(dataInput.available()>0);*/
 
-                            System.out.println("readBytes after while:"+readBytes);
-                            message.setBody(Arrays.copyOfRange(message.body, 0, readBytes));
-                            dataSocket.close();
+                            //System.out.println("readBytes after while:"+readBytes);
+                            //message.setBody(Arrays.copyOfRange(message.body, 0, readBytes));
+                            //dataSocket.close();
                         } catch (IOException e) {
-                            //e.printStackTrace();
+                            e.printStackTrace();
+			    message.setBody(Arrays.copyOfRange(message.body,0,readBytes));
+			    System.out.println("body="+new String(message.body));
                             System.out.println("Couldn't create socket for chunk reception.");
                         }
                         VolatileDatabase.restoreMemory.put(message.getFileId(),new Integer[]{Integer.parseInt(message.getChunkNo()),message.getBody().length});

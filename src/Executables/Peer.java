@@ -79,21 +79,21 @@ public class Peer {
             //e.printStackTrace();
         }
 
-        FileHandler.startPeerFileSystem();
-        new Dispatcher().start();
-        new RecoveryInitiator().start();
-
-        VolatileDatabase.populateExisting();
-        VolatileDatabase.networkUpdate();
-
-        try{
-            InputStream readStream = new FileInputStream("client.keys");
+	try{
+            InputStream readStream = new FileInputStream("../client.keys");
             peerKeyStore = KeyStore.getInstance("JKS");
             peerKeyStore.load(readStream,"123456".toCharArray());
             //peerKeyStore.getKey("clientRSA","123456".toCharArray());
         } catch (Exception e){
             System.out.println("Couldn't retrieve key storage");
         }
+
+        FileHandler.startPeerFileSystem();
+        new Dispatcher().start();
+        new RecoveryInitiator().start();
+
+        VolatileDatabase.populateExisting();
+        VolatileDatabase.networkUpdate();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("This was the state of my internals...");
