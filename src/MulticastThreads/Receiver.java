@@ -81,6 +81,9 @@ public class Receiver extends Thread {
                 }
                 break;
             case RECOVERMAX:
+                if(!RecoveryInitiator.active){
+                    return;
+                }
                 int messageNumber = Integer.parseInt(message.getChunkNo()) - 1;
                 //System.out.println(messageNumber);
                 if(messageNumber > RecoveryInitiator.chunkNumber) {

@@ -8,6 +8,7 @@ import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
 import Utilities.VolatileDatabase;
 
+import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 public class GetChunkVerification implements Runnable {
@@ -31,9 +32,11 @@ public class GetChunkVerification implements Runnable {
 
         if(info != null && (info[0]==Integer.parseInt(message.getChunkNo())||fileName.equals("single"))) {
             if (fileName.equals("peer" + Peer.peerID + "recoveryLog")) {
+                System.out.println("Chunk Number:"+RecoveryInitiator.chunkNumber);
                 if (Integer.parseInt(message.getChunkNo()) == RecoveryInitiator.chunkNumber) {
                     System.out.println("LOG RESTORE finished successfully");
                     VolatileDatabase.restoreMemory.remove(message.getFileId());
+                    FileHandler.copyFolder(new File(FileHandler.restorePath+message.getFileId()),new File(FileHandler.savePath+message.getFileId()));
                     FileHandler.restoreFile(message.getFileId(), fileName + FileHandler.EXTENSION);
                     Peer.threadPool.schedule(new LogParser(fileName), 2000, TimeUnit.MILLISECONDS);
                 } else {

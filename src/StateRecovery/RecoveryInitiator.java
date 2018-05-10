@@ -34,6 +34,7 @@ public class RecoveryInitiator extends Thread {
     private static ConcurrentHashMap<String, List<Integer>> volatileData = new ConcurrentHashMap<>();
     public static String fileID;
     public static int chunkNumber = 0;
+    public static boolean active = false;
 
     public RecoveryInitiator() {
         try {

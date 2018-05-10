@@ -5,8 +5,6 @@ import StateRecovery.RecoveryInitiator;
 import Utilities.Dispatcher;
 import Utilities.ProtocolMessage;
 
-import javax.xml.bind.DatatypeConverter;
-import java.security.MessageDigest;
 import java.util.concurrent.TimeUnit;
 
 public class RecoverAskMaxRequest implements Runnable {
@@ -17,6 +15,7 @@ public class RecoverAskMaxRequest implements Runnable {
 
     @Override
     public void run() {
+        RecoveryInitiator.active = true;
         RecoveryInitiator.chunkNumber = 0;
 
         ProtocolMessage message = new ProtocolMessage(ProtocolMessage.PossibleTypes.RECOVERASKMAX);
