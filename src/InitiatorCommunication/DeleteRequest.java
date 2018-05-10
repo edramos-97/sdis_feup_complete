@@ -27,6 +27,12 @@ public class DeleteRequest implements Runnable{
 
             message.setFileId(FileHandler.getFileId(file));
 
+            try {
+                message.setVersion(version);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             Dispatcher.sendControl(message.toCharArray());
 
             RecoveryInitiator.addDeleteBackup(file.getName(), file.lastModified());

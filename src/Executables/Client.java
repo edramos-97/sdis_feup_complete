@@ -111,7 +111,7 @@ public class Client {
             // Send message to delete the given fileID
 
             rmi_stub.say_this("ENHANCED DELETE CALLED");
-            rmi_stub.delete(filepath,false);
+            rmi_stub.delete(filepath,true);
             System.out.println("Deleted...");
             return;
         }

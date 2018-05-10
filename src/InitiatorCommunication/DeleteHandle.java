@@ -35,9 +35,6 @@ public class DeleteHandle implements Runnable{
             }
             Dispatcher.sendControl(message.toCharArray());
         }
-
-
-
         RecoveryInitiator.addDeleteStored(message.getFileId());
     }
 }

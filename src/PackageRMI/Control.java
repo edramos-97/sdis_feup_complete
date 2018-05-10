@@ -33,8 +33,6 @@ public class Control implements ControlInterface {
         String fileName = file.getName();
         long date = file.lastModified();
 
-        RecoveryInitiator.addBackup(fileName, date);
-
         int threadNo;
 
         try {
@@ -44,6 +42,8 @@ public class Control implements ControlInterface {
             return false;
         }
         System.out.println("Started PUTCHUNK for file:\""+filePath+"\"");
+
+        RecoveryInitiator.addBackup(fileName, date);
 
         //start working threads
         String version = enhanced?"1.0":"1.1";
