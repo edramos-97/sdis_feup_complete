@@ -33,6 +33,7 @@ public class Peer {
     };
     public static ScheduledThreadPoolExecutor threadPool = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors(),rejectedExecutionHandler);
     public static KeyStore peerKeyStore;
+    public static Control control_rmi;
 
     public static void main(String[] args) {
         if(args.length < 7){
@@ -67,7 +68,7 @@ public class Peer {
 
         //RMI setup
         try {
-            Control control_rmi = new Control();
+            control_rmi = new Control();
             ControlInterface control_rmi_stub = (ControlInterface) UnicastRemoteObject.exportObject(control_rmi, 0);
             // Bind the remote object's stub in the registry
             Registry registry = LocateRegistry.getRegistry();

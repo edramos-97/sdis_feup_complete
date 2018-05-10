@@ -2,7 +2,6 @@ package StateRecovery;
 
 import Executables.Peer;
 import InitiatorCommunication.GetChunkRequest;
-import InitiatorCommunication.PutChunkRequest;
 import Utilities.Dispatcher;
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
@@ -180,13 +179,7 @@ public class RecoveryInitiator extends Thread {
                     try {
                         MessageDigest digest;
                         System.out.println("date successfully modified, backing up");
-                        digest = MessageDigest.getInstance("SHA-256");
-                        byte[] hash = digest.digest((nameDate[0]+nameDate[1]).getBytes());
-                        String hashedName = DatatypeConverter.printHexBinary(hash);
-                        hashedName = hashedName.toLowerCase();
-                        if(!VolatileDatabase.backed2fileID.containsKey(fileID) && hashedName.equals(""))
-                            VolatileDatabase.backed2fileID.put(fileID, filePath);
-                        Peer.threadPool.submit(new PutChunkRequest(filePath,(short)0,'1',1,"1.1"));
+                        Peer.control_rmi.putChunk(filePath,'1',true);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
