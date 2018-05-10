@@ -249,7 +249,7 @@ public final class VolatileDatabase implements Serializable{
             String pathname = backed2fileID.get(pair.getKey());
             stream.println("Backed up from path: " + pathname);
             stream.println("File: "+pair.getKey());
-            for (FileInfo info : database.get(pair.getKey())) {
+            for (FileInfo info : database.get(pair.getKey())){
                 info.print(stream);
             }
         }

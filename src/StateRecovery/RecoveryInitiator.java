@@ -2,6 +2,7 @@ package StateRecovery;
 
 import Executables.Peer;
 import InitiatorCommunication.GetChunkRequest;
+import InitiatorCommunication.PutChunkRequest;
 import Utilities.Dispatcher;
 import Utilities.FileHandler;
 import Utilities.ProtocolMessage;
@@ -160,27 +161,35 @@ public class RecoveryInitiator extends Thread {
                 }
             }
         });
-        //remove data from retore memory and change date on created files
-        try {
-            sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        while(Peer.threadPool.getQueue().size()>1){
+        do{
             try {
                 sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }
+        }while(Peer.threadPool.getQueue().size()>1);
+        //remove data from restore memory and change date on created files
         System.out.println("::::::::::::::::::::::::::::::::::::::::");
         recoveryData.forEach((k,v)->{
             File f;
             if (k.contains(":")){
                 String[] nameDate = k.split(":");
-                f = Paths.get(FileHandler.restorePath+nameDate[0]).toFile();
+                String filePath = FileHandler.restorePath+nameDate[0];
+                f = Paths.get(filePath).toFile();
                 if(f.setLastModified(Long.valueOf(nameDate[1]))){
-                    System.out.println("date successfully modified");
+                    try {
+                        MessageDigest digest;
+                        System.out.println("date successfully modified, backing up");
+                        digest = MessageDigest.getInstance("SHA-256");
+                        byte[] hash = digest.digest((nameDate[0]+nameDate[1]).getBytes());
+                        String hashedName = DatatypeConverter.printHexBinary(hash);
+                        hashedName = hashedName.toLowerCase();
+                        if(!VolatileDatabase.backed2fileID.containsKey(fileID) && hashedName.equals(""))
+                            VolatileDatabase.backed2fileID.put(fileID, filePath);
+                        Peer.threadPool.submit(new PutChunkRequest(filePath,(short)0,'1',1,"1.1"));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }else{
                     System.out.println("date modification failed");
                 }
