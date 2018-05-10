@@ -77,7 +77,7 @@ public class RecoveryInitiator extends Thread {
         String fileNameAndDate = fileName + ":" + date;
         if(!volatileData.containsKey(fileNameAndDate)){
             List<Integer> temp = Collections.synchronizedList(new ArrayList<>());
-            temp.listIterator().add(repDeg);
+            temp.listIterator().add(-repDeg-10);
             volatileData.put(fileNameAndDate,temp);
         }
     }
@@ -178,7 +178,7 @@ public class RecoveryInitiator extends Thread {
                 if(f.setLastModified(Long.valueOf(nameDate[1]))){
                     try {
                         System.out.println("date successfully modified, backing up");
-                        Peer.control_rmi.putChunk(filePath,(-1*Integer.parseInt(k)+"").charAt(1),false);
+                        Peer.control_rmi.putChunk(filePath,(-1*v.get(0)+"").charAt(1),false);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

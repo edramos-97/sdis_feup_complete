@@ -135,6 +135,7 @@ public class Receiver extends Thread {
                 break;
             case CHUNK:
                 if(VolatileDatabase.restoreMemory.get(message.getFileId())==null) {
+                    System.out.println("restore memory does not contain fileId");
                     VolatileDatabase.getChunkMemory.remove(message.getFileId() + message.getChunkNo());
                 }else{
                     if(message.getVersion().equals("1.1")){

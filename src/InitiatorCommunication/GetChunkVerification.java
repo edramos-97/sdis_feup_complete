@@ -44,9 +44,10 @@ public class GetChunkVerification implements Runnable {
                 if (info[1] != -1 && info[1] < FileHandler.CHUNK_SIZE) {
                     //last chunk of file
                     System.out.println("GETCHUNK for fileID:\"" + message.getFileId() + "\" finished successfully");
-                    VolatileDatabase.restoreMemory.remove(message.getFileId());
-                    if(!fileName.equals("single"))
+                    if(!fileName.equals("single")){
+                        VolatileDatabase.restoreMemory.remove(message.getFileId());
                         FileHandler.restoreFile(message.getFileId(), fileName);
+                    }
                 } else {
                     //get next chunk from file
                     System.out.println("GETCHUNK for fileID:\"" + message.getFileId() + "\" chunkNo:" + message.getChunkNo() + "\" successful");
