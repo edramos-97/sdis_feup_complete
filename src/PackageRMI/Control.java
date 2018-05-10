@@ -11,10 +11,7 @@ import java.io.File;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.rmi.RemoteException;
 
 public class Control implements ControlInterface {
 
@@ -43,7 +40,7 @@ public class Control implements ControlInterface {
         }
         System.out.println("Started PUTCHUNK for file:\""+filePath+"\"");
 
-        RecoveryInitiator.addBackup(fileName, date);
+        RecoveryInitiator.addBackup(fileName, date,Integer.valueOf(""+replicationDeg));
 
         //start working threads
         String version = enhanced?"1.0":"1.1";
@@ -174,13 +171,13 @@ public class Control implements ControlInterface {
     }
 
     @Override
-    public void dumpLog() throws RemoteException {
+    public void dumpLog() {
 
         //RecoveryInitiator.dump();
     }
 
     @Override
-    public void recover() throws RemoteException {
+    public void recover() {
         Peer.threadPool.submit(new RecoverAskMaxRequest());
     }
 }

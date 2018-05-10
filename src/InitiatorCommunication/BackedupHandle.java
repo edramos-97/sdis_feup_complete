@@ -21,6 +21,7 @@ public class BackedupHandle implements Runnable {
 
         message.setMsgType(ProtocolMessage.PossibleTypes.DELETE);
         try {
+            message.setVersion("1.1");
             message.setSenderId(String.valueOf(Peer.peerID));
         } catch (Exception e) {
             e.printStackTrace();

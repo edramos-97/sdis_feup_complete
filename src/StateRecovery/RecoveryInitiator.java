@@ -27,7 +27,7 @@ public class RecoveryInitiator extends Thread {
     // FileId -> chunkNO
     // chunkNo >=0 && < 1000000   -> stored chunk
     // chunkNo >=1000000 && < 2000000  -> remove chunk
-    // chunkNo == -1  -> backed up file
+    // chunkNo == ]-20,-10]  -> backed up file
     // chunkNo == -2  -> deleted file backed up
     // chunkNo == -3  -> deleted stored file
     public static ConcurrentHashMap<String, List<Integer>> recoveryData = new ConcurrentHashMap<>();
@@ -73,11 +73,11 @@ public class RecoveryInitiator extends Thread {
 
     }
 
-    public static void addBackup(String fileName, long date){
+    public static void addBackup(String fileName, long date,int repDeg){
         String fileNameAndDate = fileName + ":" + date;
         if(!volatileData.containsKey(fileNameAndDate)){
             List<Integer> temp = Collections.synchronizedList(new ArrayList<>());
-            temp.listIterator().add(-1);
+            temp.listIterator().add(repDeg);
             volatileData.put(fileNameAndDate,temp);
         }
     }
@@ -177,9 +177,8 @@ public class RecoveryInitiator extends Thread {
                 f = Paths.get(filePath).toFile();
                 if(f.setLastModified(Long.valueOf(nameDate[1]))){
                     try {
-                        MessageDigest digest;
                         System.out.println("date successfully modified, backing up");
-                        Peer.control_rmi.putChunk(filePath,'1',false);
+                        Peer.control_rmi.putChunk(filePath,(-1*Integer.parseInt(k)+"").charAt(1),false);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
