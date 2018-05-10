@@ -9,6 +9,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -81,7 +82,7 @@ public class Receiver extends Thread {
                 break;
             case RECOVERMAX:
                 int messageNumber = Integer.parseInt(message.getChunkNo()) - 1;
-                System.out.println(messageNumber);
+                //System.out.println(messageNumber);
                 if(messageNumber > RecoveryInitiator.chunkNumber) {
                     RecoveryInitiator.chunkNumber = messageNumber;
                 }
@@ -94,7 +95,7 @@ public class Receiver extends Thread {
                     System.out.println("Back up space is full! Not saving putChunk");
                     break;
                 }
-                VolatileDatabase.restoreMemory.put(message.getFileId(),new Integer[]{Integer.parseInt(message.getChunkNo()),message.getBody().length});
+                //VolatileDatabase.restoreMemory.put(message.getFileId(),new Integer[]{Integer.parseInt(message.getChunkNo()),message.getBody().length});
                 FileHandler.saveChunk(message,"backup");
                 /*
                 try {
@@ -137,8 +138,8 @@ public class Receiver extends Thread {
                     if(message.getVersion().equals("1.1")){
                         String body = new String(message.getBody());
                         String[] socketInfo = body.split(":",2);
-                        System.out.println("Sent address is:" + socketInfo[0]);
-                        System.out.println("Sent port is:" + socketInfo[1]);
+                        System.out.println("Received address is:" + socketInfo[0]);
+                        System.out.println("Received port is:" + socketInfo[1]);
 			            int readBytes = 0;
                         int readBytesAux = 0;
                         try {
@@ -154,9 +155,11 @@ public class Receiver extends Thread {
                                 if(readBytes == 64000)
                                 break;
                             }
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        } catch (SocketTimeoutException e){
                             message.setBody(Arrays.copyOfRange(message.body,0,readBytes));
+                            System.out.println("Read timeout");
+                        } catch (IOException e) {
+                            //e.printStackTrace();
                             //System.out.println("body="+new String(message.body));
                             System.out.println("Couldn't create socket for chunk reception.");
                         }
