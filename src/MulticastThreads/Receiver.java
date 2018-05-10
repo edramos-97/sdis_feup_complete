@@ -96,6 +96,8 @@ public class Receiver extends Thread {
                     break;
                 }
                 //VolatileDatabase.restoreMemory.put(message.getFileId(),new Integer[]{Integer.parseInt(message.getChunkNo()),message.getBody().length});
+                VolatileDatabase.add_chunk_putchunk(message.getFileId(), Short.valueOf(message.getChunkNo()), (short)1,message.body.length);
+                VolatileDatabase.add_chunk_stored(message.getFileId(), Short.valueOf(message.getChunkNo()), Integer.valueOf(message.getSenderId()));
                 FileHandler.saveChunk(message,"backup");
                 /*
                 try {

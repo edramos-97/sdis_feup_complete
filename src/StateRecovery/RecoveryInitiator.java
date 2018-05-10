@@ -179,7 +179,7 @@ public class RecoveryInitiator extends Thread {
                     try {
                         MessageDigest digest;
                         System.out.println("date successfully modified, backing up");
-                        Peer.control_rmi.putChunk(filePath,'1',true);
+                        Peer.control_rmi.putChunk(filePath,'1',false);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
