@@ -12,6 +12,7 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 public class Control implements ControlInterface {
 
@@ -59,17 +60,38 @@ public class Control implements ControlInterface {
     }
 
     @Override
-    public boolean getChunk(String filePath, boolean enhanced){
-        File file = new File(filePath);
+    public boolean getChunk(String fileName, boolean enhanced){
+        /*File file = new File(fileNath);
         if (!file.exists()){
-            System.out.println("RESTORE terminated, file doesn't exist: "+filePath);
+            System.out.println("RESTORE terminated, file doesn't exist: "+fileName);
+            return false;
+        }*/
+
+        //String fileId = FileHandler.getFileId(file);
+        ArrayList<String> fileId = new ArrayList<>();
+        VolatileDatabase.backed2fileID.forEach((k,v)->{
+            String[] temp;
+            if(File.separator == "\\") {
+                System.out.println("ups this is not tested...");
+                temp = v.split("\\\\");
+            } else{
+                temp = v.split("\\\\/");
+            }
+
+            if(fileName.equals(temp[temp.length - 1])){
+                System.out.println("here added");
+                fileId.add(k);
+            }
+        });
+        if(fileId.isEmpty()){
+            System.out.println("RESTORE terminated, couldn't find reference for that file name:"+fileName);
             return false;
         }
-        String fileId = FileHandler.getFileId(file);
-        if (fileId == null){
-            System.out.println("RESTORE terminated, file is a directory: "+filePath);
+        /*if (fileId == null){
+            System.out.println("RESTORE terminated, file is a directory: "+fileName);
             return false;
-        }
+        }*/
+
         System.out.println("Started GETCHUNK for fileID:\""+fileId+"\"");
 
         String version = enhanced?"1.0":"1.1";
@@ -79,9 +101,9 @@ public class Control implements ControlInterface {
         }*/
 
         //initialize getchunk request in data base
-        VolatileDatabase.restoreMemory.put(fileId,new Integer[]{-1,-1});
+        VolatileDatabase.restoreMemory.put(fileId.get(fileId.size()-1),new Integer[]{-1,-1});
 
-        Peer.threadPool.submit(new GetChunkRequest(fileId,(short)0,file.getName(),version));
+        Peer.threadPool.submit(new GetChunkRequest(fileId.get(fileId.size()-1),(short)0,fileName,version));
         return true;
     }
 
@@ -172,7 +194,6 @@ public class Control implements ControlInterface {
 
     @Override
     public void dumpLog() {
-
         //RecoveryInitiator.dump();
     }
 

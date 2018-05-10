@@ -33,7 +33,7 @@ public class FileHandler {
     private static long allocatedSpace = 1000000000;
 
     public static void main(String[] args) {
-        String header;
+        /*String header;
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream("Frogs_MFCCs.csv")));
             header = in.readLine();
@@ -42,10 +42,13 @@ public class FileHandler {
             return;
         }
         String[] colNames = header.split(",");
-        System.out.println(Arrays.toString(colNames));
+        System.out.println(Arrays.toString(colNames));*/
 
+        String[] temp = "lalalal".split("\\\\");
 
-        /*Path filePath = Paths.get(savePath+"/NewFolder/1.txt");
+        System.out.println(temp.length);
+
+        /*Path filePath = Paths.get(savePath+"/NewFolder/11.txt");
         Path dirPath = Paths.get(savePath+"/NewFolder/");
         try {
             if (Files.notExists(dirPath)){
