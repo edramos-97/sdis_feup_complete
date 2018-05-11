@@ -13,6 +13,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Control implements ControlInterface {
 
@@ -75,9 +76,9 @@ public class Control implements ControlInterface {
                 System.out.println("ups this is not tested...");
                 temp = v.split("\\\\");
             } else{
-                temp = v.split("\\\\/");
+                temp = v.split("/");
             }
-
+            System.out.println("temp:"+ Arrays.toString(temp));
             if(fileName.equals(temp[temp.length - 1])){
                 System.out.println("here added");
                 fileId.add(k);
