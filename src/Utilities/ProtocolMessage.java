@@ -174,6 +174,7 @@ public class ProtocolMessage {
         if (hasBody){
             byte[] result = new byte[header.length + body.length];
             System.arraycopy(header,0,result,0,header.length);
+            body = MessageCipher.privateCipher(body);
             System.arraycopy(body,0,result,header.length,body.length);
             return result;
         }else{
