@@ -174,7 +174,11 @@ public class ProtocolMessage {
         if (hasBody){
             byte[] result = new byte[header.length + body.length];
             System.arraycopy(header,0,result,0,header.length);
-            body = MessageCipher.privateCipher(body);
+
+            byte[] body_ciphered = MessageCipher.privateCipher(body);
+            System.out.println("MESSAGE CIPHERED HAS " + body_ciphered.length);
+            System.out.println("MESSAGE REGULAR HAS " + body.length);
+
             System.arraycopy(body,0,result,header.length,body.length);
             return result;
         }else{
