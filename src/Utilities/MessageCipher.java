@@ -1,14 +1,10 @@
 package Utilities;
 
-import java.security.SecureRandom;
-
-import javax.crypto.Cipher;
+import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
-import javax.crypto.Mac;
-import javax.crypto.MessageDigest;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.PBEKeySpec;
+import java.security.*;
 import java.util.Arrays;
 
 
@@ -84,29 +80,82 @@ public class MessageCipher {
 
     private static byte[] encrypt_data_salted(byte[] message, String password){
 
-        SecureRandom r = SecureRandom.getInstance("SHA1PRNG");
- 
+        SecureRandom r = null;
+        try {
+            r = SecureRandom.getInstance("SHA1PRNG");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
         // Generate 160 bit Salt for Encryption Key
-        byte[] esalt = new byte[20]; r.nextBytes(esalt);
+        byte[] esalt = new byte[20];
+        if (r != null) {
+            r.nextBytes(esalt);
+        }
         // Generate 128 bit Encryption Key
-        byte[] dek = deriveKey(password, esalt, 10000, 128);
+        byte[] dek = new byte[0];
+        try {
+            dek = deriveKey(password, esalt, 10000, 128);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // Perform Encryption
         SecretKeySpec eks = new SecretKeySpec(dek, "AES");
-        Cipher c = Cipher.getInstance("AES/CTR/NoPadding");
-        c.init(Cipher.ENCRYPT_MODE, eks, new IvParameterSpec(new byte[16]));
-        byte[] es = c.doFinal(message);
+        Cipher c = null;
+        try {
+            c = Cipher.getInstance("AES/CTR/NoPadding");
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+            e.printStackTrace();
+        }
+        try {
+            if (c != null) {
+                c.init(Cipher.ENCRYPT_MODE, eks, new IvParameterSpec(new byte[16]));
+            }
+        } catch (InvalidKeyException | InvalidAlgorithmParameterException e) {
+            e.printStackTrace();
+        }
+        byte[] es = new byte[0];
+        try {
+            if (c != null) {
+                es = c.doFinal(message);
+            }
+        } catch (IllegalBlockSizeException | BadPaddingException e) {
+            e.printStackTrace();
+        }
 
         // Generate 160 bit Salt for HMAC Key
-        byte[] hsalt = new byte[20]; r.nextBytes(hsalt);
+        byte[] hsalt = new byte[20];
+        if (r != null) {
+            r.nextBytes(hsalt);
+        }
         // Generate 160 bit HMAC Key
-        byte[] dhk = deriveKey(password, hsalt, 10000, 160);
+        byte[] dhk = new byte[0];
+        try {
+            dhk = deriveKey(password, hsalt, 10000, 160);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // Perform HMAC using SHA-256
         SecretKeySpec hks = new SecretKeySpec(dhk, "HmacSHA256");
-        Mac m = Mac.getInstance("HmacSHA256");
-        m.init(hks);
-        byte[] hmac = m.doFinal(es);
+        Mac m = null;
+        try {
+            m = Mac.getInstance("HmacSHA256");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        try {
+            if (m != null) {
+                m.init(hks);
+            }
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        }
+        byte[] hmac = new byte[0];
+        if (m != null) {
+            hmac = m.doFinal(es);
+        }
 
         // Construct Output as "ESALT + HSALT + CIPHERTEXT + HMAC"
         byte[] os = new byte[40 + es.length + 32];
@@ -144,25 +193,63 @@ public class MessageCipher {
         byte[] hmac = Arrays.copyOfRange(message, message.length - 32, message.length);
 
         // Regenerate HMAC key using Recovered Salt (hsalt)
-        byte[] dhk = deriveKey(password, hsalt, 10000, 160);
+            byte[] dhk = new byte[0];
+            try {
+                dhk = deriveKey(password, hsalt, 10000, 160);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-        // Perform HMAC using SHA-256
+            // Perform HMAC using SHA-256
         SecretKeySpec hks = new SecretKeySpec(dhk, "HmacSHA256");
-        Mac m = Mac.getInstance("HmacSHA256");
-        m.init(hks);
-        byte[] chmac = m.doFinal(es);
+            Mac m = null;
+            try {
+                m = Mac.getInstance("HmacSHA256");
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (m != null) {
+                    m.init(hks);
+                }
+            } catch (InvalidKeyException e) {
+                e.printStackTrace();
+            }
+            byte[] chmac = new byte[0];
+            if (m != null) {
+                chmac = m.doFinal(es);
+            }
 
-        // Compare Computed HMAC vs Recovered HMAC
+            // Compare Computed HMAC vs Recovered HMAC
         if (MessageDigest.isEqual(hmac, chmac)) {
             // HMAC Verification Passed
             // Regenerate Encryption Key using Recovered Salt (esalt)
-            byte[] dek = deriveKey(password, esalt, 10000, 128);
+            byte[] dek = new byte[0];
+            try {
+                dek = deriveKey(password, esalt, 10000, 128);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             // Perform Decryption
             SecretKeySpec eks = new SecretKeySpec(dek, "AES");
-            Cipher c = Cipher.getInstance("AES/CTR/NoPadding");
-            c.init(Cipher.DECRYPT_MODE, eks, new IvParameterSpec(new byte[16]));
-            byte[] s = c.doFinal(es);
+            Cipher c = null;
+            try {
+                c = Cipher.getInstance("AES/CTR/NoPadding");
+            } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+                e.printStackTrace();
+            }
+            try {
+                c.init(Cipher.DECRYPT_MODE, eks, new IvParameterSpec(new byte[16]));
+            } catch (InvalidKeyException | InvalidAlgorithmParameterException e) {
+                e.printStackTrace();
+            }
+            byte[] s = new byte[0];
+            try {
+                s = c.doFinal(es);
+            } catch (IllegalBlockSizeException | BadPaddingException e) {
+                e.printStackTrace();
+            }
 
             // Return our Decrypted String
             return s;
