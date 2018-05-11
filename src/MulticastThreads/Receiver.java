@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -154,22 +153,24 @@ public class Receiver extends Thread {
                         System.out.println("Received address is:" + socketInfo[0]);
                         System.out.println("Received port is:" + socketInfo[1]);
 			            int readBytes = 0;
-                        int readBytesAux = 0;
+                        //int readBytesAux = 0;
                         try {
                             Socket dataSocket = new Socket(socketInfo[0],Integer.valueOf(socketInfo[1]));
                             dataSocket.setSoTimeout(1000);
                             DataInputStream dataInput = new DataInputStream(dataSocket.getInputStream());
-                            message.setBody(new byte[64000]);
-                            byte[] temp = new byte[64000];
-                            while (true){
+                            int messageLength = dataInput.readInt();
+                            message.setBody(new byte[messageLength]);
+                            dataInput.readFully(message.body,0,messageLength);
+                            //byte[] temp = new byte[64000];
+                            /*while (true){
                                 readBytesAux = dataInput.read(temp);
                                 System.arraycopy(temp,0,message.body,readBytes,readBytesAux);
                                 readBytes = readBytesAux + readBytes;
                                 if(readBytes == 64000)
                                 break;
-                            }
+                            }*/
                         } catch (SocketTimeoutException e){
-                            message.setBody(Arrays.copyOfRange(message.body,0,readBytes));
+                            //message.setBody(Arrays.copyOfRange(message.body,0,readBytes));
                             System.out.println("Read timeout");
                         } catch (IOException e) {
                             //e.printStackTrace();

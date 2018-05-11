@@ -38,7 +38,7 @@ public class GetChunkRequest implements Callable<String>{
         //send Getchunk
         Dispatcher.sendControl(message.toCharArray());
 
-        Peer.threadPool.schedule(new GetChunkVerification(0,message,fileName),1250, TimeUnit.MILLISECONDS);
+        Peer.threadPool.schedule(new GetChunkVerification(0,message,fileName),500, TimeUnit.MILLISECONDS);
         return "";
     }
 }
