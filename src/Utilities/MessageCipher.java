@@ -1,12 +1,19 @@
 package Utilities;
 
+import java.security.SecureRandom;
+
 import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class MessageCipher {
 
     private static String password_private = "default_private!";
     private static String password_group = "default_group!!!";
+
+
+    // private static SecureRandom rnd = new SecureRandom();
+    private static IvParameterSpec iv = new IvParameterSpec(new byte[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0});
 
     public MessageCipher(){
         // TODO - get password/key
@@ -38,7 +45,7 @@ public class MessageCipher {
 
             SecretKeySpec secret_key_spec = new SecretKeySpec(password.getBytes(),"AES");
             Cipher cipher=Cipher.getInstance("AES/CTR/NoPadding");
-            cipher.init(Cipher.ENCRYPT_MODE, secret_key_spec);
+            cipher.init(Cipher.ENCRYPT_MODE, secret_key_spec, iv);
             encrypted = cipher.doFinal(message);
 
         } catch (Exception e) {
@@ -53,7 +60,7 @@ public class MessageCipher {
         try {
             SecretKeySpec secret_key_spec = new SecretKeySpec(password.getBytes(),"AES");
             Cipher cipher = Cipher.getInstance("AES/CTR/NoPadding");
-            cipher.init(Cipher.DECRYPT_MODE, secret_key_spec);
+            cipher.init(Cipher.DECRYPT_MODE, secret_key_spec, iv);
             decrypted = cipher.doFinal(message);
 
         } catch (Exception e) {

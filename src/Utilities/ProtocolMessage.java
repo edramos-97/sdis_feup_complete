@@ -175,9 +175,11 @@ public class ProtocolMessage {
             byte[] result = new byte[header.length + body.length];
             System.arraycopy(header,0,result,0,header.length);
 
-            byte[] body_ciphered = MessageCipher.privateCipher(body);
-            System.out.println("MESSAGE CIPHERED HAS " + body_ciphered.length);
-            System.out.println("MESSAGE REGULAR HAS " + body.length);
+            if(msgType == PossibleTypes.PUTCHUNK || msgType == PossibleTypes.PUTLOGCHUNK)
+                body = MessageCipher.privateCipher(body);
+
+            //System.out.println("MESSAGE CIPHERED HAS " + body_ciphered.length);
+            //System.out.println("MESSAGE REGULAR HAS " + body.length);
 
             System.arraycopy(body,0,result,header.length,body.length);
             return result;

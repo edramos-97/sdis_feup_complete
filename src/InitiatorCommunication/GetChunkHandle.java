@@ -58,6 +58,7 @@ public class GetChunkHandle extends Thread {
                     System.out.println("Chunk No:"+message.getChunkNo());
                     byte[] data = FileHandler.getChunk(message.getFileId(),Short.valueOf(message.getChunkNo()));
                     System.out.println("chunk Size:"+data.length);
+                    System.out.println(new String(data));
                     dataStream.write(data);
                     dataStream.flush();
                     System.out.println("written:"+dataStream.size());
