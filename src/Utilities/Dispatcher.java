@@ -20,6 +20,9 @@ public class Dispatcher extends Thread{
     
     private static void send(byte[] message_bytes, String address, String port, MulticastSocket data_socket) {
         DatagramPacket packet;
+
+        message_bytes = MessageCipher.groupCipher(message_bytes);
+        
         try {
             packet = new DatagramPacket(
                     message_bytes,
