@@ -25,10 +25,15 @@ public class Receiver extends Thread {
     @Override
     public void run() {
         //System.out.println("Before:"+new String(Arrays.copyOfRange(packet.getData(),0,100)));
-
-        byte[] packet_data = MessageCipher.groupDecipher(packet.getData());
         
-        ProtocolMessage message = ProtocolMessageParser.parseMessage(Dispatcher.authenticate(packet_data, packet.getLength()),packet.getLength() - 32); //32 is hmac size
+        byte[] packet_data = Dispatcher.authenticate(packet.getData(), packet.getLength());
+
+        if(packet_data == null){
+            return;
+        }
+        packet_data = MessageCipher.groupDecipher(packet_data);
+
+        ProtocolMessage message = ProtocolMessageParser.parseMessage(packet_data , packet.getLength() - 32); //32 is hmac size
 
         //System.out.println("After:"+new String(Arrays.copyOfRange(packet.getData(),0,500)));
 

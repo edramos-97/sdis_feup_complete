@@ -23,6 +23,8 @@ public class Dispatcher extends Thread{
 
         message_bytes = MessageCipher.groupCipher(message_bytes);
         
+        message_bytes = sign(message_bytes);
+
         try {
             packet = new DatagramPacket(
                     message_bytes,
@@ -39,7 +41,7 @@ public class Dispatcher extends Thread{
 
     public static void sendData(byte[] message_bytes) {
         try {
-            dispatcherQueue.put(new DispatcherMessage(sign(message_bytes), MulticastChanel.multicast_data_address, MulticastChanel.multicast_data_port, MulticastChanel.multicast_data_socket));
+            dispatcherQueue.put(new DispatcherMessage(message_bytes, MulticastChanel.multicast_data_address, MulticastChanel.multicast_data_port, MulticastChanel.multicast_data_socket));
         } catch (InterruptedException e) {
             System.out.println("Error in adding Message to queue");
         }
@@ -48,7 +50,7 @@ public class Dispatcher extends Thread{
 
     public static void sendRecover(byte[] message_bytes) {
         try {
-            dispatcherQueue.put(new DispatcherMessage(sign(message_bytes), MulticastChanel.multicast_recover_address, MulticastChanel.multicast_recover_port, MulticastChanel.multicast_recover_socket));
+            dispatcherQueue.put(new DispatcherMessage(message_bytes, MulticastChanel.multicast_recover_address, MulticastChanel.multicast_recover_port, MulticastChanel.multicast_recover_socket));
         } catch (InterruptedException e) {
             System.out.println("Error in adding Message to queue");
         }
@@ -57,7 +59,7 @@ public class Dispatcher extends Thread{
 
     public static void sendControl(byte[] message_bytes) {
         try {
-            dispatcherQueue.put(new DispatcherMessage(sign(message_bytes), MulticastChanel.multicast_control_address, MulticastChanel.multicast_control_port, MulticastChanel.multicast_control_socket));
+            dispatcherQueue.put(new DispatcherMessage(message_bytes, MulticastChanel.multicast_control_address, MulticastChanel.multicast_control_port, MulticastChanel.multicast_control_socket));
         } catch (InterruptedException e) {
             System.out.println("Error in adding Message to queue");
         }
