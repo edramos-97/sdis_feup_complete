@@ -63,6 +63,8 @@ public class GetChunkHandle extends Thread {
                     dataStream.flush();
                     dataStream.write(data);
                     System.out.println("written:"+dataStream.size());
+                    dataSocket.shutdownOutput();
+                    while (!dataSocket.isOutputShutdown());
                     dataStream.close();
                     dataSocket.close();
                     s.close();

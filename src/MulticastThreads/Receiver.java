@@ -161,6 +161,9 @@ public class Receiver extends Thread {
                             int messageLength = dataInput.readInt();
                             message.setBody(new byte[messageLength]);
                             dataInput.readFully(message.body,0,messageLength);
+                            dataSocket.shutdownInput();
+                            while(!dataSocket.isInputShutdown());
+                            dataInput.close();
                             //byte[] temp = new byte[64000];
                             /*while (true){
                                 readBytesAux = dataInput.read(temp);
