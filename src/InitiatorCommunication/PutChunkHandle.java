@@ -41,8 +41,6 @@ public class PutChunkHandle extends Thread {
             e.printStackTrace();
         }
 
-
-
         VolatileDatabase.add_chunk_stored(message.getFileId(), Short.valueOf(message.getChunkNo()), Peer.peerID);
         Dispatcher.sendControl(message.toCharArray());
 

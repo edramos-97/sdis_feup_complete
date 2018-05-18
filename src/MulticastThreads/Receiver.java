@@ -140,7 +140,21 @@ public class Receiver extends Thread {
                 }
                 int size_message = message.body.length;
                 VolatileDatabase.add_chunk_putchunk(message.getFileId(),Short.valueOf(message.getChunkNo()),message.getReplicationDeg(), size_message);
-                Peer.threadPool.schedule(new PutChunkHandle(message),delay, TimeUnit.MILLISECONDS);
+                if(FileHandler.hasChunk(message.getFileId(),Short.valueOf(message.getChunkNo()))){
+                    if(message.getMsgType() == ProtocolMessage.PossibleTypes.PUTCHUNK){
+                        RecoveryInitiator.addStored(message.getFileId(), Integer.valueOf(message.getChunkNo()));
+                    }
+                    message.setMsgType(ProtocolMessage.PossibleTypes.STORED);
+                    try {
+                        message.setSenderId(String.valueOf(Peer.peerID));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    VolatileDatabase.add_chunk_stored(message.getFileId(), Short.valueOf(message.getChunkNo()), Peer.peerID);
+                    Dispatcher.sendControl(message.toCharArray());
+                }else{
+                    Peer.threadPool.schedule(new PutChunkHandle(message),delay, TimeUnit.MILLISECONDS);
+                }
                 break;
             case CHUNK:
                 if(VolatileDatabase.restoreMemory.get(message.getFileId())==null) {
