@@ -81,7 +81,7 @@ public class Peer {
 
 	try{
             InputStream readStream = new FileInputStream("client.keys");
-            peerKeyStore = KeyStore.getInstance("JKS");
+            peerKeyStore = KeyStore.getInstance("PKCS12");
             peerKeyStore.load(readStream,"123456".toCharArray());
             //peerKeyStore.getKey("clientRSA","123456".toCharArray());
         } catch (Exception e){
