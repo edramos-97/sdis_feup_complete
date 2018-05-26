@@ -15,6 +15,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.security.Key;
 import java.security.KeyStore;
 import java.util.Random;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -32,7 +33,8 @@ public class Peer {
         ((ScheduledThreadPoolExecutor)executor).schedule(r, delay, TimeUnit.MILLISECONDS);
     };
     public static ScheduledThreadPoolExecutor threadPool = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors(),rejectedExecutionHandler);
-    public static KeyStore peerKeyStore;
+    public static Key peerKeyStore;
+    public static Key privateKeyStore;
     public static Control control_rmi;
 
     public static void main(String[] args) {
@@ -79,12 +81,20 @@ public class Peer {
             //e.printStackTrace();
         }
 
-	try{
-            InputStream readStream = new FileInputStream("client.keys");
-            peerKeyStore = KeyStore.getInstance("PKCS12");
-            peerKeyStore.load(readStream,"123456".toCharArray());
+        try{
+            InputStream readStream = new FileInputStream("peer" + peerID + ".keystore");
+            KeyStore tempKey = KeyStore.getInstance("pkcs12");
+            tempKey.load(readStream,("peer" + peerID).toCharArray());
+            privateKeyStore = tempKey.getKey("keyPeer" + peerID, ("peer" + peerID).toCharArray());
+
+            readStream = new FileInputStream("symencryption.keystore");
+            tempKey = KeyStore.getInstance("pkcs12");
+            tempKey.load(readStream,"password123".toCharArray());
+            peerKeyStore = tempKey.getKey("key1", "password123".toCharArray());
             //peerKeyStore.getKey("clientRSA","123456".toCharArray());
+            readStream.close();
         } catch (Exception e){
+            e.printStackTrace();
             System.out.println("Couldn't retrieve key storage");
         }
 

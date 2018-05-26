@@ -176,7 +176,7 @@ public class ProtocolMessage {
             System.arraycopy(header,0,result,0,header.length);
 
             if(msgType == PossibleTypes.PUTCHUNK || msgType == PossibleTypes.PUTLOGCHUNK)
-                body = MessageCipher.privateCipher(body);
+                body = MessageCipher.privateCipher(body,getFileId());
 
             //System.out.println("MESSAGE CIPHERED HAS " + body_ciphered.length);
             //System.out.println("MESSAGE REGULAR HAS " + body.length);

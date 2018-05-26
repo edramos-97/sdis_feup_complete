@@ -21,7 +21,7 @@ public class Dispatcher extends Thread{
     private static void send(byte[] message_bytes, String address, String port, MulticastSocket data_socket) {
         DatagramPacket packet;
 
-        message_bytes = MessageCipher.groupCipher(message_bytes);
+        //message_bytes = MessageCipher.groupCipher(message_bytes);
         
         message_bytes = sign(message_bytes);
 
@@ -68,9 +68,9 @@ public class Dispatcher extends Thread{
 
     private static byte[] sign(byte[] data) {
         try {
-            SecretKeySpec hks = new SecretKeySpec(Peer.peerKeyStore.getKey("clientRSA", "123456".toCharArray()).getEncoded(), "HmacSHA256");
+            //SecretKeySpec hks = new SecretKeySpec(, "HmacSHA256");
             Mac m = Mac.getInstance("HmacSHA256");
-            m.init(hks);
+            m.init(Peer.peerKeyStore);
             byte[] hmac = m.doFinal(data);
 
             byte[] os = new byte[data.length + 32];
@@ -89,9 +89,9 @@ public class Dispatcher extends Thread{
         byte[] message = Arrays.copyOfRange(data, 0, size - 32);
         byte[] hmac = Arrays.copyOfRange(data, size - 32, size);
         try {
-            SecretKeySpec hks = new SecretKeySpec(Peer.peerKeyStore.getKey("clientRSA", "123456".toCharArray()).getEncoded(), "HmacSHA256");
+            //SecretKeySpec hks = new SecretKeySpec(.getEncoded(), "HmacSHA256");
             Mac m = Mac.getInstance("HmacSHA256");
-            m.init(hks);
+            m.init(Peer.peerKeyStore);
             chmac = m.doFinal(message);
         } catch(Exception e) {
             e.printStackTrace();

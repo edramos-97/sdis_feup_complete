@@ -136,7 +136,7 @@ public class FileHandler {
             case "restore":
                 dirPath = Paths.get(restorePath+message.getFileId());
                 filePath = Paths.get(restorePath+message.getFileId()+ File.separator+message.getChunkNo()+EXTENSION);
-                message.setBody(MessageCipher.privateDecipher(message.body));
+                message.setBody(MessageCipher.privateDecipher(message.body, message.getFileId()));
                 break;
             default:
                 System.out.println("SaveChunk type was unknown, not saving...");
