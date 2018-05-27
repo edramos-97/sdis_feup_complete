@@ -2,9 +2,8 @@ package Utilities;
 
 import Executables.Peer;
 
-import javax.crypto.*;
+import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 
 
 public class MessageCipher {
@@ -32,13 +31,13 @@ public class MessageCipher {
         return decrypt_data(message, fileID);
     }
 
-    public static byte[] groupCipher(byte[] message){
+    /*public static byte[] groupCipher(byte[] message){
         return encrypt_data_salted(message, password_group);
     }
 
     public static byte[] groupDecipher(byte[] message){
         return decrypt_data_salted(message, password_group);
-    }
+    }*/
 
 
     private static byte[] encrypt_data(byte[] message, String fileID){
@@ -70,7 +69,7 @@ public class MessageCipher {
         return decrypted;
     }
 
-    private static byte[] encrypt_data_salted(byte[] message, String password){
+    /*private static byte[] encrypt_data_salted(byte[] message, String password){
          byte[] encrypted = new byte[message.length];
          try {
 
@@ -99,6 +98,5 @@ public class MessageCipher {
              System.out.println("Error In Decryption");
          }
          return decrypted;
-    }
-
+    }*/
 }
