@@ -24,12 +24,15 @@ import java.util.concurrent.TimeUnit;
 
 public class RecoveryInitiator extends Thread {
 
-    // FileId -> chunkNO
-    // chunkNo >=0 && < 1000000   -> stored chunk
-    // chunkNo >=1000000 && < 2000000  -> remove chunk
-    // chunkNo == ]-20,-10]  -> backed up file
-    // chunkNo == -2  -> deleted file backed up
-    // chunkNo == -3  -> deleted stored file
+    // Log Format
+    // String | Integer[,Integer]*
+    // Integer >=0 && < 1000000   -> stored chunk
+    // Integer >=1000000 && < 2000000  -> remove chunk
+    // Integer == ]-20,-10]  -> backed up file with information relative to the replication degree in the format (Integer+10)
+    // Integer == -2  -> deleted backed up file
+    // Integer == -3  -> deleted stored file
+    // String == String:date -> backed up file
+    // String == fileId -> stored file
     public static ConcurrentHashMap<String, List<Integer>> recoveryData = new ConcurrentHashMap<>();
     private static ConcurrentHashMap<String, List<Integer>> volatileData = new ConcurrentHashMap<>();
     public static String fileID;
@@ -92,7 +95,6 @@ public class RecoveryInitiator extends Thread {
             temp.listIterator().add(-2);
             volatileData.put(fileNameAndDate,temp);
         }
-        //TODO - add entry to volatile data
     }
 
     public static void addDeleteStored(String fileId){
@@ -100,7 +102,6 @@ public class RecoveryInitiator extends Thread {
         List<Integer> temp = Collections.synchronizedList(new ArrayList<>());
         temp.listIterator().add(-3);
         volatileData.put(fileId,temp);
-        //TODO - add entry to volatile data
     }
 
     public static void addStored(String fileId, int chunkNo){
